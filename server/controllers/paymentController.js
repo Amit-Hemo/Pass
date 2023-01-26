@@ -14,11 +14,7 @@ const createCostumer = async (req, res) => {
 			lastName,
 		});
 		const customerId = createResult.customer.id;
-		const result = await gateway.clientToken.generate({
-			customerId,
-		});
-		const clientToken = result.clientToken;
-		res.status(200).json({ customerId, clientToken });
+		res.status(200).json({ customerId });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
@@ -53,7 +49,7 @@ const createTransaction = async (req, res) => {
 	try {
 		// using default payment method
 		const result = await gateway.transaction.sale({
-			amount: '100.00',
+			amount: '50.00',
 			customerId,
 		});
 		res.status(200).json({ result: result.success });
