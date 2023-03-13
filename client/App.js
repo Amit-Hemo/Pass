@@ -12,7 +12,6 @@ import ReleaseProductScreen from "./src/screens/ReleaseProductScreen";
 import SplashScreen from "./src/screens/SplashScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import CartScreen from "./src/screens/CartScreen";
-import EditPaymentMethodScreen from "./src/screens/EditPaymentMethodScreen";
 import PurchasesHistoryScreen from "./src/screens/PurchasesHistoryScreen";
 import HeaderLogo from "./src/components/HeaderLogo";
 import { AntDesign } from "@expo/vector-icons";
@@ -210,25 +209,6 @@ function CartStackScreen() {
   );
 }
 
-const EditPaymentMethodStack = createStackNavigator();
-function EditPaymentMethodStackScreen() {
-  return (
-    <EditPaymentMethodStack.Navigator>
-      <EditPaymentMethodStack.Screen
-        name="EditPaymentMethodScreen"
-        component={EditPaymentMethodScreen}
-        options={{
-          title: "",
-          headerShown: false,
-          cardStyle: {
-            backgroundColor: "#fff",
-          },
-        }}
-      />
-    </EditPaymentMethodStack.Navigator>
-  );
-}
-
 const PurchasesHistoryStack = createStackNavigator();
 function PurchasesHistoryStackScreen() {
   return (
@@ -342,12 +322,6 @@ export default function App() {
         <Tab.Screen
           name="Release"
           component={ReleaseStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
-        ></Tab.Screen>
-
-        <Tab.Screen
-          name="EditPaymentMethod"
-          component={EditPaymentMethodStackScreen}
           options={{ title: "", tabBarButton: () => null }}
         ></Tab.Screen>
 
