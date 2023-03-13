@@ -8,8 +8,9 @@ const HomeScreen = ({ navigation }) => {
     <View className="items-center mt-10">
       <ActionButton
         title="לחץ לסריקת מוצר"
-        screen="ScanProduct"
-        navigation={navigation}
+        handler={() => {
+          navigation.navigate("ScanProduct");
+        }}
       />
 
       {/* In that part we will need to return the ID from the scanned RFID and send it to the DB.

@@ -8,6 +8,10 @@ import ActionButton from "./ActionButton";
 name , price , image*/
 }
 const ScannedProductDetails = ({ productID, navigation }) => {
+  const handler = async () => {
+    //Need to implement 'add to cart'
+    navigation.navigate("Home");
+  };
   return (
     <View className="items-center mt-10 border-2 rounded-lg">
       <Text className="text-base text-2xl font-bold">פרטי המוצר</Text>
@@ -25,11 +29,12 @@ const ScannedProductDetails = ({ productID, navigation }) => {
       <View className="flex-row">
         <ActionButton
           title="רכישה מהירה"
-          screen="Bill"
-          navigation={navigation}
+          handler={() => {
+            navigation.navigate("Bill");
+          }}
         />
         <View className="px-1" />
-        <ActionButton title="הוספה לסל" screen="Home" navigation={navigation} />
+        <ActionButton title="הוספה לסל" handler={handler} />
       </View>
     </View>
   );

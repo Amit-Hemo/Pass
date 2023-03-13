@@ -25,8 +25,9 @@ const CartScreen = ({ navigation }) => {
         <Text>סך הכל 100 ש"ח</Text>
         <ActionButton
           title="מעבר לתשלום"
-          screen="Bill"
-          navigation={navigation}
+          handler={() => {
+            navigation.navigate("Bill");
+          }}
         />
       </View>
     </View>
