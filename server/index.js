@@ -1,9 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const paymentRoutes = require('./routes/paymentRoutes');
-const connectDB = require('./config/dbConnect');
 const { default: mongoose } = require('mongoose');
+
+const connectDB = require('./config/dbConnect');
+const paymentRoutes = require('./routes/paymentRoutes');
+const usersRoutes = require('./routes/usersRoutes');
 
 const app = express();
 connectDB();
@@ -14,6 +16,7 @@ app.use(express.urlencoded({ limit: '30mb', extended: true }));
 app.use(cors());
 
 app.use('/payment', paymentRoutes);
+app.use('/users', usersRoutes)
 
 mongoose.connection.once('open', () => {
   app.listen(PORT, () => console.log(`server listening on ${PORT}`));
