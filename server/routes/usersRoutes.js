@@ -6,6 +6,15 @@ const userSchema = require('../schemas/userSchema');
 
 const router = express.Router();
 
-router.post('/', validateResource({body: userSchema}), usersController.createUser)
+router.post(
+  '/',
+  validateResource({
+    body: userSchema.refine((data) => data.password === data.confirmPassword, {
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
+    }),
+  }),
+  usersController.createUser
+);
 
-module.exports = router
+module.exports = router;
