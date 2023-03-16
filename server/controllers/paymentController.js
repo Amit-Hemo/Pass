@@ -1,67 +1,121 @@
-const path = require('path')
+const path = require('path');
+
 const gateway = require('../config/paymentGatewayInit');
+const UserModel = require('../models/userModel');
 
 const getBraintreeUI = async (req, res) => {
-	res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
+  res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
 };
 
-const createCostumer = async (req, res) => {
-	//generate a client token
-	const { firstName, lastName } = req.body;
-	try {
-		const createResult = await gateway.customer.create({
-			firstName,
-			lastName,
-		});
-		const customerId = createResult.customer.id;
-		res.status(200).json({ customerId });
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
+const createCustomer = async (req, res) => {
+  const { uuid, firstName, lastName, email } = req.body;
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    if (user.braintreeCustomerId) {
+      return res.status(409).json({
+        error: 'User is already has a saved customer client in the vault',
+      });
+    }
+
+    const createResult = await gateway.customer.create({
+      firstName,
+      lastName,
+      email,
+    });
+    const customerId = createResult.customer.id;
+
+    user.braintreeCustomerId = customerId;
+    await user.save();
+    res.json({
+      message: `A new customer for the user: ${uuid} has been added to the vault`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const getPaymentMethod = async (req, res) => {
-	const { id } = req.params;
-	try {
-		const customer = await gateway.customer.find(id);
-		const firstMethod = customer.paymentMethods[0];
-		res.json({ firstMethod });
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { braintreeCustomerId: customerId } = user;
+    if (!customerId) {
+      return res.status(409).json({
+        error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
+      });
+    }
+
+    const customer = await gateway.customer.find(customerId);
+    const firstMethod = customer.paymentMethods[0];
+    res.json({ firstMethod });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const getClientToken = async (req, res) => {
-	const { id } = req.params;
-	try {
-		const result = await gateway.clientToken.generate({
-			customerId: id,
-		});
-		const clientToken = result.clientToken;
-		res.status(200).json({ clientToken });
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { braintreeCustomerId: customerId } = user;
+    if (!customerId) {
+      return res.status(409).json({
+        error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
+      });
+    }
+
+    const result = await gateway.clientToken.generate({
+      customerId,
+    });
+    const clientToken = result.clientToken;
+    res.status(200).json({ clientToken });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const createTransaction = async (req, res) => {
-	const { customerId } = req.body;
-	try {
-		// using default payment method
-		const result = await gateway.transaction.sale({
-			amount: '50.00',
-			customerId,
-		});
-		res.status(200).json({ result: result.success });
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
+  const { uuid } = req.body;
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { braintreeCustomerId: customerId } = user;
+    if (!customerId) {
+      return res.status(409).json({
+        error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
+      });
+    }
+    // using default payment method
+    const result = await gateway.transaction.sale({
+      amount: '75.00',
+      customerId,
+    });
+    res.status(200).json({ result: result });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 module.exports = {
-    getBraintreeUI,
-    createCostumer,
-    getPaymentMethod,
-    getClientToken,
-    createTransaction
-}
+  getBraintreeUI,
+  createCustomer,
+  getPaymentMethod,
+  getClientToken,
+  createTransaction,
+};

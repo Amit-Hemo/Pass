@@ -1,13 +1,36 @@
 const express = require('express');
 
 const paymentController = require('../controllers/paymentController');
+const validateResource = require('../middlewares/validateResource');
+const uuidSchema = require('../schemas/uuidSchema');
+const userSchema = require('../schemas/userSchema');
 
 const router = express.Router();
 
 router.get('/', paymentController.getBraintreeUI);
-router.post('/customers', paymentController.createCostumer);
-router.get('/customers/:id', paymentController.getPaymentMethod);
-router.get('/customers/:id/generateToken', paymentController.getClientToken);
-router.post('/transactions', paymentController.createTransaction);
+router.post(
+  '/customers',
+  validateResource({
+    body: userSchema
+      .pick({ firstName: true, lastName: true, email: true })
+      .merge(uuidSchema),
+  }),
+  paymentController.createCustomer
+);
+router.get(
+  '/customers/:uuid',
+  validateResource({ params: uuidSchema }),
+  paymentController.getPaymentMethod
+);
+router.get(
+  '/customers/:uuid/generateToken',
+  validateResource({ params: uuidSchema }),
+  paymentController.getClientToken
+);
+router.post(
+  '/transactions',
+  validateResource({ body: uuidSchema }),
+  paymentController.createTransaction
+);
 
 module.exports = router;
