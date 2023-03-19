@@ -3,6 +3,7 @@ const express = require('express');
 const usersController = require('../controllers/usersController');
 const validateResource = require('../middlewares/validateResource');
 const userSchema = require('../schemas/userSchema');
+const uuidSchema = require('../schemas/uuidSchema');
 
 const router = express.Router();
 
@@ -15,6 +16,14 @@ router.post(
     }),
   }),
   usersController.createUser
+);
+router.put(
+  '/:uuid',
+  validateResource({
+    body: userSchema.pick({ firstName: true, lastName: true, email: true }),
+    params: uuidSchema,
+  }),
+  usersController.updateUser
 );
 
 module.exports = router;
