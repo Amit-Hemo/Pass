@@ -112,10 +112,36 @@ const createTransaction = async (req, res) => {
   }
 };
 
+const updateCustomer = async (req, res) => {
+  const {uuid} = req.params
+  const updatedUserInfo = req.body;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const { braintreeCustomerId: customerId } = user;
+    if (!customerId) {
+      return res.status(409).json({
+        error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
+      });
+    }
+
+    const customer = await gateway.customer.update(customerId, {name: 'amit'});
+
+    res.json({ message: customer });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+};
+
+
 module.exports = {
   getBraintreeUI,
   createCustomer,
   getPaymentMethod,
   getClientToken,
   createTransaction,
+  updateCustomer
 };

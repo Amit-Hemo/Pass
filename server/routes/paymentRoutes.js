@@ -32,5 +32,13 @@ router.post(
   validateResource({ body: uuidSchema }),
   paymentController.createTransaction
 );
+router.put(
+  '/customers/:uuid',
+  validateResource({
+    body: userSchema.pick({ firstName: true, lastName: true, email: true }),
+    params: uuidSchema,
+  }),
+  paymentController.updateCustomer
+);
 
 module.exports = router;

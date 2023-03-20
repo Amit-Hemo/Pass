@@ -38,9 +38,9 @@ async function updateUser(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
     const { uuid, firstName, lastName, email } = updatedUser;
+  
 
     //TODO: create route of change password
-    //TODO: delete user? how? disable? ask chat. 
     //TODO: change details also in vault somehow, maybe redirect to payment resource and create put request there? ask chat .
     //TODO: auth resource AMEN!!!!!!!!
     //TODO: Yivgeni...
