@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
   uuid: {
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: (value) => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value),
-      message: 'please fill a valid email address',
+      message: "please fill a valid email address",
     },
   },
   password: {
@@ -51,17 +52,20 @@ const userSchema = new mongoose.Schema({
         );
       },
       message:
-        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character",
     },
   },
   braintreeCustomerId: {
     type: String,
     minLength: 1,
   },
+  refreshToken: {
+    type: String,
+  },
 });
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) next();
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) next();
 
   try {
     const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
@@ -75,6 +79,23 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-const UserModel = mongoose.model('User', userSchema);
+userSchema.methods.comparePassword = async function (password) {
+  const isEqual = await bcrypt.compare(password, this.password);
+  return isEqual;
+};
+
+userSchema.methods.generateAccessToken = function (uuid) {
+  return jwt.sign({ uuid }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: "30s",
+  });
+};
+
+userSchema.methods.generateRefreshToken = function (uuid) {
+  return jwt.sign({ uuid }, process.env.REFRESH_TOKEN_SECRET, {
+    expiresIn: "1d",
+  });
+};
+
+const UserModel = mongoose.model("User", userSchema);
 
 module.exports = UserModel;

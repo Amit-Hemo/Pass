@@ -1,4 +1,4 @@
-const UserModel = require('../models/userModel');
+const UserModel = require("../models/userModel");
 
 async function createUser(req, res) {
   const {
@@ -35,23 +35,42 @@ async function updateUser(req, res) {
       }
     );
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     const { uuid, firstName, lastName, email } = updatedUser;
-  
 
     //TODO: create route of change password
-    //TODO: change details also in vault somehow, maybe redirect to payment resource and create put request there? ask chat .
-    //TODO: auth resource AMEN!!!!!!!!
-    //TODO: Yivgeni...
 
     res.json({ uuid, firstName, lastName, email });
   } catch (err) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
+async function loginUser(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const isValidPassword = await user.comparePassword(password);
+    if (!isValidPassword)
+      return res.status(401).json({ error: "Passwords do not match" });
+
+    const accessToken = user.generateAccessToken(user.uuid);
+    const refreshToken = user.generateRefreshToken(user.uuid);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return res.json({ accessToken, refreshToken });
+  } catch (err) {
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
 module.exports = {
   createUser,
   updateUser,
+  loginUser,
 };
