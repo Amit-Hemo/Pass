@@ -1,15 +1,17 @@
-const express = require('express');
+const express = require("express");
 
-const paymentController = require('../controllers/paymentController');
-const validateResource = require('../middlewares/validateResource');
-const uuidSchema = require('../schemas/uuidSchema');
-const userSchema = require('../schemas/userSchema');
+const paymentController = require("../controllers/paymentController");
+const validateResource = require("../middlewares/validateResource");
+const uuidSchema = require("../schemas/uuidSchema");
+const userSchema = require("../schemas/userSchema");
+const verifyAccessToken = require("../middlewares/verifyAccessToken");
 
 const router = express.Router();
+router.use(verifyAccessToken);
 
-router.get('/', paymentController.getBraintreeUI);
+router.get("/", paymentController.getBraintreeUI);
 router.post(
-  '/customers',
+  "/customers",
   validateResource({
     body: userSchema
       .pick({ firstName: true, lastName: true, email: true })
@@ -18,22 +20,22 @@ router.post(
   paymentController.createCustomer
 );
 router.get(
-  '/customers/:uuid',
+  "/customers/:uuid",
   validateResource({ params: uuidSchema }),
   paymentController.getPaymentMethod
 );
 router.get(
-  '/customers/:uuid/generateToken',
+  "/customers/:uuid/generateToken",
   validateResource({ params: uuidSchema }),
   paymentController.getClientToken
 );
 router.post(
-  '/transactions',
+  "/transactions",
   validateResource({ body: uuidSchema }),
   paymentController.createTransaction
 );
 router.put(
-  '/customers/:uuid',
+  "/customers/:uuid",
   validateResource({
     body: userSchema.pick({ firstName: true, lastName: true, email: true }),
     params: uuidSchema,
