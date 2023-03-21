@@ -5,6 +5,7 @@ const validateResource = require("../middlewares/validateResource");
 const verifyAccessToken = require("../middlewares/verifyAccessToken");
 const userSchema = require("../schemas/userSchema");
 const uuidSchema = require("../schemas/uuidSchema");
+const refreshTokenSchema = require("../schemas/refreshTokenSchema");
 
 const router = express.Router();
 
@@ -36,11 +37,15 @@ router.post(
   usersController.loginUser
 );
 
-router.post("/logout",validateResource({body : userSchema.pick({refreshToken:true})}),usersController.logoutUser)
+router.post(
+  "/logout",
+  validateResource({ body: refreshTokenSchema }),
+  usersController.logoutUser
+);
 
 router.post(
   "/refreshToken",
-  validateResource({ body: userSchema.pick({ refreshToken: true }) }),
+  validateResource({ body: refreshTokenSchema }),
   usersController.handleRefreshToken
 );
 
