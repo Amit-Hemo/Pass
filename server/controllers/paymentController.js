@@ -1,22 +1,24 @@
-const path = require('path');
+const path = require("path");
 
-const gateway = require('../config/paymentGatewayInit');
-const UserModel = require('../models/userModel');
+const gateway = require("../config/paymentGatewayInit");
+const UserModel = require("../models/userModel");
 
 const getBraintreeUI = async (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
+  res.sendFile(path.join(__dirname, "..", "views", "braintree.html"));
 };
 
 const createCustomer = async (req, res) => {
   const { uuid, firstName, lastName, email } = req.body;
+
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
+
     if (user.braintreeCustomerId) {
       return res.status(409).json({
-        error: 'User is already has a saved customer client in the vault',
+        error: "User is already has a saved customer client in the vault",
       });
     }
 
@@ -43,7 +45,7 @@ const getPaymentMethod = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -67,7 +69,7 @@ const getClientToken = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -92,7 +94,7 @@ const createTransaction = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -103,7 +105,7 @@ const createTransaction = async (req, res) => {
     }
     // using default payment method
     const result = await gateway.transaction.sale({
-      amount: '75.00',
+      amount: "75.00",
       customerId,
     });
     res.status(200).json({ result: result });
@@ -113,13 +115,13 @@ const createTransaction = async (req, res) => {
 };
 
 const updateCustomer = async (req, res) => {
-  const {uuid} = req.params
+  const { uuid } = req.params;
   const updatedUserInfo = req.body;
 
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
@@ -128,7 +130,7 @@ const updateCustomer = async (req, res) => {
       });
     }
 
-    const customer = await gateway.customer.update(customerId, {name: 'amit'});
+    const customer = await gateway.customer.update(customerId, updatedUserInfo);
 
     res.json({ message: customer });
   } catch (error) {
@@ -136,12 +138,11 @@ const updateCustomer = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getBraintreeUI,
   createCustomer,
   getPaymentMethod,
   getClientToken,
   createTransaction,
-  updateCustomer
+  updateCustomer,
 };
