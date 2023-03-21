@@ -7,19 +7,10 @@ const validateAuthUUID = require("../middlewares/validateAuthUUID");
 const userSchema = require("../schemas/userSchema");
 const uuidSchema = require("../schemas/uuidSchema");
 const refreshTokenSchema = require("../schemas/refreshTokenSchema");
+const changePasswordSchema = require("../schemas/changePasswordSchema");
 
 const router = express.Router();
 
-router.post(
-  "/",
-  validateResource({
-    body: userSchema.refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
-    }),
-  }),
-  usersController.createUser
-);
 router.put(
   "/:uuid",
   [
@@ -31,6 +22,36 @@ router.put(
     validateAuthUUID,
   ],
   usersController.updateUser
+);
+
+router.put(
+  "/:uuid/updatePassword",
+  [
+    verifyAccessToken,
+    validateResource({
+      body: userSchema
+        .pick({ password: true })
+        .merge(changePasswordSchema)
+        .refine((data) => data.newPassword === data.confirmNewPassword, {
+          message: "Passwords do not match",
+          path: ["confirmPassword"],
+        }),
+      params: uuidSchema,
+    }),
+    validateAuthUUID,
+  ],
+  usersController.updatePassword
+);
+
+router.post(
+  "/",
+  validateResource({
+    body: userSchema.refine((data) => data.password === data.confirmPassword, {
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    }),
+  }),
+  usersController.createUser
 );
 
 router.post(
