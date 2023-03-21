@@ -3,6 +3,7 @@ const express = require("express");
 const usersController = require("../controllers/usersController");
 const validateResource = require("../middlewares/validateResource");
 const verifyAccessToken = require("../middlewares/verifyAccessToken");
+const validateAuthUUID = require("../middlewares/validateAuthUUID");
 const userSchema = require("../schemas/userSchema");
 const uuidSchema = require("../schemas/uuidSchema");
 const refreshTokenSchema = require("../schemas/refreshTokenSchema");
@@ -27,6 +28,7 @@ router.put(
       body: userSchema.pick({ firstName: true, lastName: true, email: true }),
       params: uuidSchema,
     }),
+    validateAuthUUID,
   ],
   usersController.updateUser
 );
