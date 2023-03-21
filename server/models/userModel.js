@@ -61,6 +61,7 @@ const userSchema = new mongoose.Schema({
   },
   refreshToken: {
     type: String,
+    nullable: true,
   },
 });
 
@@ -86,7 +87,7 @@ userSchema.methods.comparePassword = async function (password) {
 
 userSchema.methods.generateAccessToken = function (uuid) {
   return jwt.sign({ uuid }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: "30s",
+    expiresIn: "100s",
   });
 };
 

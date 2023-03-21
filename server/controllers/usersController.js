@@ -1,4 +1,5 @@
 const UserModel = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
 async function createUser(req, res) {
   const {
@@ -23,12 +24,12 @@ async function createUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  const { uuidInput } = req.params;
+  const { uuid: uuidInput } = req.params;
   const updatedUserInfo = req.body;
 
   try {
     const updatedUser = await UserModel.findOneAndUpdate(
-      { uuidInput },
+      { uuid: uuidInput },
       updatedUserInfo,
       {
         new: true,
@@ -43,7 +44,7 @@ async function updateUser(req, res) {
 
     res.json({ uuid, firstName, lastName, email });
   } catch (err) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(409).json({ error: err });
   }
 }
 
@@ -69,8 +70,40 @@ async function loginUser(req, res) {
   }
 }
 
+async function logoutUser(req, res) {
+  const { refreshToken } = req.body;
+
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { refreshToken },
+      { refreshToken: null },
+      { new: true }
+    );
+    if (!user) return res.status(401).json({ error: "User not found" });
+    return res.status(200).json({ messege: "success" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
+async function handleRefreshToken(req, res) {
+  const { refreshToken } = req.body;
+  const user = await UserModel.findOne({ refreshToken });
+  if (!user) return res.status(403).json({ error: "Refresh token not found" });
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const accessToken = user.generateAccessToken(decoded.uuid);
+    return res.json({ accessToken });
+  } catch (error) {
+    return res.status(403).json({ error: "Invalid refresh token" });
+  }
+}
+
+//TODO:  pick problem - doesnt really do required , check what about the req.user use
 module.exports = {
   createUser,
   updateUser,
   loginUser,
+  handleRefreshToken,
+  logoutUser,
 };
