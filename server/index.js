@@ -16,8 +16,8 @@ app.use(express.urlencoded({ limit: '30mb', extended: true }));
 app.use(cors());
 
 app.use('/payment', paymentRoutes);
-app.use('/users', usersRoutes)
+app.use('/users', usersRoutes);
 
 mongoose.connection.once('open', () => {
   app.listen(PORT, () => console.log(`server listening on ${PORT}`));
-})
+});
