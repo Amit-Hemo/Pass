@@ -3,6 +3,7 @@ const UserModel = require('../models/userModel');
 const OtpModel = require('../models/otpModel');
 const generateOTP = require('../utils/generateOTP');
 const sendOTPEmail = require('../utils/sendOTPEmail');
+const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
 
 async function createUser(req, res) {
   const {
@@ -141,6 +142,10 @@ async function resetPassword(req, res) {
 
     user.password = newPassword;
     await user.save();
+
+    sendResetPasswordEmail({
+      targetEmail: user.email,
+    });
 
     return res
       .status(200)
