@@ -133,14 +133,35 @@ async function forgotPassword(req, res) {
       otp,
       otpExpire: 5,
       targetEmail: email,
-      actionMessage: 'לשחזר את הסיסמא'
-    })
+      actionMessage: 'לשחזר את הסיסמא',
+    });
 
     res.status(200).json({
       message: `Password reset OTP has been sent to this email: ${email}`,
     });
   } catch (error) {
-    return res.status(409).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+async function validateOTP(req, res) {
+  const { otp , email } = req.body;
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const otpDocument = await OtpModel.findOne({ email });
+    if (!otpDocument)
+      return res.status(404).json({ error: 'OTP is not found for that user' });
+
+    const isMatch = await otpDocument.compareOTP(otp);
+    if (!isMatch) return res.status(400).json({ error: 'Wrong OTP' });
+
+    await otpDocument.deleteOne();
+
+    res.json({ message: 'otp is valid' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Error in OTP verification process' });
   }
 }
 
@@ -152,4 +173,5 @@ module.exports = {
   logoutUser,
   updatePassword,
   forgotPassword,
+  validateOTP,
 };

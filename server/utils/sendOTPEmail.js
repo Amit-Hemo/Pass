@@ -6,7 +6,7 @@ async function sendOTPEmail({ otp, otpExpire, actionMessage, targetEmail }) {
     await mailer.sendMail({
       from: process.env.EMAIL_AUTH_USER,
       to: targetEmail,
-      subject: 'Amit Is The King',
+      subject: 'OTP Verification',
       html: `
       <!DOCTYPE html>
       <html lang="he">

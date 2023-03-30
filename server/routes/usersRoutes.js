@@ -6,10 +6,9 @@ const verifyAccessToken = require('../middlewares/verifyAccessToken');
 const validateAuthUUID = require('../middlewares/validateAuthUUID');
 const userSchema = require('../schemas/userSchema');
 const uuidSchema = require('../schemas/uuidSchema');
+const otpSchema = require('../schemas/otpSchema');
 const refreshTokenSchema = require('../schemas/refreshTokenSchema');
 const changePasswordSchema = require('../schemas/changePasswordSchema');
-
-const sendOTPEmail = require('../utils/sendOTPEmail');
 
 const router = express.Router();
 
@@ -78,6 +77,12 @@ router.post(
   '/forgotPassword',
   validateResource({ body: userSchema.pick({ email: true }) }),
   usersController.forgotPassword
+);
+
+router.post(
+  '/validateOTP',
+  validateResource({ body: userSchema.pick({ email: true }).merge(otpSchema) }),
+  usersController.validateOTP
 );
 
 module.exports = router;
