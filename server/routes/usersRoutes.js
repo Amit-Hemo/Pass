@@ -44,6 +44,21 @@ router.put(
   usersController.updatePassword
 );
 
+router.put(
+  '/:uuid/resetPassword',
+  validateResource({
+    body: changePasswordSchema.refine(
+      (data) => data.newPassword === data.confirmNewPassword,
+      {
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+      }
+    ),
+    params: uuidSchema,
+  }),
+  usersController.resetPassword
+);
+
 router.post(
   '/',
   validateResource({

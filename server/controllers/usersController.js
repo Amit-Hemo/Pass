@@ -107,12 +107,44 @@ async function updatePassword(req, res) {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) return res.status(404).json({ error: 'User not found' });
+
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
       return res.status(400).json({ error: 'Invalid password' });
+
+    const isOriginal = await user.comparePassword(newPassword);
+    if (isOriginal)
+      return res.status(400).json({ error: 'Password has already been used' });
+
     user.password = newPassword;
     await user.save();
-    return res.status(200).json({ message: 'Password updated successfully' });
+
+    return res
+      .status(200)
+      .json({ message: 'Password has been successfully updated' });
+  } catch (error) {
+    return res.status(409).json({ error: 'Server error' });
+  }
+}
+
+async function resetPassword(req, res) {
+  const { newPassword } = req.body;
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const isOriginal = await user.comparePassword(newPassword);
+    if (isOriginal)
+      return res.status(400).json({ error: 'Password has already been used' });
+
+    user.password = newPassword;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ message: 'Password has been successfully reset' });
   } catch (error) {
     return res.status(409).json({ error: 'Server error' });
   }
@@ -145,7 +177,7 @@ async function forgotPassword(req, res) {
 }
 
 async function validateOTP(req, res) {
-  const { otp , email } = req.body;
+  const { otp, email } = req.body;
   try {
     const user = await UserModel.findOne({ email });
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -159,7 +191,7 @@ async function validateOTP(req, res) {
 
     await otpDocument.deleteOne();
 
-    res.json({ message: 'otp is valid' });
+    res.json({ message: 'otp is valid', uuid: user.uuid });
   } catch (error) {
     return res.status(500).json({ error: 'Error in OTP verification process' });
   }
@@ -174,4 +206,5 @@ module.exports = {
   updatePassword,
   forgotPassword,
   validateOTP,
+  resetPassword,
 };
