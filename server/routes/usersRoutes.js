@@ -1,18 +1,20 @@
-const express = require("express");
+const express = require('express');
 
-const usersController = require("../controllers/usersController");
-const validateResource = require("../middlewares/validateResource");
-const verifyAccessToken = require("../middlewares/verifyAccessToken");
-const validateAuthUUID = require("../middlewares/validateAuthUUID");
-const userSchema = require("../schemas/userSchema");
-const uuidSchema = require("../schemas/uuidSchema");
-const refreshTokenSchema = require("../schemas/refreshTokenSchema");
-const changePasswordSchema = require("../schemas/changePasswordSchema");
+const usersController = require('../controllers/usersController');
+const validateResource = require('../middlewares/validateResource');
+const verifyAccessToken = require('../middlewares/verifyAccessToken');
+const validateAuthUUID = require('../middlewares/validateAuthUUID');
+const userSchema = require('../schemas/userSchema');
+const uuidSchema = require('../schemas/uuidSchema');
+const refreshTokenSchema = require('../schemas/refreshTokenSchema');
+const changePasswordSchema = require('../schemas/changePasswordSchema');
+
+const sendOTPEmail = require('../utils/sendOTPEmail');
 
 const router = express.Router();
 
 router.put(
-  "/:uuid",
+  '/:uuid',
   [
     verifyAccessToken,
     validateResource({
@@ -25,7 +27,7 @@ router.put(
 );
 
 router.put(
-  "/:uuid/updatePassword",
+  '/:uuid/updatePassword',
   [
     verifyAccessToken,
     validateResource({
@@ -33,8 +35,8 @@ router.put(
         .pick({ password: true })
         .merge(changePasswordSchema)
         .refine((data) => data.newPassword === data.confirmNewPassword, {
-          message: "Passwords do not match",
-          path: ["confirmPassword"],
+          message: 'Passwords do not match',
+          path: ['confirmPassword'],
         }),
       params: uuidSchema,
     }),
@@ -44,32 +46,38 @@ router.put(
 );
 
 router.post(
-  "/",
+  '/',
   validateResource({
     body: userSchema.refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
     }),
   }),
   usersController.createUser
 );
 
 router.post(
-  "/login",
+  '/login',
   validateResource({ body: userSchema.pick({ email: true, password: true }) }),
   usersController.loginUser
 );
 
 router.post(
-  "/logout",
+  '/logout',
   validateResource({ body: refreshTokenSchema }),
   usersController.logoutUser
 );
 
 router.post(
-  "/refreshToken",
+  '/refreshToken',
   validateResource({ body: refreshTokenSchema }),
   usersController.handleRefreshToken
+);
+
+router.post(
+  '/forgotPassword',
+  validateResource({ body: userSchema.pick({ email: true }) }),
+  usersController.forgotPassword
 );
 
 module.exports = router;

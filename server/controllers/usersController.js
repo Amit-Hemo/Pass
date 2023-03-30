@@ -1,5 +1,8 @@
-const UserModel = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
+const UserModel = require('../models/userModel');
+const OtpModel = require('../models/otpModel');
+const generateOTP = require('../utils/generateOTP');
+const sendOTPEmail = require('../utils/sendOTPEmail');
 
 async function createUser(req, res) {
   const {
@@ -36,11 +39,9 @@ async function updateUser(req, res) {
       }
     );
     if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
     const { uuid, firstName, lastName, email } = updatedUser;
-
-    //TODO: create route of change password
 
     res.json({ uuid, firstName, lastName, email });
   } catch (err) {
@@ -53,10 +54,10 @@ async function loginUser(req, res) {
 
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(401).json({ error: "Passwords do not match" });
+      return res.status(401).json({ error: 'Wrong password' });
 
     const accessToken = user.generateAccessToken(user.uuid);
     const refreshToken = user.generateRefreshToken(user.uuid);
@@ -66,7 +67,7 @@ async function loginUser(req, res) {
 
     return res.json({ accessToken, refreshToken });
   } catch (err) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -79,23 +80,23 @@ async function logoutUser(req, res) {
       { refreshToken: null },
       { new: true }
     );
-    if (!user) return res.status(401).json({ error: "User not found" });
-    return res.status(200).json({ messege: "success" });
+    if (!user) return res.status(401).json({ error: 'User not found' });
+    return res.status(200).json({ message: 'success' });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
 async function handleRefreshToken(req, res) {
   const { refreshToken } = req.body;
   const user = await UserModel.findOne({ refreshToken });
-  if (!user) return res.status(403).json({ error: "Refresh token not found" });
+  if (!user) return res.status(403).json({ error: 'Refresh token not found' });
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const accessToken = user.generateAccessToken(decoded.uuid);
     return res.json({ accessToken });
   } catch (error) {
-    return res.status(403).json({ error: "Invalid refresh token" });
+    return res.status(403).json({ error: 'Invalid refresh token' });
   }
 }
 
@@ -105,15 +106,41 @@ async function updatePassword(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(400).json({ error: 'Invalid password' });
     user.password = newPassword;
     await user.save();
-    return res.status(200).json({ messege: "Password updated successfully" });
+    return res.status(200).json({ message: 'Password updated successfully' });
   } catch (error) {
-    return res.status(409).json({ error: "Server error" });
+    return res.status(409).json({ error: 'Server error' });
+  }
+}
+
+async function forgotPassword(req, res) {
+  const { email } = req.body;
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    await OtpModel.deleteMany({ email });
+    const otp = generateOTP();
+
+    await OtpModel.create({ email, otp });
+
+    await sendOTPEmail({
+      otp,
+      otpExpire: 5,
+      targetEmail: email,
+      actionMessage: 'לשחזר את הסיסמא'
+    })
+
+    res.status(200).json({
+      message: `Password reset OTP has been sent to this email: ${email}`,
+    });
+  } catch (error) {
+    return res.status(409).json({ error: 'Server error' });
   }
 }
 
@@ -124,4 +151,5 @@ module.exports = {
   handleRefreshToken,
   logoutUser,
   updatePassword,
+  forgotPassword,
 };
