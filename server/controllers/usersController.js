@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
-const UserModel = require('../models/userModel');
-const OtpModel = require('../models/otpModel');
-const generateOTP = require('../utils/generateOTP');
-const sendOTPEmail = require('../utils/sendOTPEmail');
-const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
+const jwt = require("jsonwebtoken");
+const UserModel = require("../models/userModel");
+const OtpModel = require("../models/otpModel");
+const generateOTP = require("../utils/generateOTP");
+const sendOTPEmail = require("../utils/sendOTPEmail");
+const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
 
 async function createUser(req, res) {
   const {
@@ -20,7 +20,26 @@ async function createUser(req, res) {
       email: emailInput,
       password: passwordInput,
     });
-    res.json({ uuid, firstName, lastName, email });
+
+    await OtpModel.deleteMany({ email });
+    const otp = generateOTP();
+
+    await OtpModel.create({ email, otp });
+
+    await sendOTPEmail({
+      otp,
+      otpExpire: 5,
+      targetEmail: email,
+      actionMessage: "לאמת את חשבונך",
+    });
+
+    res.json({
+      message: "An OTP has been sent to the email for verification",
+      uuid,
+      firstName,
+      lastName,
+      email,
+    });
   } catch (err) {
     console.error(err);
     res.status(409).send(err);
@@ -40,7 +59,7 @@ async function updateUser(req, res) {
       }
     );
     if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     const { uuid, firstName, lastName, email } = updatedUser;
 
@@ -55,10 +74,16 @@ async function loginUser(req, res) {
 
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(401).json({ error: 'Wrong password' });
+      return res.status(401).json({ error: "Wrong password" });
+
+    if (!user.verified) {
+      return res
+        .status(401)
+        .json({ error: "User must be verified before login" });
+    }
 
     const accessToken = user.generateAccessToken(user.uuid);
     const refreshToken = user.generateRefreshToken(user.uuid);
@@ -68,7 +93,7 @@ async function loginUser(req, res) {
 
     return res.json({ accessToken, refreshToken });
   } catch (err) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
@@ -81,23 +106,23 @@ async function logoutUser(req, res) {
       { refreshToken: null },
       { new: true }
     );
-    if (!user) return res.status(401).json({ error: 'User not found' });
-    return res.status(200).json({ message: 'success' });
+    if (!user) return res.status(401).json({ error: "User not found" });
+    return res.status(200).json({ message: "success" });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
 async function handleRefreshToken(req, res) {
   const { refreshToken } = req.body;
   const user = await UserModel.findOne({ refreshToken });
-  if (!user) return res.status(403).json({ error: 'Refresh token not found' });
+  if (!user) return res.status(403).json({ error: "Refresh token not found" });
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
     const accessToken = user.generateAccessToken(decoded.uuid);
     return res.json({ accessToken });
   } catch (error) {
-    return res.status(403).json({ error: 'Invalid refresh token' });
+    return res.status(403).json({ error: "Invalid refresh token" });
   }
 }
 
@@ -107,24 +132,24 @@ async function updatePassword(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(400).json({ error: 'Invalid password' });
+      return res.status(400).json({ error: "Invalid password" });
 
     const isOriginal = await user.comparePassword(newPassword);
     if (isOriginal)
-      return res.status(400).json({ error: 'Password has already been used' });
+      return res.status(400).json({ error: "Password has already been used" });
 
     user.password = newPassword;
     await user.save();
 
     return res
       .status(200)
-      .json({ message: 'Password has been successfully updated' });
+      .json({ message: "Password has been successfully updated" });
   } catch (error) {
-    return res.status(409).json({ error: 'Server error' });
+    return res.status(409).json({ error: "Server error" });
   }
 }
 
@@ -134,11 +159,11 @@ async function resetPassword(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const isOriginal = await user.comparePassword(newPassword);
     if (isOriginal)
-      return res.status(400).json({ error: 'Password has already been used' });
+      return res.status(400).json({ error: "Password has already been used" });
 
     user.password = newPassword;
     await user.save();
@@ -149,9 +174,9 @@ async function resetPassword(req, res) {
 
     return res
       .status(200)
-      .json({ message: 'Password has been successfully reset' });
+      .json({ message: "Password has been successfully reset" });
   } catch (error) {
-    return res.status(409).json({ error: 'Server error' });
+    return res.status(409).json({ error: "Server error" });
   }
 }
 
@@ -159,7 +184,7 @@ async function forgotPassword(req, res) {
   const { email } = req.body;
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     await OtpModel.deleteMany({ email });
     const otp = generateOTP();
@@ -170,14 +195,14 @@ async function forgotPassword(req, res) {
       otp,
       otpExpire: 5,
       targetEmail: email,
-      actionMessage: 'לשחזר את הסיסמא',
+      actionMessage: "לשחזר את הסיסמא",
     });
 
     res.status(200).json({
       message: `Password reset OTP has been sent to this email: ${email}`,
     });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
@@ -185,20 +210,22 @@ async function validateOTP(req, res) {
   const { otp, email } = req.body;
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     const otpDocument = await OtpModel.findOne({ email });
     if (!otpDocument)
-      return res.status(404).json({ error: 'OTP is not found for that user' });
+      return res.status(404).json({ error: "OTP is not found for that user" });
 
     const isMatch = await otpDocument.compareOTP(otp);
-    if (!isMatch) return res.status(400).json({ error: 'Wrong OTP' });
+    if (!isMatch) return res.status(400).json({ error: "Wrong OTP" });
 
     await otpDocument.deleteOne();
+    user.verified = true;
+    await user.save();
 
-    res.json({ message: 'otp is valid', uuid: user.uuid });
+    res.json({ message: "otp is valid", uuid: user.uuid });
   } catch (error) {
-    return res.status(500).json({ error: 'Error in OTP verification process' });
+    return res.status(500).json({ error: "Error in OTP verification process" });
   }
 }
 

@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     nullable: true,
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 userSchema.pre("save", async function (next) {
