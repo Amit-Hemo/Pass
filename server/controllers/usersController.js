@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require("../models/userModel");
 const OtpModel = require("../models/otpModel");
+const StoreModel = require("../models/storeModel");
+const ProductModel = require("../models/productModel");
 const generateOTP = require("../utils/generateOTP");
 const sendOTPEmail = require("../utils/sendOTPEmail");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
@@ -229,6 +231,41 @@ async function validateOTP(req, res) {
   }
 }
 
+async function addProductToCart(req, res) {
+  const { uuid } = req.params;
+  const { sku, merchantID } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { cart } = await user.populate("cart.product");
+    const foundProduct = cart.find((value) => value.product.sku === sku);
+
+    if (foundProduct) {
+      foundProduct.quantity++;
+    } else {
+      const store = await StoreModel.findOne({ merchantID });
+      if (!store) return res.status(404).json({ error: "Store not found" });
+
+      const { products } = await store.populate("products.product");
+      const stockItem = products.find((value) => value.product.sku === sku);
+      if (!stockItem)
+        return res.status(404).json({ error: "product not found" });
+
+      const { product } = stockItem;
+
+      cart.push({ product: product._id, quantity: 1 });
+    }
+
+    await user.save();
+
+    return res.json({ cart });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -239,4 +276,5 @@ module.exports = {
   forgotPassword,
   validateOTP,
   resetPassword,
+  addProductToCart,
 };

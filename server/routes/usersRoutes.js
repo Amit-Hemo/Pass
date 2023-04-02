@@ -1,19 +1,21 @@
-const express = require('express');
+const express = require("express");
 
-const usersController = require('../controllers/usersController');
-const validateResource = require('../middlewares/validateResource');
-const verifyAccessToken = require('../middlewares/verifyAccessToken');
-const validateAuthUUID = require('../middlewares/validateAuthUUID');
-const userSchema = require('../schemas/userSchema');
-const uuidSchema = require('../schemas/uuidSchema');
-const otpSchema = require('../schemas/otpSchema');
-const refreshTokenSchema = require('../schemas/refreshTokenSchema');
-const changePasswordSchema = require('../schemas/changePasswordSchema');
+const usersController = require("../controllers/usersController");
+const validateResource = require("../middlewares/validateResource");
+const verifyAccessToken = require("../middlewares/verifyAccessToken");
+const validateAuthUUID = require("../middlewares/validateAuthUUID");
+const userSchema = require("../schemas/userSchema");
+const uuidSchema = require("../schemas/uuidSchema");
+const otpSchema = require("../schemas/otpSchema");
+const skuSchema = require("../schemas/skuSchema");
+const refreshTokenSchema = require("../schemas/refreshTokenSchema");
+const changePasswordSchema = require("../schemas/changePasswordSchema");
+const storeSchema = require("../schemas/storeSchema");
 
 const router = express.Router();
 
 router.put(
-  '/:uuid',
+  "/:uuid",
   [
     verifyAccessToken,
     validateResource({
@@ -26,7 +28,7 @@ router.put(
 );
 
 router.put(
-  '/:uuid/updatePassword',
+  "/:uuid/updatePassword",
   [
     verifyAccessToken,
     validateResource({
@@ -34,8 +36,8 @@ router.put(
         .pick({ password: true })
         .merge(changePasswordSchema)
         .refine((data) => data.newPassword === data.confirmNewPassword, {
-          message: 'Passwords do not match',
-          path: ['confirmPassword'],
+          message: "Passwords do not match",
+          path: ["confirmPassword"],
         }),
       params: uuidSchema,
     }),
@@ -45,13 +47,13 @@ router.put(
 );
 
 router.put(
-  '/:uuid/resetPassword',
+  "/:uuid/resetPassword",
   validateResource({
     body: changePasswordSchema.refine(
       (data) => data.newPassword === data.confirmNewPassword,
       {
-        message: 'Passwords do not match',
-        path: ['confirmPassword'],
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
       }
     ),
     params: uuidSchema,
@@ -60,44 +62,57 @@ router.put(
 );
 
 router.post(
-  '/',
+  "/",
   validateResource({
     body: userSchema.refine((data) => data.password === data.confirmPassword, {
-      message: 'Passwords do not match',
-      path: ['confirmPassword'],
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
     }),
   }),
   usersController.createUser
 );
 
 router.post(
-  '/login',
+  "/login",
   validateResource({ body: userSchema.pick({ email: true, password: true }) }),
   usersController.loginUser
 );
 
 router.post(
-  '/logout',
+  "/logout",
   validateResource({ body: refreshTokenSchema }),
   usersController.logoutUser
 );
 
 router.post(
-  '/refreshToken',
+  "/refreshToken",
   validateResource({ body: refreshTokenSchema }),
   usersController.handleRefreshToken
 );
 
 router.post(
-  '/forgotPassword',
+  "/forgotPassword",
   validateResource({ body: userSchema.pick({ email: true }) }),
   usersController.forgotPassword
 );
 
 router.post(
-  '/validateOTP',
+  "/validateOTP",
   validateResource({ body: userSchema.pick({ email: true }).merge(otpSchema) }),
   usersController.validateOTP
+);
+
+router.post(
+  "/:uuid/addProductToCart",
+  [
+    verifyAccessToken,
+    validateResource({
+      params: uuidSchema,
+      body: skuSchema.merge(storeSchema.pick({ merchantID: true })),
+    }),
+    validateAuthUUID,
+  ],
+  usersController.addProductToCart
 );
 
 module.exports = router;

@@ -67,6 +67,16 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  cart: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+      },
+      quantity: { type: Number, required: true },
+    },
+  ],
 });
 
 userSchema.pre("save", async function (next) {
