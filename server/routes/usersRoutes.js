@@ -125,4 +125,14 @@ router.delete(
   usersController.deleteProductFromCart
 );
 
+router.get(
+  "/:uuid",
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema }),
+    validateAuthUUID,
+  ],
+  usersController.watchCart
+);
+
 module.exports = router;

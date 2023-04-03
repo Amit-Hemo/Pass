@@ -260,7 +260,14 @@ async function addProductToCart(req, res) {
 
     await user.save();
 
-    return res.json({ cart });
+    const selectedItems = cart.map(({ product, quantity }) => ({
+      name: product.name,
+      size: product.size,
+      price: product.price,
+      image: product.image,
+      quantity,
+    }));
+    return res.json({ selectedItems });
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
   }
@@ -287,7 +294,38 @@ async function deleteProductFromCart(req, res) {
       return res.status(404).json({ error: "Product not found" });
     }
     await user.save();
-    return res.json({ cart });
+
+    const selectedItems = cart.map(({ product, quantity }) => ({
+      name: product.name,
+      size: product.size,
+      price: product.price,
+      image: product.image,
+      quantity,
+    }));
+    return res.json({ selectedItems });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
+async function watchCart(req, res) {
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { cart } = await user.populate("cart.product");
+
+    const selectedItems = cart.map(({ product, quantity }) => ({
+      name: product.name,
+      size: product.size,
+      price: product.price,
+      image: product.image,
+      quantity,
+    }));
+
+    return res.json({ selectedItems });
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
   }
@@ -305,4 +343,5 @@ module.exports = {
   resetPassword,
   addProductToCart,
   deleteProductFromCart,
+  watchCart,
 };
