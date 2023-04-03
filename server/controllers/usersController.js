@@ -266,6 +266,33 @@ async function addProductToCart(req, res) {
   }
 }
 
+async function deleteProductFromCart(req, res) {
+  const { uuid, sku } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { cart } = await user.populate("cart.product");
+    const foundProduct = cart.find((value) => value.product.sku === sku);
+
+    if (foundProduct) {
+      const index = cart.indexOf(foundProduct);
+      foundProduct.quantity--;
+
+      if (foundProduct.quantity === 0) {
+        cart.splice(index, 1);
+      }
+    } else {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    await user.save();
+    return res.json({ cart });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -277,4 +304,5 @@ module.exports = {
   validateOTP,
   resetPassword,
   addProductToCart,
+  deleteProductFromCart,
 };

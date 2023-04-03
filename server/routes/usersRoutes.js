@@ -115,4 +115,14 @@ router.post(
   usersController.addProductToCart
 );
 
+router.delete(
+  "/:uuid/deleteProductFromCart/:sku",
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema.merge(skuSchema) }),
+    validateAuthUUID,
+  ],
+  usersController.deleteProductFromCart
+);
+
 module.exports = router;
