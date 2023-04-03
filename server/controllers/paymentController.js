@@ -90,7 +90,7 @@ const getClientToken = async (req, res) => {
 };
 
 const createTransaction = async (req, res) => {
-  const { uuid } = req.body;
+  const { uuid, merchantID, price } = req.body;
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
@@ -105,8 +105,12 @@ const createTransaction = async (req, res) => {
     }
     // using default payment method
     const result = await gateway.transaction.sale({
-      amount: "75.00",
+      amount: price,
       customerId,
+      merchantAccountId: merchantID,
+      options : {
+        submitForSettlement: true
+      },
     });
     res.status(200).json({ result: result });
   } catch (error) {

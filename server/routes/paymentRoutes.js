@@ -1,18 +1,20 @@
-const express = require("express");
+const express = require('express');
 
-const paymentController = require("../controllers/paymentController");
-const validateResource = require("../middlewares/validateResource");
-const validateAuthUUID = require("../middlewares/validateAuthUUID");
-const verifyAccessToken = require("../middlewares/verifyAccessToken");
-const uuidSchema = require("../schemas/uuidSchema");
-const userSchema = require("../schemas/userSchema");
+const paymentController = require('../controllers/paymentController');
+const validateResource = require('../middlewares/validateResource');
+const validateAuthUUID = require('../middlewares/validateAuthUUID');
+const verifyAccessToken = require('../middlewares/verifyAccessToken');
+const uuidSchema = require('../schemas/uuidSchema');
+const userSchema = require('../schemas/userSchema');
+const productSchema = require('../schemas/productSchema');
+const storeSchema = require('../schemas/storeSchema');
 
 const router = express.Router();
 router.use(verifyAccessToken);
 
-router.get("/", paymentController.getBraintreeUI);
+router.get('/', paymentController.getBraintreeUI);
 router.post(
-  "/customers",
+  '/customers',
   [
     validateResource({
       body: userSchema
@@ -24,22 +26,29 @@ router.post(
   paymentController.createCustomer
 );
 router.get(
-  "/customers/:uuid",
+  '/customers/:uuid',
   [validateResource({ params: uuidSchema }), validateAuthUUID],
   paymentController.getPaymentMethod
 );
 router.get(
-  "/customers/:uuid/generateToken",
+  '/customers/:uuid/generateToken',
   [validateResource({ params: uuidSchema }), validateAuthUUID],
   paymentController.getClientToken
 );
 router.post(
-  "/transactions",
-  [validateResource({ body: uuidSchema }), validateAuthUUID],
+  '/transactions/single',
+  [
+    validateResource({
+      body: uuidSchema
+        .merge(productSchema.pick({ price: true }))
+        .merge(storeSchema.pick({ merchantID: true })),
+    }),
+    validateAuthUUID,
+  ],
   paymentController.createTransaction
 );
 router.put(
-  "/customers/:uuid",
+  '/customers/:uuid',
   [
     validateResource({
       body: userSchema.pick({ firstName: true, lastName: true, email: true }),
