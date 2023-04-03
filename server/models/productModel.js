@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const { v4: uuidv4 } = require("uuid");
-const url = require("url");
+const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
+const url = require('url');
 
 const productSchema = new mongoose.Schema({
   sku: {
@@ -21,6 +21,10 @@ const productSchema = new mongoose.Schema({
     minLength: 1,
     maxLength: 10,
     trim: true,
+    validate: {
+      validator: (value) => /^\d+(\.\d{1,2})?$/.test(value),
+      message: 'please fill a valid email address',
+    },
   },
   size: {
     type: String,
@@ -33,21 +37,21 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: function (value) {
+      validator: (value) => {
         try {
           const parsedUrl = new URL(value);
           return (
-            parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:"
+            parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:'
           );
         } catch {
           return false;
         }
       },
-      message: "Invalid image URL",
+      message: 'Invalid image URL',
     },
   },
 });
 
-const ProductModel = mongoose.model("Product", productSchema);
+const ProductModel = mongoose.model('Product', productSchema);
 
 module.exports = ProductModel;
