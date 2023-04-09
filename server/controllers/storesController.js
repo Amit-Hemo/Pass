@@ -3,20 +3,19 @@ const ProductModel = require('../models/productModel');
 const TagModel = require('../models/tagModel');
 
 async function getProduct(req, res) {
-  const { sku, merchantID } = req.params;
+  const { uuid: tagId } = req.params;
 
   try {
-    const store = await StoreModel.findOne({ merchantID });
+    const tag = await TagModel.findOne({ uuid: tagId });
+    if (!tag) return res.status(404).json({ error: 'tag not found' });
+
+    const store = await StoreModel.findById(tag.attachedStore);
     if (!store) return res.status(404).json({ error: 'store not found' });
 
-    const { products } = await store.populate('products.product');
-    // the product will be scanned physically from the store
-    const stockItem = products.find((value) => value.product.sku === sku);
-    if (!stockItem) return res.status(404).json({ error: 'product not found' });
+    const product = await ProductModel.findById(tag.attachedProduct)
+    if (!product) return res.status(404).json({ error: 'product not found' });
 
-    const { name, price, image, size } = stockItem.product;
-
-    return res.json({ sku, name, price, image, size });
+    return res.json({ product });
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }
@@ -73,11 +72,14 @@ async function addProductToStore(req, res) {
 
     const product = await ProductModel.findOne({ sku });
     if (!product) return res.status(404).json({ error: 'product not found' });
-    
+
+    const tag = await TagModel.create({
+      attachedProduct: product._id,
+      attachedStore: store._id,
+    });
+
     const { products } = await store.populate('products.product');
     const stockItem = products.find((value) => value.product.sku === sku);
-
-    const tag = await TagModel.create({});
     if (stockItem) {
       stockItem.quantity++;
       stockItem.tags.push(tag._id);
@@ -87,7 +89,9 @@ async function addProductToStore(req, res) {
 
     await store.save();
 
-    res.json({message: 'The product has been added successfully to the store'})
+    res.json({
+      message: 'The product has been added successfully to the store',
+    });
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }

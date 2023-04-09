@@ -1,18 +1,18 @@
 const express = require('express');
 
 const storesController = require('../controllers/storesController');
-const verifyAccessToken = require('../middlewares/verifyAccessToken');
 const validateResource = require('../middlewares/validateResource');
 const skuSchema = require('../schemas/skuSchema');
 const productSchema = require('../schemas/productSchema');
 const storeSchema = require('../schemas/storeSchema');
+const uuidSchema = require('../schemas/uuidSchema')
 
 const router = express.Router();
 
 router.get(
-  '/:merchantID/products/:sku',
+  '/tags/:uuid',
   validateResource({
-    params: skuSchema.merge(storeSchema.pick({ merchantID: true })),
+    params: uuidSchema
   }),
   storesController.getProduct
 );

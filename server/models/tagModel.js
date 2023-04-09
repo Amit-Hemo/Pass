@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const tagSchema = new mongoose.Schema({
@@ -9,10 +9,20 @@ const tagSchema = new mongoose.Schema({
   },
   isAvailable: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
+  attachedProduct: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  },
+  attachedStore: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Store',
+    required: true,
+  },
 });
 
-const TagModel = mongoose.model("Tag", tagSchema);
+const TagModel = mongoose.model('Tag', tagSchema);
 
 module.exports = TagModel;
