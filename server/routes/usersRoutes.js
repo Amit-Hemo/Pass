@@ -10,7 +10,6 @@ const otpSchema = require("../schemas/otpSchema");
 const skuSchema = require("../schemas/skuSchema");
 const refreshTokenSchema = require("../schemas/refreshTokenSchema");
 const changePasswordSchema = require("../schemas/changePasswordSchema");
-const storeSchema = require("../schemas/storeSchema");
 
 const router = express.Router();
 
@@ -108,7 +107,7 @@ router.post(
     verifyAccessToken,
     validateResource({
       params: uuidSchema,
-      body: skuSchema.merge(storeSchema.pick({ merchantID: true })),
+      body: uuidSchema,
     }),
     validateAuthUUID,
   ],
