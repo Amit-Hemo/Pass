@@ -307,20 +307,16 @@ async function watchCart(req, res) {
   const { uuid } = req.params;
 
   try {
-    const user = await UserModel.findOne({ uuid });
+    const user = await UserModel.findOne({ uuid })
+      .select("-cart._id")
+      .lean()
+      .populate("cart.product", "name size price image -_id")
+      .populate("cart.tags", "isAvailable attachedStore uuid -_id");
+
     if (!user) return res.status(404).json({ error: "User not found" });
+    const { cart } = user;
 
-    const { cart } = await user.populate("cart.product");
-
-    const selectedItems = cart.map(({ product, quantity }) => ({
-      name: product.name,
-      size: product.size,
-      price: product.price,
-      image: product.image,
-      quantity,
-    }));
-
-    return res.json({ selectedItems });
+    return res.json({ cart });
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
   }
