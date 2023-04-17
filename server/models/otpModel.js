@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const otpSchema = new mongoose.Schema({
   email: {
@@ -9,7 +9,7 @@ const otpSchema = new mongoose.Schema({
     trim: true,
     validate: {
       validator: (value) => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value),
-      message: 'please fill a valid email address',
+      message: "please fill a valid email address",
     },
   },
   otp: {
@@ -25,9 +25,9 @@ const otpSchema = new mongoose.Schema({
   },
 });
 
-otpSchema.pre('save', async function (next) {
-  if (!this.isModified('otp')) next();
-  console.log(this.otp);
+otpSchema.pre("save", async function (next) {
+  if (!this.isModified("otp")) next();
+
   try {
     const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
     const hashedOTP = await bcrypt.hash(this.otp, salt);
@@ -45,6 +45,6 @@ otpSchema.methods.compareOTP = async function (otp) {
   return isEqual;
 };
 
-const OtpModel = mongoose.model('OTP', otpSchema);
+const OtpModel = mongoose.model("OTP", otpSchema);
 
 module.exports = OtpModel;
