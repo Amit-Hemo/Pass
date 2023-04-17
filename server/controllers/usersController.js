@@ -184,7 +184,7 @@ async function resetPassword(req, res) {
 async function forgotPassword(req, res) {
   const { email } = req.body;
   try {
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).lean();
     if (!user) return res.status(404).json({ error: "User not found" });
 
     await OtpModel.deleteMany({ email });
@@ -238,7 +238,7 @@ async function addProductToCart(req, res) {
     const user = await UserModel.findOne({ uuid: userId });
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const tag = await TagModel.findOne({ uuid: tagUuid });
+    const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: "Tag not found" });
 
     const { cart } = user;
@@ -271,7 +271,7 @@ async function deleteProductFromCart(req, res) {
     const user = await UserModel.findOne({ uuid });
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    const tag = await TagModel.findOne({ uuid: tagUuid });
+    const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: "Tag not found" });
 
     const { cart } = user;

@@ -6,13 +6,13 @@ async function getProduct(req, res) {
   const { tagUuid } = req.params;
 
   try {
-    const tag = await TagModel.findOne({ uuid: tagUuid });
+    const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: "tag not found" });
 
-    const store = await StoreModel.findById(tag.attachedStore);
+    const store = await StoreModel.findById(tag.attachedStore).lean();
     if (!store) return res.status(404).json({ error: "store not found" });
 
-    const product = await ProductModel.findById(tag.attachedProduct);
+    const product = await ProductModel.findById(tag.attachedProduct).lean();
     if (!product) return res.status(404).json({ error: "product not found" });
 
     return res.json({ product });
@@ -70,7 +70,7 @@ async function addProductToStore(req, res) {
     const store = await StoreModel.findOne({ merchantID });
     if (!store) return res.status(404).json({ error: "store not found" });
 
-    const product = await ProductModel.findOne({ sku });
+    const product = await ProductModel.findOne({ sku }).lean();
     if (!product) return res.status(404).json({ error: "product not found" });
 
     const tag = await TagModel.create({

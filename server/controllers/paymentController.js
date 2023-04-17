@@ -43,7 +43,7 @@ const getPaymentMethod = async (req, res) => {
   const { uuid } = req.params;
 
   try {
-    const user = await UserModel.findOne({ uuid });
+    const user = await UserModel.findOne({ uuid }).lean();
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -67,7 +67,7 @@ const getClientToken = async (req, res) => {
   const { uuid } = req.params;
 
   try {
-    const user = await UserModel.findOne({ uuid });
+    const user = await UserModel.findOne({ uuid }).lean();
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -108,8 +108,8 @@ const createTransaction = async (req, res) => {
       amount: price,
       customerId,
       merchantAccountId: merchantID,
-      options : {
-        submitForSettlement: true
+      options: {
+        submitForSettlement: true,
       },
     });
     res.status(200).json({ result: result });
