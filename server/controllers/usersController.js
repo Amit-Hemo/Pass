@@ -235,19 +235,34 @@ async function addProductToCart(req, res) {
   const { tagUuid } = req.body;
 
   try {
-    const user = await UserModel.findOne({ uuid: userId });
+    const user = await UserModel.findOne({ uuid: userId }).populate(
+      "cart.tags"
+    );
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: "Tag not found" });
 
     const { cart } = user;
+
+    const productTags = cart[0].tags;
+    if (
+      cart.length > 0 &&
+      productTags[0].attachedStore.toString() !== tag.attachedStore.toString()
+    ) {
+      return res.status(409).json({
+        error: "Products must be added to the cart from the same store",
+      });
+    }
+
     const foundProduct = cart.find(
       (value) => value.product.toString() === tag.attachedProduct.toString()
     );
 
     if (foundProduct) {
-      const isTagExists = foundProduct.tags.includes(tag._id);
+      const isTagExists = foundProduct.tags.find(
+        (value) => value._id.toString() === tag._id.toString()
+      );
       if (isTagExists)
         return res.status(409).json({ error: "The tag is already in cart" });
       foundProduct.quantity++;
