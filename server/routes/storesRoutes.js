@@ -1,30 +1,30 @@
-const express = require('express');
+const express = require("express");
 
-const storesController = require('../controllers/storesController');
-const validateResource = require('../middlewares/validateResource');
-const skuSchema = require('../schemas/skuSchema');
-const productSchema = require('../schemas/productSchema');
-const storeSchema = require('../schemas/storeSchema');
-const uuidSchema = require('../schemas/uuidSchema')
+const storesController = require("../controllers/storesController");
+const validateResource = require("../middlewares/validateResource");
+const skuSchema = require("../schemas/skuSchema");
+const productSchema = require("../schemas/productSchema");
+const storeSchema = require("../schemas/storeSchema");
+const tagUuidSchema = require("../schemas/tagUuidSchema");
 
 const router = express.Router();
 
 router.get(
-  '/tags/:uuid',
+  "/tags/:tagUuid",
   validateResource({
-    params: uuidSchema
+    params: tagUuidSchema,
   }),
   storesController.getProduct
 );
 
 router.post(
-  '/',
+  "/",
   validateResource({ body: storeSchema }),
   storesController.createStore
 );
 
 router.post(
-  '/productsFactory',
+  "/productsFactory",
   validateResource({
     body: productSchema,
   }),
@@ -32,7 +32,7 @@ router.post(
 );
 
 router.post(
-  '/:merchantID/products',
+  "/:merchantID/products",
   validateResource({
     params: storeSchema.pick({ merchantID: true }),
     body: skuSchema,

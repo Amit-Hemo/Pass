@@ -10,6 +10,7 @@ const otpSchema = require("../schemas/otpSchema");
 const skuSchema = require("../schemas/skuSchema");
 const refreshTokenSchema = require("../schemas/refreshTokenSchema");
 const changePasswordSchema = require("../schemas/changePasswordSchema");
+const tagUuidSchema=require("../schemas/tagUuidSchema");
 
 const router = express.Router();
 
@@ -107,7 +108,7 @@ router.post(
     verifyAccessToken,
     validateResource({
       params: uuidSchema,
-      body: uuidSchema,
+      body: tagUuidSchema,
     }),
     validateAuthUUID,
   ],
@@ -115,10 +116,10 @@ router.post(
 );
 
 router.delete(
-  "/:uuid/deleteProductFromCart/:sku",
+  "/:uuid/deleteProductFromCart/:tagUuid",
   [
     verifyAccessToken,
-    validateResource({ params: uuidSchema.merge(skuSchema) }),
+    validateResource({ params: uuidSchema.merge(tagUuidSchema) }),
     validateAuthUUID,
   ],
   usersController.deleteProductFromCart
