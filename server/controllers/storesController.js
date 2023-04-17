@@ -1,23 +1,23 @@
-const StoreModel = require('../models/storeModel');
-const ProductModel = require('../models/productModel');
-const TagModel = require('../models/tagModel');
+const StoreModel = require("../models/storeModel");
+const ProductModel = require("../models/productModel");
+const TagModel = require("../models/tagModel");
 
 async function getProduct(req, res) {
-  const { uuid: tagId } = req.params;
+  const { tagUuid } = req.params;
 
   try {
-    const tag = await TagModel.findOne({ uuid: tagId });
-    if (!tag) return res.status(404).json({ error: 'tag not found' });
+    const tag = await TagModel.findOne({ uuid: tagUuid });
+    if (!tag) return res.status(404).json({ error: "tag not found" });
 
     const store = await StoreModel.findById(tag.attachedStore);
-    if (!store) return res.status(404).json({ error: 'store not found' });
+    if (!store) return res.status(404).json({ error: "store not found" });
 
-    const product = await ProductModel.findById(tag.attachedProduct)
-    if (!product) return res.status(404).json({ error: 'product not found' });
+    const product = await ProductModel.findById(tag.attachedProduct);
+    if (!product) return res.status(404).json({ error: "product not found" });
 
     return res.json({ product });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
@@ -36,7 +36,7 @@ async function createStore(req, res) {
     });
     res.json({ merchantID, name, address });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
@@ -58,7 +58,7 @@ async function createProduct(req, res) {
     const { name, price, size, image } = product;
     res.json({ name, price, size, image });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
@@ -68,17 +68,17 @@ async function addProductToStore(req, res) {
 
   try {
     const store = await StoreModel.findOne({ merchantID });
-    if (!store) return res.status(404).json({ error: 'store not found' });
+    if (!store) return res.status(404).json({ error: "store not found" });
 
     const product = await ProductModel.findOne({ sku });
-    if (!product) return res.status(404).json({ error: 'product not found' });
+    if (!product) return res.status(404).json({ error: "product not found" });
 
     const tag = await TagModel.create({
       attachedProduct: product._id,
       attachedStore: store._id,
     });
 
-    const { products } = await store.populate('products.product');
+    const { products } = await store.populate("products.product");
     const stockItem = products.find((value) => value.product.sku === sku);
     if (stockItem) {
       stockItem.quantity++;
@@ -90,10 +90,10 @@ async function addProductToStore(req, res) {
     await store.save();
 
     res.json({
-      message: 'The product has been added successfully to the store',
+      message: "The product has been added successfully to the store",
     });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: "Server error" });
   }
 }
 
