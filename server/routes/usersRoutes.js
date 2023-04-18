@@ -125,6 +125,12 @@ router.delete(
   usersController.deleteProductFromCart
 );
 
+router.delete("/:uuid/deleteCart",[
+  verifyAccessToken,
+  validateResource({ params: uuidSchema }),
+  validateAuthUUID,
+],usersController.deleteCart)
+
 router.get(
   "/:uuid",
   [
