@@ -3,8 +3,11 @@ const path = require("path");
 const gateway = require("../config/paymentGatewayInit");
 const UserModel = require("../models/userModel");
 const TagModel = require("../models/tagModel");
+const PurchaseModel = require("../models/purchaseModel");
+
 const sendReceiptEmail = require("../../server/utils/sendReceipt");
 const calculateCart = require("../../server/utils/calculateCart");
+const parseToIL = require("../../server/utils/parseToIL");
 
 const getBraintreeUI = async (req, res) => {
   res.sendFile(path.join(__dirname, "..", "views", "braintree.html"));
@@ -97,8 +100,7 @@ const createTransaction = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid })
       .select("-cart._id -cart.tags")
-      .lean()
-      .populate("cart.product", "name size price -_id");
+      .populate("cart.product");
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -154,10 +156,21 @@ const createTransaction = async (req, res) => {
     }
 
     const { transaction } = result;
+    const { date: transactionDate, time: transactionTime } = parseToIL(
+      transaction.createdAt
+    );
 
-    const utcTime = new Date(transaction.createdAt);
-    const transactionDate = utcTime.toLocaleDateString("he-IL");
-    const transactionTime = utcTime.toLocaleTimeString("he-IL");
+    const { _id: purchaseID } = await PurchaseModel.create({
+      transactionId: transaction.id,
+      merchantID: transaction.merchantAccountId,
+      cardType: transaction.creditCard.cardType,
+      totalAmount: transaction.amount,
+      transactionTimeStamp: transaction.createdAt,
+      products,
+    });
+
+    user.purchases.push(purchaseID);
+    await user.save();
 
     await sendReceiptEmail({
       targetEmail: user.email,
