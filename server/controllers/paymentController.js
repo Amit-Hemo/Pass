@@ -2,6 +2,9 @@ const path = require("path");
 
 const gateway = require("../config/paymentGatewayInit");
 const UserModel = require("../models/userModel");
+const TagModel = require("../models/tagModel");
+const sendReceiptEmail = require("../../server/utils/sendReceipt");
+const calculateCart = require("../../server/utils/calculateCart");
 
 const getBraintreeUI = async (req, res) => {
   res.sendFile(path.join(__dirname, "..", "views", "braintree.html"));
@@ -90,9 +93,13 @@ const getClientToken = async (req, res) => {
 };
 
 const createTransaction = async (req, res) => {
-  const { uuid, merchantID, price } = req.body;
+  const { uuid, merchantID, tagUuid } = req.body;
   try {
-    const user = await UserModel.findOne({ uuid });
+    const user = await UserModel.findOne({ uuid })
+      .select("-cart._id -cart.tags")
+      .lean()
+      .populate("cart.product", "name size price -_id");
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -103,6 +110,35 @@ const createTransaction = async (req, res) => {
         error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
       });
     }
+
+    let price = "";
+    let products = [];
+    //single payment
+    if (tagUuid) {
+      const tag = await TagModel.findOne({ uuid: tagUuid })
+        .lean()
+        .populate("attachedProduct");
+
+      if (!tag) {
+        return res.status(404).json({ error: "Tag not found" });
+      }
+      const { attachedProduct } = tag;
+      const { price: productPrice } = attachedProduct;
+      price = productPrice;
+
+      const singleProduct = {
+        product: attachedProduct,
+        quantity: 1,
+      };
+      products.push(singleProduct);
+    }
+
+    //cart payment
+    else {
+      price = calculateCart(user.cart);
+      products = user.cart;
+    }
+
     // using default payment method
     const result = await gateway.transaction.sale({
       amount: price,
@@ -112,6 +148,32 @@ const createTransaction = async (req, res) => {
         submitForSettlement: true,
       },
     });
+
+    if (!result.success) {
+      return res.status(500).json({ error: result.message });
+    }
+
+    const { transaction } = result;
+
+    const utcTime = new Date(transaction.createdAt);
+    const transactionDate = utcTime.toLocaleDateString("he-IL");
+    const transactionTime = utcTime.toLocaleTimeString("he-IL");
+
+    await sendReceiptEmail({
+      targetEmail: user.email,
+      transactionId: transaction.id,
+      merchantId: transaction.merchantAccountId,
+      amount: transaction.amount,
+      transactionDate,
+      transactionTime,
+      cardType: transaction.creditCard.cardType,
+      last4: transaction.creditCard.last4,
+      firstName: transaction.customer.firstName,
+      lastName: transaction.customer.lastName,
+      email: transaction.customer.email,
+      cart: products,
+    });
+
     res.status(200).json({ result: result });
   } catch (error) {
     res.status(500).json({ message: error.message });
