@@ -245,10 +245,9 @@ async function addProductToCart(req, res) {
 
     const { cart } = user;
 
-    const productTags = cart[0].tags;
     if (
       cart.length > 0 &&
-      productTags[0].attachedStore.toString() !== tag.attachedStore.toString()
+      cart[0].tags[0].attachedStore.toString() !== tag.attachedStore.toString()
     ) {
       return res.status(409).json({
         error: "Products must be added to the cart from the same store",
@@ -337,6 +336,22 @@ async function watchCart(req, res) {
   }
 }
 
+async function deleteCart(req, res) {
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.cart = [];
+    await user.save();
+
+    return res.json({ message: "Cart deleted successfuly" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -350,4 +365,5 @@ module.exports = {
   addProductToCart,
   deleteProductFromCart,
   watchCart,
+  deleteCart,
 };
