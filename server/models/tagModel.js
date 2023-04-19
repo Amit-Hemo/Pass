@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
 
 const tagSchema = new mongoose.Schema({
   uuid: {
@@ -13,16 +13,16 @@ const tagSchema = new mongoose.Schema({
   },
   attachedProduct: {
     type: mongoose.Types.ObjectId,
-    ref: 'Product',
+    ref: "Product",
     required: true,
   },
   attachedStore: {
     type: mongoose.Types.ObjectId,
-    ref: 'Store',
+    ref: "Store",
     required: true,
   },
 });
 
-const TagModel = mongoose.model('Tag', tagSchema);
+const TagModel = mongoose.models.Tag || mongoose.model("Tag", tagSchema);
 
 module.exports = TagModel;

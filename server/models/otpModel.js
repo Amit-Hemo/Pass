@@ -45,6 +45,6 @@ otpSchema.methods.compareOTP = async function (otp) {
   return isEqual;
 };
 
-const OtpModel = mongoose.model("OTP", otpSchema);
+const OtpModel = mongoose.models.OTP || mongoose.model("OTP", otpSchema);
 
 module.exports = OtpModel;

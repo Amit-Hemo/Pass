@@ -37,12 +37,27 @@ const purchaseSchema = new mongoose.Schema({
     },
   },
   transactionTimeStamp: {
-    type: String,
-    required: true,
-    trim: true,
-    validate: {
-      validator: (value) => !isNaN(Date.parse(value)),
-      message: "invalid time/date ",
+    transactionTime: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: (value) =>
+          /^([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(value),
+        message: "invalid time/date ",
+      },
+    },
+    transactionDate: {
+      type: String,
+      required: true,
+      trim: true,
+      validate: {
+        validator: (value) =>
+          /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.(20\d{2})$/.test(
+            value
+          ),
+        message: "invalid time/date ",
+      },
     },
   },
 
@@ -58,6 +73,6 @@ const purchaseSchema = new mongoose.Schema({
   ],
 });
 
-const PurchaseModel = mongoose.model("Purchase", purchaseSchema);
+const PurchaseModel = mongoose.models.Purchase||mongoose.model("Purchase", purchaseSchema);
 
 module.exports = PurchaseModel;

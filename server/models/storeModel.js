@@ -43,6 +43,7 @@ const storeSchema = new mongoose.Schema({
   ],
 });
 
-const StoreModel = mongoose.model("Store", storeSchema);
+const StoreModel =
+  mongoose.models.Store || mongoose.model("Store", storeSchema);
 
 module.exports = StoreModel;

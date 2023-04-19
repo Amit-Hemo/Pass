@@ -124,6 +124,6 @@ userSchema.methods.generateRefreshToken = function (uuid) {
   });
 };
 
-const UserModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
 
 module.exports = UserModel;
