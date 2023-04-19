@@ -104,7 +104,6 @@ function ForgotPasswordStackScreen() {
         options={{
           title: "",
           headerShown: false,
-          headerShown: false,
           cardStyle: {
             backgroundColor: "#fff",
           },

@@ -15,8 +15,6 @@ const ProductsBillList = () => {
         <ProductBillDetails productName="חולצה לבנה" price="100" />
         <ProductBillDetails productName="חולצה לבנה" price="100" />
         <ProductBillDetails productName="חולצה לבנה" price="100" />
-        {/* <ProductBillDetails productName="חולצה שחורה" price="100" />
-        <ProductBillDetails productName="חולצה כתומה" price="100" /> */}
       </ScrollView>
     </View>
   );
