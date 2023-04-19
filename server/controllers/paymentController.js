@@ -7,7 +7,6 @@ const PurchaseModel = require("../models/purchaseModel");
 
 const sendReceiptEmail = require("../../server/utils/sendReceipt");
 const calculateCart = require("../../server/utils/calculateCart");
-const parseToIL = require("../../server/utils/parseToIL");
 
 const getBraintreeUI = async (req, res) => {
   res.sendFile(path.join(__dirname, "..", "views", "braintree.html"));
@@ -155,19 +154,24 @@ const createTransaction = async (req, res) => {
       return res.status(500).json({ error: result.message });
     }
 
-    const { transaction } = result;
-    const { date: transactionDate, time: transactionTime } = parseToIL(
-      transaction.createdAt
-    );
+    //delete user cart after successful purchase
+    user.cart = [];
 
-    const { _id: purchaseID } = await PurchaseModel.create({
-      transactionId: transaction.id,
-      merchantID: transaction.merchantAccountId,
-      cardType: transaction.creditCard.cardType,
-      totalAmount: transaction.amount,
-      transactionTimeStamp: transaction.createdAt,
-      products,
-    });
+    const { transaction } = result;
+
+    const utcTime = new Date(transaction.createdAt);
+    const date = utcTime.toLocaleDateString("he-IL");
+    const time = utcTime.toLocaleTimeString("he-IL");
+
+    const { _id: purchaseID, transactionTimeStamp } =
+      await PurchaseModel.create({
+        transactionId: transaction.id,
+        merchantID: transaction.merchantAccountId,
+        cardType: transaction.creditCard.cardType,
+        totalAmount: transaction.amount,
+        transactionTimeStamp: { transactionDate: date, transactionTime: time },
+        products,
+      });
 
     user.purchases.push(purchaseID);
     await user.save();
@@ -177,8 +181,8 @@ const createTransaction = async (req, res) => {
       transactionId: transaction.id,
       merchantId: transaction.merchantAccountId,
       amount: transaction.amount,
-      transactionDate,
-      transactionTime,
+      transactionDate: transactionTimeStamp.transactionDate,
+      transactionTime: transactionTimeStamp.transactionTime,
       cardType: transaction.creditCard.cardType,
       last4: transaction.creditCard.last4,
       firstName: transaction.customer.firstName,
