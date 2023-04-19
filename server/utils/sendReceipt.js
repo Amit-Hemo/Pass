@@ -145,7 +145,6 @@ async function sendReceiptEmail({
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
-      path: "test.pdf",
     });
 
     mailOptions.attachments.push({
