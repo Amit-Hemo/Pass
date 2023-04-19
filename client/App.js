@@ -1,33 +1,34 @@
-import "react-native-gesture-handler";
-import { createStackNavigator } from "@react-navigation/stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import HomeScreen from "./src/screens/HomeScreen";
-import LoginScreen from "./src/screens/LoginScreen";
-import CreateAccountScreen from "./src/screens/CreateAccountScreen";
-import ForgotPasswordScreen from "./src/screens/ForgotPasswordScreen";
-import ScanProductScreen from "./src/screens/ScanProductScreen";
-import BillScreen from "./src/screens/BillScreen";
-import ReleaseProductScreen from "./src/screens/ReleaseProductScreen";
-import SplashScreen from "./src/screens/SplashScreen";
-import ProfileScreen from "./src/screens/ProfileScreen";
-import CartScreen from "./src/screens/CartScreen";
-import PurchasesHistoryScreen from "./src/screens/PurchasesHistoryScreen";
-import HeaderLogo from "./src/components/HeaderLogo";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+import HeaderLogo from './src/components/HeaderLogo';
+import BillScreen from './src/screens/BillScreen';
+import CartScreen from './src/screens/CartScreen';
+import CreateAccountScreen from './src/screens/CreateAccountScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import HomeScreen from './src/screens/HomeScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import OTPScreen from './src/screens/OTPScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import PurchasesHistoryScreen from './src/screens/PurchasesHistoryScreen';
+import ReleaseProductScreen from './src/screens/ReleaseProductScreen';
+import ScanProductScreen from './src/screens/ScanProductScreen';
+import SplashScreen from './src/screens/SplashScreen';
 
 const SplashStack = createStackNavigator();
 function SplashStackScreen() {
   return (
     <SplashStack.Navigator>
       <SplashStack.Screen
-        name="SplashScreen"
+        name='SplashScreen'
         component={SplashScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -40,14 +41,14 @@ function LoginStackScreen() {
   return (
     <LoginStack.Navigator>
       <LoginStack.Screen
-        name="LoginScreen"
+        name='LoginScreen'
         component={LoginScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           headerLeft: () => null,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -60,14 +61,14 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen
-        name="HomeScreen"
+        name='HomeScreen'
         component={HomeScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           headerLeft: () => null,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -80,13 +81,13 @@ function CreateAccountStackScreen() {
   return (
     <CreateAccountStack.Navigator>
       <CreateAccountStack.Screen
-        name="CreateAccountScreen"
+        name='CreateAccountScreen'
         component={CreateAccountScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -99,17 +100,37 @@ function ForgotPasswordStackScreen() {
   return (
     <ForgotPasswordStack.Navigator>
       <ForgotPasswordStack.Screen
-        name="ForgotPasswordScreen"
+        name='ForgotPasswordScreen'
         component={ForgotPasswordScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
     </ForgotPasswordStack.Navigator>
+  );
+}
+
+const OTPStack = createStackNavigator();
+function OTPStackScreen() {
+  return (
+    <OTPStack.Navigator>
+      <OTPStack.Screen
+        name='OTPScreen'
+        component={OTPScreen}
+        options={{
+          title: '',
+          headerShown: false,
+          headerLeft: () => null,
+          cardStyle: {
+            backgroundColor: '#fff',
+          },
+        }}
+      />
+    </OTPStack.Navigator>
   );
 }
 
@@ -118,13 +139,13 @@ function ScanProductStackScreen() {
   return (
     <ScanProductStack.Navigator>
       <ScanProductStack.Screen
-        name="ScanProductScreen"
+        name='ScanProductScreen'
         component={ScanProductScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -137,13 +158,13 @@ function BillStackScreen() {
   return (
     <BillStack.Navigator>
       <BillStack.Screen
-        name="BillScreen"
+        name='BillScreen'
         component={BillScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -156,13 +177,13 @@ function ReleaseStackScreen() {
   return (
     <ReleaseStack.Navigator>
       <ReleaseStack.Screen
-        name="ReleaseScreen"
+        name='ReleaseScreen'
         component={ReleaseProductScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -175,13 +196,13 @@ function ProfileStackScreen() {
   return (
     <ProfileStack.Navigator>
       <ProfileStack.Screen
-        name="ProfileScreen"
+        name='ProfileScreen'
         component={ProfileScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -194,13 +215,13 @@ function CartStackScreen() {
   return (
     <CartStack.Navigator>
       <CartStack.Screen
-        name="CartScreen"
+        name='CartScreen'
         component={CartScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -213,13 +234,13 @@ function PurchasesHistoryStackScreen() {
   return (
     <PurchasesHistoryStack.Navigator>
       <PurchasesHistoryStack.Screen
-        name="PurchasesHistoryScreen"
+        name='PurchasesHistoryScreen'
         component={PurchasesHistoryScreen}
         options={{
-          title: "",
+          title: '',
           headerShown: false,
           cardStyle: {
-            backgroundColor: "#fff",
+            backgroundColor: '#fff',
           },
         }}
       />
@@ -233,101 +254,125 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="Splash"
+        initialRouteName='Splash'
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#00B8D4",
+            backgroundColor: '#00B8D4',
           },
-          headerTitleAlign: "center",
+          headerTitleAlign: 'center',
           headerTitle: () => <HeaderLogo />,
         }}
       >
         <Tab.Screen
-          name="Home"
+          name='Home'
           component={HomeStackScreen}
           options={{
-            title: "ראשי",
-            tabBarIcon: () => <AntDesign name="home" size={24} color="black" />,
+            title: 'ראשי',
+            tabBarIcon: () => (
+              <AntDesign
+                name='home'
+                size={24}
+                color='black'
+              />
+            ),
           }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Profile"
+          name='Profile'
           component={ProfileStackScreen}
           options={{
-            title: "פרופיל",
+            title: 'פרופיל',
             tabBarIcon: () => (
-              <AntDesign name="profile" size={24} color="black" />
+              <AntDesign
+                name='profile'
+                size={24}
+                color='black'
+              />
             ),
           }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Cart"
+          name='Cart'
           component={CartStackScreen}
           options={{
-            title: "עגלה",
+            title: 'עגלה',
             tabBarIcon: () => (
-              <AntDesign name="shoppingcart" size={24} color="black" />
+              <AntDesign
+                name='shoppingcart'
+                size={24}
+                color='black'
+              />
             ),
           }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Splash"
+          name='Splash'
           component={SplashStackScreen}
           options={{
-            title: "",
+            title: '',
             headerTitle: () => null,
-            tabBarStyle: { display: "none" },
+            tabBarStyle: { display: 'none' },
             tabBarButton: () => null,
           }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Login"
+          name='Login'
           component={LoginStackScreen}
           options={{
-            title: "",
+            title: '',
             tabBarButton: () => null,
-            tabBarStyle: { display: "none" },
+            tabBarStyle: { display: 'none' },
           }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="CreateAccount"
+          name='CreateAccount'
           component={CreateAccountStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="ForgotPassword"
+          name='ForgotPassword'
           component={ForgotPasswordStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="ScanProduct"
+          name='OTP'
+          component={OTPStackScreen}
+          options={{
+            title: '',
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' },
+          }}
+        ></Tab.Screen>
+
+        <Tab.Screen
+          name='ScanProduct'
           component={ScanProductStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Bill"
+          name='Bill'
           component={BillStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="Release"
+          name='Release'
           component={ReleaseStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
 
         <Tab.Screen
-          name="PurchasesHistory"
+          name='PurchasesHistory'
           component={PurchasesHistoryStackScreen}
-          options={{ title: "", tabBarButton: () => null }}
+          options={{ title: '', tabBarButton: () => null }}
         ></Tab.Screen>
       </Tab.Navigator>
     </NavigationContainer>
