@@ -7,10 +7,10 @@ const validateAuthUUID = require("../middlewares/validateAuthUUID");
 const userSchema = require("../schemas/userSchema");
 const uuidSchema = require("../schemas/uuidSchema");
 const otpSchema = require("../schemas/otpSchema");
-const skuSchema = require("../schemas/skuSchema");
 const refreshTokenSchema = require("../schemas/refreshTokenSchema");
 const changePasswordSchema = require("../schemas/changePasswordSchema");
-const tagUuidSchema=require("../schemas/tagUuidSchema");
+const tagUuidSchema = require("../schemas/tagUuidSchema");
+const transactionSchema = require("../schemas/transactionSchema");
 
 const router = express.Router();
 
@@ -125,11 +125,15 @@ router.delete(
   usersController.deleteProductFromCart
 );
 
-router.delete("/:uuid/deleteCart",[
-  verifyAccessToken,
-  validateResource({ params: uuidSchema }),
-  validateAuthUUID,
-],usersController.deleteCart)
+router.delete(
+  "/:uuid/deleteCart",
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema }),
+    validateAuthUUID,
+  ],
+  usersController.deleteCart
+);
 
 router.get(
   "/:uuid",
@@ -139,6 +143,26 @@ router.get(
     validateAuthUUID,
   ],
   usersController.watchCart
+);
+
+router.get(
+  "/:uuid/purchases",
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema }),
+    validateAuthUUID,
+  ],
+  usersController.watchPurchases
+);
+
+router.get(
+  "/:uuid/purchases/:transactionId",
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema.merge(transactionSchema) }),
+    validateAuthUUID,
+  ],
+  usersController.watchPurchaseById
 );
 
 module.exports = router;

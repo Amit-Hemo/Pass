@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const UserModel = require("../models/userModel");
 const OtpModel = require("../models/otpModel");
 const TagModel = require("../models/tagModel");
+const PurchaseModel = require("../models/PurchaseModel");
 const generateOTP = require("../utils/generateOTP");
 const sendOTPEmail = require("../utils/sendOTPEmail");
 const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
@@ -352,6 +353,54 @@ async function deleteCart(req, res) {
   }
 }
 
+async function watchPurchases(req, res) {
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid })
+      .select("purchases")
+      .lean()
+      .populate("purchases", "-_id -cardType -products");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { purchases } = user;
+
+    return res.json({ purchases });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
+async function watchPurchaseById(req, res) {
+  const { uuid, transactionId } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid })
+      .select("purchases")
+      .lean()
+      .populate("purchases");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const transaction = await PurchaseModel.findOne({ transactionId }).lean();
+    if (!transaction)
+      return res.status(404).json({ error: "Transaction not exist" });
+
+    const foundPurchase = user.purchases.find(
+      (purchase) => purchase.transactionId === transactionId
+    );
+
+    if (!foundPurchase) {
+      return res
+        .status(404)
+        .json({ error: "Transaction not exist in user purchase history" });
+    }
+
+    return res.json({ foundPurchase });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -366,4 +415,6 @@ module.exports = {
   deleteProductFromCart,
   watchCart,
   deleteCart,
+  watchPurchases,
+  watchPurchaseById,
 };
