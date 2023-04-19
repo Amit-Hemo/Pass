@@ -1,34 +1,49 @@
-import { View, TextInput } from "react-native";
+import { Controller } from 'react-hook-form';
+import { Text, TextInput, View } from 'react-native';
 
 const InputBar = ({
   input,
-  onInputChange,
-  visible,
+  visible = true,
   placeHolder,
-  algin,
+  align,
   style,
   keyboardType,
-  maxLength,
+  control,
+  rules = {},
 }) => {
-  let isPassword = false;
   return (
-    <View className="w-44 mb-2 items-center">
-      {/* Check if the input should be visible or invisible */}
-      {visible === false ? (visible = true) : (visible = false)}
-
-      <TextInput
-        className={style}
-        secureTextEntry={visible}
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={input}
-        onChangeText={onInputChange}
-        placeholder={placeHolder}
-        textAlign={algin}
-        keyboardType={keyboardType}
-        maxLength={maxLength}
-      />
-    </View>
+    <Controller
+      control={control}
+      name={input}
+      rules={rules}
+      render={({
+        field: { value, onChange, onBlur },
+        fieldState: { error },
+      }) => (
+        <>
+          <View className='w-44 items-center'>
+            {/* Check if the input should be visible or invisible */}
+            <TextInput
+              className={style}
+              onChangeText={onChange}
+              autoCapitalize='none'
+              autoCorrect={false}
+              value={value}
+              onBlur={onBlur}
+              placeholder={placeHolder}
+              textAlign={align}
+              keyboardType={keyboardType}
+              secureTextEntry={!visible}
+            />
+          </View>
+          {error && (
+            <Text className='text-red-500 mb-3'>
+              {error.message || 'קרתה שגיאה לא צפויה, אנא נסו להיכנס מחדש'}
+            </Text>
+          )}
+        </>
+      )}
+    />
   );
 };
 
