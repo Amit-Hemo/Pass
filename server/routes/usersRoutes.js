@@ -38,6 +38,9 @@ router.put(
         .refine((data) => data.newPassword === data.confirmNewPassword, {
           message: "Passwords do not match",
           path: ["confirmPassword"],
+        }).refine((data) => data.password !== data.newPassword, {
+          message: "New password is the same as before",
+          path: ["newPassword"]
         }),
       params: uuidSchema,
     }),
