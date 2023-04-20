@@ -7,6 +7,7 @@ import HeaderLogo from './src/components/HeaderLogo';
 import BillScreen from './src/screens/BillScreen';
 import CartScreen from './src/screens/CartScreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
@@ -14,8 +15,10 @@ import OTPScreen from './src/screens/OTPScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import PurchasesHistoryScreen from './src/screens/PurchasesHistoryScreen';
 import ReleaseProductScreen from './src/screens/ReleaseProductScreen';
+import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import ScanProductScreen from './src/screens/ScanProductScreen';
 import SplashScreen from './src/screens/SplashScreen';
+import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
 
 const SplashStack = createStackNavigator();
 function SplashStackScreen() {
@@ -133,6 +136,25 @@ function OTPStackScreen() {
     </OTPStack.Navigator>
   );
 }
+const ResetPasswordStack = createStackNavigator();
+function ResetPasswordStackScreen() {
+  return (
+    <ResetPasswordStack.Navigator>
+      <ResetPasswordStack.Screen
+        name='ResetPasswordScreen'
+        component={ResetPasswordScreen}
+        options={{
+          title: '',
+          headerShown: false,
+          headerLeft: () => null,
+          cardStyle: {
+            backgroundColor: '#fff',
+          },
+        }}
+      />
+    </ResetPasswordStack.Navigator>
+  );
+}
 
 const ScanProductStack = createStackNavigator();
 function ScanProductStackScreen() {
@@ -207,6 +229,44 @@ function ProfileStackScreen() {
         }}
       />
     </ProfileStack.Navigator>
+  );
+}
+
+const EditProfileStack = createStackNavigator();
+function EditProfileStackScreen() {
+  return (
+    <EditProfileStack.Navigator>
+      <EditProfileStack.Screen
+        name='EditProfileScreen'
+        component={EditProfileScreen}
+        options={{
+          title: '',
+          headerShown: false,
+          cardStyle: {
+            backgroundColor: '#fff',
+          },
+        }}
+      />
+    </EditProfileStack.Navigator>
+  );
+}
+
+const UpdatePasswordStack = createStackNavigator();
+function UpdatePasswordStackScreen() {
+  return (
+    <UpdatePasswordStack.Navigator>
+      <UpdatePasswordStack.Screen
+        name='UpdatePasswordScreen'
+        component={UpdatePasswordScreen}
+        options={{
+          title: '',
+          headerShown: false,
+          cardStyle: {
+            backgroundColor: '#fff',
+          },
+        }}
+      />
+    </UpdatePasswordStack.Navigator>
   );
 }
 
@@ -294,6 +354,28 @@ export default function App() {
         ></Tab.Screen>
 
         <Tab.Screen
+          name='EditProfile'
+          component={EditProfileStackScreen}
+          options={{
+            title: '',
+            headerTitle: () => null,
+            tabBarStyle: { display: 'none' },
+            tabBarButton: () => null,
+          }}
+        ></Tab.Screen>
+
+        <Tab.Screen
+          name='UpdatePassword'
+          component={UpdatePasswordStackScreen}
+          options={{
+            title: '',
+            headerTitle: () => null,
+            tabBarStyle: { display: 'none' },
+            tabBarButton: () => null,
+          }}
+        ></Tab.Screen>
+
+        <Tab.Screen
           name='Cart'
           component={CartStackScreen}
           options={{
@@ -344,6 +426,16 @@ export default function App() {
         <Tab.Screen
           name='OTP'
           component={OTPStackScreen}
+          options={{
+            title: '',
+            tabBarButton: () => null,
+            tabBarStyle: { display: 'none' },
+          }}
+        ></Tab.Screen>
+
+        <Tab.Screen
+          name='ResetPassword'
+          component={ResetPasswordStackScreen}
           options={{
             title: '',
             tabBarButton: () => null,

@@ -8,7 +8,6 @@ const OTPScreen = ({ navigation }) => {
   const {
     handleSubmit,
     control,
-    setError,
     formState: { errors, isValid, isSubmitted },
   } = useForm();
 
@@ -18,14 +17,7 @@ const OTPScreen = ({ navigation }) => {
     console.log(data);
     const otp = Object.values(data).join('');
     console.log(otp);
-    // if (otp.length < 4) {
-    //   [...Array(4)].forEach((_, index) => {
-    //     const name = `otp${index + 1}`;
-    //     setError(name, {
-    //       type: 'manual',
-    //     });
-    //   });
-    // }
+    navigation.navigate('ResetPassword')
   };
 
   const focusPrevInput = (index) => {
@@ -55,13 +47,6 @@ const OTPScreen = ({ navigation }) => {
               rules={{ required: true }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  // height: 64,
-                  // borderWidth: 1,
-                  // borderColor: errors[`otp${index + 1}`] ? 'red' : 'gray',
-                  // borderRadius: 8,
-                  // fontSize: 24,
-                  // textAlign: 'center',
-                  // marginRight: 8,
                   className={`border-[1.5px] ${
                     errors[`otp${index + 1}`] && 'border-red-500'
                   } rounded-md text-3xl text-center p-2 mr-2`}

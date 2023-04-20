@@ -12,7 +12,7 @@ import ActionButton from "../components/ActionButton";
 import KeyboardDismiss from "../components/KeyboardDismiss";
 
 // for development
-const HOST = "http://10.0.0.5:5000";
+const HOST = "http://192.168.1.32:5000";
 
 const ProfileScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
@@ -20,6 +20,7 @@ const ProfileScreen = ({ navigation }) => {
     userId: "1234",
     firstName: "Albert",
     lastName: "Einstein",
+    email: "nadavGeneral@gmail.com",
     payment: {
       customerId: null, //for now, if is empty it will be assigned after the user is added to the vault
       clientToken: null,
@@ -99,7 +100,7 @@ const ProfileScreen = ({ navigation }) => {
         <ActionButton
           title="ערוך פרטים"
           handler={() => {
-            navigation.navigate("ProfileScreen");
+            navigation.navigate("EditProfile");
           }}
         />
 
