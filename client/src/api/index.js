@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // for development
-const baseURL = "http://10.0.0.5:5000";
+const baseURL = "http://192.168.1.32:5000";
 
 export default client = axios.create({
   baseURL,
