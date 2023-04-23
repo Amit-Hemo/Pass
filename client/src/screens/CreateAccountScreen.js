@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { CreateUser } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
+import Popup from '../components/Popup';
 import {
   DIGIT_REGEX,
   EMAIL_REGEX,
@@ -11,20 +13,46 @@ import {
   SPECIAL_CHAR_REGEX,
   UPPERCASE_REGEX,
 } from '../constants/regexes';
+import handleApiError from '../utils/handleApiError';
 
 const CreateAccountScreen = ({ navigation }) => {
   const { handleSubmit, watch, control } = useForm();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalInfo, setModalInfo] = useState({
+    isError: false,
+    message: '',
+    onClose: () => {},
+  });
   const pwd = watch('password');
 
-  const onRegister = (data) => {
+  async function onRegister(data) {
     console.log(data);
-  };
+    try {
+      const { data: response } = await CreateUser(data);
+    } catch (error) {
+      const errorMessage = handleApiError(error);
+      setModalVisible(true);
+      setModalInfo({
+        isError: true,
+        message: errorMessage,
+        onClose: () => {
+          console.log('Modal closed');
+        },
+      });
+    }
+  }
 
   return (
     <KeyboardDismiss>
-      <View className='items-center'>
+      <View className='flex-1 items-center'>
+        <Popup
+          visible={modalVisible}
+          setVisible={setModalVisible}
+          isError={modalInfo.isError}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+        />
         <Text className='text-base mt-10 mb-8 text-3xl'>יצירת משתמש</Text>
-
         <Text className='text-xl'>שם פרטי</Text>
         <InputBar
           input='firstName'
@@ -43,7 +71,6 @@ const CreateAccountScreen = ({ navigation }) => {
             },
           }}
         />
-
         <Text className='text-xl'>שם משפחה</Text>
         <InputBar
           input='lastName'
@@ -62,7 +89,6 @@ const CreateAccountScreen = ({ navigation }) => {
             },
           }}
         />
-
         <Text className='text-xl'>אימייל</Text>
         <InputBar
           input='email'
@@ -74,7 +100,6 @@ const CreateAccountScreen = ({ navigation }) => {
             pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
           }}
         />
-
         <Text className='text-xl'>סיסמא</Text>
         <InputBar
           input='password'
@@ -100,7 +125,6 @@ const CreateAccountScreen = ({ navigation }) => {
               'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
           }}
         />
-
         <Text className='text-xl'>אימות סיסמא</Text>
         <InputBar
           input='confirmPassword'
@@ -121,7 +145,6 @@ const CreateAccountScreen = ({ navigation }) => {
             validate: (value) => value === pwd || 'הסיסמאות אינן תואמות',
           }}
         />
-
         <ActionButton
           title='צור משתמש'
           handler={handleSubmit(onRegister)}
