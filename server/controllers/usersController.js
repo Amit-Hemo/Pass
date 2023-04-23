@@ -1,11 +1,11 @@
-const jwt = require("jsonwebtoken");
-const UserModel = require("../models/userModel");
-const OtpModel = require("../models/otpModel");
-const TagModel = require("../models/tagModel");
-const PurchaseModel = require("../models/PurchaseModel");
-const generateOTP = require("../utils/generateOTP");
-const sendOTPEmail = require("../utils/sendOTPEmail");
-const sendResetPasswordEmail = require("../utils/sendResetPasswordEmail");
+const jwt = require('jsonwebtoken');
+const UserModel = require('../models/userModel');
+const OtpModel = require('../models/otpModel');
+const TagModel = require('../models/tagModel');
+const PurchaseModel = require('../models/PurchaseModel');
+const generateOTP = require('../utils/generateOTP');
+const sendOTPEmail = require('../utils/sendOTPEmail');
+const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
 
 async function createUser(req, res) {
   const {
@@ -32,19 +32,24 @@ async function createUser(req, res) {
       otp,
       otpExpire: 5,
       targetEmail: email,
-      actionMessage: "לאמת את חשבונך",
+      actionMessage: 'לאמת את חשבונך',
     });
 
     res.json({
-      message: "An OTP has been sent to the email for verification",
+      message: 'An OTP has been sent to the email for verification',
       uuid,
       firstName,
       lastName,
       email,
     });
   } catch (err) {
-    console.error(err);
-    res.status(409).send(err);
+    if (err.code === 11000) {
+      return res
+        .status(409)
+        .send({ error: 'The email is already used by an account' });
+    } else {
+      return res.status(500).send({ error: 'Server error' });
+    }
   }
 }
 
@@ -61,13 +66,13 @@ async function updateUser(req, res) {
       }
     );
     if (!updatedUser) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
     const { uuid, firstName, lastName, email } = updatedUser;
 
     res.json({ uuid, firstName, lastName, email });
   } catch (err) {
-    return res.status(409).json({ error: err });
+    return res.status(500).json({ error: 'Server Error' });
   }
 }
 
@@ -76,15 +81,15 @@ async function loginUser(req, res) {
 
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(401).json({ error: "Wrong password" });
+      return res.status(401).json({ error: 'Wrong password' });
 
     if (!user.verified) {
       return res
         .status(401)
-        .json({ error: "User must be verified before login" });
+        .json({ error: 'User must be verified before login' });
     }
 
     const accessToken = user.generateAccessToken(user.uuid);
@@ -95,7 +100,7 @@ async function loginUser(req, res) {
 
     return res.json({ accessToken, refreshToken });
   } catch (err) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -108,23 +113,32 @@ async function logoutUser(req, res) {
       { refreshToken: null },
       { new: true }
     );
-    if (!user) return res.status(401).json({ error: "User not found" });
-    return res.status(200).json({ message: "success" });
+    if (!user) return res.status(401).json({ error: 'User not found' });
+    return res.status(200).json({ message: 'success' });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
 async function handleRefreshToken(req, res) {
   const { refreshToken } = req.body;
-  const user = await UserModel.findOne({ refreshToken });
-  if (!user) return res.status(403).json({ error: "Refresh token not found" });
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await UserModel.findOne({ refreshToken }).lean();
+    if (!user)
+      return res.status(403).json({ error: 'Refresh token not found' });
     const accessToken = user.generateAccessToken(decoded.uuid);
     return res.json({ accessToken });
   } catch (error) {
-    return res.status(403).json({ error: "Invalid refresh token" });
+    if (error.name === 'TokenExpiredError') {
+      return res.status(403).send({ error: 'Token is expired' });
+    }
+    else if(error.name === 'JsonWebTokenError') {
+      return res.status(403).send({ error: 'Invalid Token' });
+    }
+    else {
+      return res.status(500).send({error: 'Server error'})
+    }
   }
 }
 
@@ -134,24 +148,24 @@ async function updatePassword(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const isValidPassword = await user.comparePassword(password);
     if (!isValidPassword)
-      return res.status(400).json({ error: "Invalid password" });
+      return res.status(400).json({ error: 'Invalid password' });
 
     const isOriginal = await user.comparePassword(newPassword);
     if (isOriginal)
-      return res.status(400).json({ error: "Password has already been used" });
+      return res.status(400).json({ error: 'Password has already been used' });
 
     user.password = newPassword;
     await user.save();
 
     return res
       .status(200)
-      .json({ message: "Password has been successfully updated" });
+      .json({ message: 'Password has been successfully updated' });
   } catch (error) {
-    return res.status(409).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -161,11 +175,11 @@ async function resetPassword(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const isOriginal = await user.comparePassword(newPassword);
     if (isOriginal)
-      return res.status(400).json({ error: "Password has already been used" });
+      return res.status(400).json({ error: 'Password has already been used' });
 
     user.password = newPassword;
     await user.save();
@@ -176,9 +190,9 @@ async function resetPassword(req, res) {
 
     return res
       .status(200)
-      .json({ message: "Password has been successfully reset" });
+      .json({ message: 'Password has been successfully reset' });
   } catch (error) {
-    return res.status(409).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -186,7 +200,7 @@ async function forgotPassword(req, res) {
   const { email } = req.body;
   try {
     const user = await UserModel.findOne({ email }).lean();
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     await OtpModel.deleteMany({ email });
     const otp = generateOTP();
@@ -197,14 +211,14 @@ async function forgotPassword(req, res) {
       otp,
       otpExpire: 5,
       targetEmail: email,
-      actionMessage: "לשחזר את הסיסמא",
+      actionMessage: 'לשחזר את הסיסמא',
     });
 
     res.status(200).json({
       message: `Password reset OTP has been sent to this email: ${email}`,
     });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -212,22 +226,22 @@ async function validateOTP(req, res) {
   const { otp, email } = req.body;
   try {
     const user = await UserModel.findOne({ email });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const otpDocument = await OtpModel.findOne({ email });
     if (!otpDocument)
-      return res.status(404).json({ error: "OTP is not found for that user" });
+      return res.status(404).json({ error: 'OTP is not found for that user' });
 
     const isMatch = await otpDocument.compareOTP(otp);
-    if (!isMatch) return res.status(400).json({ error: "Wrong OTP" });
+    if (!isMatch) return res.status(400).json({ error: 'Wrong OTP' });
 
     await otpDocument.deleteOne();
     user.verified = true;
     await user.save();
 
-    res.json({ message: "otp is valid", uuid: user.uuid });
+    res.json({ message: 'otp is valid', uuid: user.uuid });
   } catch (error) {
-    return res.status(500).json({ error: "Error in OTP verification process" });
+    return res.status(500).json({ error: 'Error in OTP verification process' });
   }
 }
 
@@ -237,12 +251,12 @@ async function addProductToCart(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid: userId }).populate(
-      "cart.tags"
+      'cart.tags'
     );
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
-    if (!tag) return res.status(404).json({ error: "Tag not found" });
+    if (!tag) return res.status(404).json({ error: 'Tag not found' });
 
     const { cart } = user;
 
@@ -251,7 +265,7 @@ async function addProductToCart(req, res) {
       cart[0].tags[0].attachedStore.toString() !== tag.attachedStore.toString()
     ) {
       return res.status(409).json({
-        error: "Products must be added to the cart from the same store",
+        error: 'Products must be added to the cart from the same store',
       });
     }
 
@@ -264,7 +278,7 @@ async function addProductToCart(req, res) {
         (value) => value._id.toString() === tag._id.toString()
       );
       if (isTagExists)
-        return res.status(409).json({ error: "The tag is already in cart" });
+        return res.status(409).json({ error: 'The tag is already in cart' });
       foundProduct.quantity++;
       foundProduct.tags.push(tag._id);
     } else {
@@ -273,9 +287,9 @@ async function addProductToCart(req, res) {
 
     await user.save();
 
-    return res.json({ message: "Product has been added to the cart" });
+    return res.json({ message: 'Product has been added to the cart' });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -284,10 +298,10 @@ async function deleteProductFromCart(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
-    if (!tag) return res.status(404).json({ error: "Tag not found" });
+    if (!tag) return res.status(404).json({ error: 'Tag not found' });
 
     const { cart } = user;
     const foundProduct = cart.find(
@@ -295,12 +309,12 @@ async function deleteProductFromCart(req, res) {
     );
 
     if (!foundProduct) {
-      return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ error: 'Product not found' });
     }
 
     const isTagExists = foundProduct.tags.includes(tag._id);
     if (!isTagExists)
-      return res.status(404).json({ error: "Tag not found in the cart" });
+      return res.status(404).json({ error: 'Tag not found in the cart' });
 
     const productIndex = cart.indexOf(foundProduct);
 
@@ -312,9 +326,9 @@ async function deleteProductFromCart(req, res) {
       foundProduct.quantity--;
     }
     await user.save();
-    return res.json({ message: "product deleted from cart" });
+    return res.json({ message: 'product deleted from cart' });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -323,17 +337,17 @@ async function watchCart(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid })
-      .select("-cart._id")
+      .select('-cart._id')
       .lean()
-      .populate("cart.product", "name size price image -_id")
-      .populate("cart.tags", "isAvailable attachedStore uuid -_id");
+      .populate('cart.product', 'name size price image -_id')
+      .populate('cart.tags', 'isAvailable attachedStore uuid -_id');
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
     const { cart } = user;
 
     return res.json({ cart });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -342,14 +356,14 @@ async function deleteCart(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     user.cart = [];
     await user.save();
 
-    return res.json({ message: "Cart deleted successfuly" });
+    return res.json({ message: 'Cart deleted successfuly' });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -358,16 +372,16 @@ async function watchPurchases(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid })
-      .select("purchases")
+      .select('purchases')
       .lean()
-      .populate("purchases", "-_id -cardType -products");
-    if (!user) return res.status(404).json({ error: "User not found" });
+      .populate('purchases', '-_id -cardType -products');
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const { purchases } = user;
 
     return res.json({ purchases });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 
@@ -376,14 +390,14 @@ async function watchPurchaseById(req, res) {
 
   try {
     const user = await UserModel.findOne({ uuid })
-      .select("purchases")
+      .select('purchases')
       .lean()
-      .populate("purchases");
-    if (!user) return res.status(404).json({ error: "User not found" });
+      .populate('purchases');
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const transaction = await PurchaseModel.findOne({ transactionId }).lean();
     if (!transaction)
-      return res.status(404).json({ error: "Transaction not exist" });
+      return res.status(404).json({ error: 'Transaction not exist' });
 
     const foundPurchase = user.purchases.find(
       (purchase) => purchase.transactionId === transactionId
@@ -392,12 +406,12 @@ async function watchPurchaseById(req, res) {
     if (!foundPurchase) {
       return res
         .status(404)
-        .json({ error: "Transaction not exist in user purchase history" });
+        .json({ error: 'Transaction not exist in user purchase history' });
     }
 
     return res.json({ foundPurchase });
   } catch (error) {
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: 'Server error' });
   }
 }
 

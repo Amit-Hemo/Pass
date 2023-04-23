@@ -1,15 +1,15 @@
-const path = require("path");
+const path = require('path');
 
-const gateway = require("../config/paymentGatewayInit");
-const UserModel = require("../models/userModel");
-const TagModel = require("../models/tagModel");
-const PurchaseModel = require("../models/purchaseModel");
+const gateway = require('../config/paymentGatewayInit');
+const UserModel = require('../models/userModel');
+const TagModel = require('../models/tagModel');
+const PurchaseModel = require('../models/purchaseModel');
 
-const sendReceiptEmail = require("../../server/utils/sendReceipt");
-const calculateCart = require("../../server/utils/calculateCart");
+const sendReceiptEmail = require('../../server/utils/sendReceipt');
+const calculateCart = require('../../server/utils/calculateCart');
 
 const getBraintreeUI = async (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "views", "braintree.html"));
+  res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
 };
 
 const createCustomer = async (req, res) => {
@@ -18,12 +18,12 @@ const createCustomer = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     if (user.braintreeCustomerId) {
       return res.status(409).json({
-        error: "User is already has a saved customer client in the vault",
+        error: 'User is already has a saved customer client in the vault',
       });
     }
 
@@ -40,7 +40,7 @@ const createCustomer = async (req, res) => {
       message: `A new customer for the user: ${uuid} has been added to the vault`,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -50,7 +50,7 @@ const getPaymentMethod = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid }).lean();
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -64,7 +64,7 @@ const getPaymentMethod = async (req, res) => {
     const firstMethod = customer.paymentMethods[0];
     res.json({ firstMethod });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -74,7 +74,7 @@ const getClientToken = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid }).lean();
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -90,7 +90,7 @@ const getClientToken = async (req, res) => {
     const clientToken = result.clientToken;
     res.status(200).json({ clientToken });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -98,11 +98,11 @@ const createTransaction = async (req, res) => {
   const { uuid, merchantID, tagUuid } = req.body;
   try {
     const user = await UserModel.findOne({ uuid })
-      .select("-cart._id -cart.tags")
-      .populate("cart.product");
+      .select('-cart._id -cart.tags')
+      .populate('cart.product');
 
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const { braintreeCustomerId: customerId } = user;
@@ -112,16 +112,16 @@ const createTransaction = async (req, res) => {
       });
     }
 
-    let price = "";
+    let price = '';
     let products = [];
     //single payment
     if (tagUuid) {
       const tag = await TagModel.findOne({ uuid: tagUuid })
         .lean()
-        .populate("attachedProduct");
+        .populate('attachedProduct');
 
       if (!tag) {
-        return res.status(404).json({ error: "Tag not found" });
+        return res.status(404).json({ error: 'Tag not found' });
       }
       const { attachedProduct } = tag;
       const { price: productPrice } = attachedProduct;
@@ -160,8 +160,8 @@ const createTransaction = async (req, res) => {
     const { transaction } = result;
 
     const utcTime = new Date(transaction.createdAt);
-    const date = utcTime.toLocaleDateString("he-IL");
-    const time = utcTime.toLocaleTimeString("he-IL");
+    const date = utcTime.toLocaleDateString('he-IL');
+    const time = utcTime.toLocaleTimeString('he-IL');
 
     const { _id: purchaseID, transactionTimeStamp } =
       await PurchaseModel.create({
@@ -191,9 +191,9 @@ const createTransaction = async (req, res) => {
       cart: products,
     });
 
-    res.status(200).json({ result: result });
+    return res.status(200).json({ result: result });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -204,7 +204,7 @@ const updateCustomer = async (req, res) => {
   try {
     const user = await UserModel.findOne({ uuid });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
@@ -217,7 +217,7 @@ const updateCustomer = async (req, res) => {
 
     res.json({ message: customer });
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ error: error });
   }
 };
 
