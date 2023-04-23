@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import * as paymentAPI from "../../api/payment";
+import * as paymentAPI from "../api/payment";
 import ProductsBillList from "../components/ProductsBillList";
 
 // The Screen should match a quick purchase  (1 product) but also a Flat list of products comes from the Cart

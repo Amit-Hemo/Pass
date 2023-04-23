@@ -40,10 +40,11 @@ const createCustomer = async (req, res) => {
       message: `A new customer for the user: ${uuid} has been added to the vault`,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Server Error' });
   }
 };
 
+//TODO: will be replaced as change payment method
 const getPaymentMethod = async (req, res) => {
   const { uuid } = req.params;
 
@@ -123,6 +124,8 @@ const createTransaction = async (req, res) => {
       if (!tag) {
         return res.status(404).json({ error: 'Tag not found' });
       }
+      //TODO: check if tag is available, add client error
+
       const { attachedProduct } = tag;
       const { price: productPrice } = attachedProduct;
       price = productPrice;
@@ -136,6 +139,7 @@ const createTransaction = async (req, res) => {
 
     //cart payment
     else {
+      //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
       price = calculateCart(user.cart);
       products = user.cart;
     }
@@ -151,12 +155,17 @@ const createTransaction = async (req, res) => {
     });
 
     if (!result.success) {
-      return res.status(500).json({ error: result.message });
+      return res.status(500).json({
+        error: result.message,
+        client:
+          'אירעה שגיאה בתהליך התשלום, יש לנסות בשנית או לחכות למועד מאוחר יותר',
+      });
     }
 
     //delete user cart after successful purchase
     user.cart = [];
 
+    //TODO: create createPurchase handler, gets uuid (check tokens as usual) and transactionId, the cart that he payed for
     const { transaction } = result;
 
     const utcTime = new Date(transaction.createdAt);
@@ -206,6 +215,7 @@ const updateCustomer = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+    
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
       return res.status(409).json({
