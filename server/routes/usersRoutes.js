@@ -1,21 +1,21 @@
-const express = require("express");
+const express = require('express');
 
-const usersController = require("../controllers/usersController");
-const validateResource = require("../middlewares/validateResource");
-const verifyAccessToken = require("../middlewares/verifyAccessToken");
-const validateAuthUUID = require("../middlewares/validateAuthUUID");
-const userSchema = require("../schemas/userSchema");
-const uuidSchema = require("../schemas/uuidSchema");
-const otpSchema = require("../schemas/otpSchema");
-const refreshTokenSchema = require("../schemas/refreshTokenSchema");
-const changePasswordSchema = require("../schemas/changePasswordSchema");
-const tagUuidSchema = require("../schemas/tagUuidSchema");
-const transactionSchema = require("../schemas/transactionSchema");
+const usersController = require('../controllers/usersController');
+const validateResource = require('../middlewares/validateResource');
+const verifyAccessToken = require('../middlewares/verifyAccessToken');
+const validateAuthUUID = require('../middlewares/validateAuthUUID');
+const userSchema = require('../schemas/userSchema');
+const uuidSchema = require('../schemas/uuidSchema');
+const otpSchema = require('../schemas/otpSchema');
+const refreshTokenSchema = require('../schemas/refreshTokenSchema');
+const changePasswordSchema = require('../schemas/changePasswordSchema');
+const tagUuidSchema = require('../schemas/tagUuidSchema');
+const transactionSchema = require('../schemas/transactionSchema');
 
 const router = express.Router();
 
 router.put(
-  "/:uuid",
+  '/:uuid',
   [
     verifyAccessToken,
     validateResource({
@@ -28,7 +28,7 @@ router.put(
 );
 
 router.put(
-  "/:uuid/updatePassword",
+  '/:uuid/updatePassword',
   [
     verifyAccessToken,
     validateResource({
@@ -36,11 +36,12 @@ router.put(
         .pick({ password: true })
         .merge(changePasswordSchema)
         .refine((data) => data.newPassword === data.confirmNewPassword, {
-          message: "Passwords do not match",
-          path: ["confirmPassword"],
-        }).refine((data) => data.password !== data.newPassword, {
-          message: "New password is the same as before",
-          path: ["newPassword"]
+          message: 'Passwords do not match',
+          path: ['confirmPassword'],
+        })
+        .refine((data) => data.password !== data.newPassword, {
+          message: 'New password is the same as before',
+          path: ['newPassword'],
         }),
       params: uuidSchema,
     }),
@@ -50,13 +51,13 @@ router.put(
 );
 
 router.put(
-  "/:uuid/resetPassword",
+  '/:uuid/resetPassword',
   validateResource({
     body: changePasswordSchema.refine(
       (data) => data.newPassword === data.confirmNewPassword,
       {
-        message: "Passwords do not match",
-        path: ["confirmPassword"],
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
       }
     ),
     params: uuidSchema,
@@ -65,48 +66,54 @@ router.put(
 );
 
 router.post(
-  "/",
+  '/',
   validateResource({
     body: userSchema.refine((data) => data.password === data.confirmPassword, {
-      message: "Passwords do not match",
-      path: ["confirmPassword"],
+      message: 'Passwords do not match',
+      path: ['confirmPassword'],
     }),
   }),
   usersController.createUser
 );
 
 router.post(
-  "/login",
+  '/login',
   validateResource({ body: userSchema.pick({ email: true, password: true }) }),
   usersController.loginUser
 );
 
 router.post(
-  "/logout",
+  '/logout',
   validateResource({ body: refreshTokenSchema }),
   usersController.logoutUser
 );
 
 router.post(
-  "/refreshToken",
+  '/refreshToken',
   validateResource({ body: refreshTokenSchema }),
   usersController.handleRefreshToken
 );
 
 router.post(
-  "/forgotPassword",
+  '/forgotPassword',
   validateResource({ body: userSchema.pick({ email: true }) }),
   usersController.forgotPassword
 );
 
 router.post(
-  "/validateOTP",
+  '/requestOTP',
+  validateResource({ body: userSchema.pick({ email: true }) }),
+  usersController.requestOTP
+);
+
+router.post(
+  '/validateOTP',
   validateResource({ body: userSchema.pick({ email: true }).merge(otpSchema) }),
   usersController.validateOTP
 );
 
 router.post(
-  "/:uuid/addProductToCart",
+  '/:uuid/addProductToCart',
   [
     verifyAccessToken,
     validateResource({
@@ -119,7 +126,7 @@ router.post(
 );
 
 router.delete(
-  "/:uuid/deleteProductFromCart/:tagUuid",
+  '/:uuid/deleteProductFromCart/:tagUuid',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema.merge(tagUuidSchema) }),
@@ -129,7 +136,7 @@ router.delete(
 );
 
 router.delete(
-  "/:uuid/deleteCart",
+  '/:uuid/deleteCart',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema }),
@@ -139,7 +146,7 @@ router.delete(
 );
 
 router.get(
-  "/:uuid",
+  '/:uuid',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema }),
@@ -149,7 +156,7 @@ router.get(
 );
 
 router.get(
-  "/:uuid/purchases",
+  '/:uuid/purchases',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema }),
@@ -159,7 +166,7 @@ router.get(
 );
 
 router.get(
-  "/:uuid/purchases/:transactionId",
+  '/:uuid/purchases/:transactionId',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema.merge(transactionSchema) }),

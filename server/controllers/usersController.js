@@ -28,15 +28,8 @@ async function createUser(req, res) {
 
     await OtpModel.create({ email, otp });
 
-    await sendOTPEmail({
-      otp,
-      otpExpire: 5,
-      targetEmail: email,
-      actionMessage: 'לאמת את חשבונך',
-    });
-
     res.json({
-      message: 'An OTP has been sent to the email for verification',
+      message: 'The user has been created successfully',
       uuid,
       firstName,
       lastName,
@@ -224,9 +217,25 @@ async function forgotPassword(req, res) {
   try {
     const user = await UserModel.findOne({ email }).lean();
     if (!user)
-      return res
-        .status(404)
-        .json({ error: 'User not found', client: 'כתובת האימייל תפוסה' });
+      return res.status(404).json({
+        error: 'User not found',
+        client: 'כתובת האימייל לא נמצאה במערכת',
+      });
+    
+    return res.json({message: 'Forgot password request has been approved'})
+  } catch (error) {
+    return res.status(500).json({ error: 'Server Error' });
+  }
+}
+
+async function requestOTP(req, res) {
+  const { email } = req.body;
+  try {
+    const user = await UserModel.findOne({ email }).lean();
+    if (!user)
+      return res.status(404).json({
+        error: 'User not found',
+      });
 
     await OtpModel.deleteMany({ email });
     const otp = generateOTP();
@@ -237,7 +246,7 @@ async function forgotPassword(req, res) {
       otp,
       otpExpire: 5,
       targetEmail: email,
-      actionMessage: 'לשחזר את הסיסמא',
+      actionMessage: 'לסיים את תהליך האימות',
     });
 
     res.status(200).json({
@@ -262,12 +271,10 @@ async function validateOTP(req, res) {
 
     const isMatch = await otpDocument.compareOTP(otp);
     if (!isMatch)
-      return res
-        .status(400)
-        .json({
-          error: 'Wrong OTP',
-          client: 'הקוד שהוזן שגוי, יש להזין את הקוד שנשלח באימייל',
-        });
+      return res.status(400).json({
+        error: 'Wrong OTP',
+        client: 'הקוד שהוזן שגוי, יש להזין את הקוד שנשלח באימייל',
+      });
 
     await otpDocument.deleteOne();
     user.verified = true;
@@ -314,12 +321,10 @@ async function addProductToCart(req, res) {
         (value) => value._id.toString() === tag._id.toString()
       );
       if (isTagExists)
-        return res
-          .status(409)
-          .json({
-            error: 'The tag is already in cart',
-            client: 'המוצר כבר נסרק ונמצא בעגלת הקניות',
-          });
+        return res.status(409).json({
+          error: 'The tag is already in cart',
+          client: 'המוצר כבר נסרק ונמצא בעגלת הקניות',
+        });
       foundProduct.quantity++;
       foundProduct.tags.push(tag._id);
     } else {
@@ -462,6 +467,7 @@ module.exports = {
   logoutUser,
   updatePassword,
   forgotPassword,
+  requestOTP,
   validateOTP,
   resetPassword,
   addProductToCart,
