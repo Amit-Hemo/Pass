@@ -1,24 +1,69 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { loginUser, requestOTP } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
-import { EMAIL_REGEX } from '../constants/regexes';
+import Popup from '../components/Popup';
+import {
+  DIGIT_REGEX,
+  EMAIL_REGEX,
+  LOWERCASE_REGEX,
+  SPECIAL_CHAR_REGEX,
+  UPPERCASE_REGEX,
+} from '../constants/regexes';
+import usePopup from '../hooks/usePopup';
+import handleApiError from '../utils/handleApiError';
 
 const LoginScreen = ({ navigation }) => {
   const { handleSubmit, control } = useForm();
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
 
   const onLogin = async (data) => {
     console.log(data);
-    navigation.navigate('Home');
+    try {
+      const { data: response } = await loginUser(data);
+      //TODO: handle access token
+      navigation.navigate('Home');
+    } catch (error) {
+      setModalVisible(true);
+      const errorMessage = handleApiError(error);
+
+      if (
+        error.response?.data?.error === 'User must be verified before login'
+      ) {
+        setModalInfo({
+          ...modalInfo,
+          isError: true,
+          message: errorMessage,
+          onClose: async () => {
+            navigation.navigate('OTP');
+            await requestOTP(data.email);
+          },
+        });
+      } else {
+        setModalInfo({
+          ...modalInfo,
+          isError: true,
+          message: errorMessage,
+        });
+      }
+    }
   };
 
   return (
     <KeyboardDismiss>
-      <View className='items-center flex-1 '>
-        <Text className='mt-10 mb-5 text-3xl '>משתמש קיים</Text>
+      <View className='flex-1 items-center'>
+        <Popup
+          visible={modalVisible}
+          setVisible={setModalVisible}
+          isError={modalInfo.isError}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+        />
 
+        <Text className='mt-10 mb-5 text-3xl '>משתמש קיים</Text>
         <View className='items-center mb-16'>
           <Text className='text-xl'>אימייל</Text>
           <InputBar
@@ -49,6 +94,12 @@ const LoginScreen = ({ navigation }) => {
                 value: 100,
                 message: 'שדה זה מכיל לכל היותר 100 אותיות',
               },
+              validate: (value) =>
+                (UPPERCASE_REGEX.test(value) &&
+                  LOWERCASE_REGEX.test(value) &&
+                  DIGIT_REGEX.test(value) &&
+                  SPECIAL_CHAR_REGEX.test(value)) ||
+                'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
             }}
           />
 
@@ -63,7 +114,7 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
         </View>
-     
+
         <ActionButton
           title='צור משתמש חדש'
           handler={() => {

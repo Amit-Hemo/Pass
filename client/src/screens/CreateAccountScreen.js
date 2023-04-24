@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
-import { CreateUser } from '../api/user';
+import { createUser, requestOTP } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
@@ -13,39 +13,34 @@ import {
   SPECIAL_CHAR_REGEX,
   UPPERCASE_REGEX,
 } from '../constants/regexes';
+import usePopup from '../hooks/usePopup';
 import handleApiError from '../utils/handleApiError';
 
 const CreateAccountScreen = ({ navigation }) => {
   const { handleSubmit, watch, control } = useForm();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalInfo, setModalInfo] = useState({
-    isError: false,
-    message: '',
-    onClose: () => {},
-  });
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+
   const pwd = watch('password');
 
   async function onRegister(data) {
-    console.log(data);
     try {
-      const { data: response } = await CreateUser(data);
+      const { data: response } = await createUser(data);
       setModalVisible(true);
       setModalInfo({
         isError: false,
         message: 'המשתמש נוסף בהצלחה!',
-        onClose: () => {
-          console.log('Modal closed');
+        onClose: async () => {
+          navigation.navigate('OTP');
+          await requestOTP(response.email);
         },
       });
     } catch (error) {
       const errorMessage = handleApiError(error);
       setModalVisible(true);
       setModalInfo({
+        ...modalInfo,
         isError: true,
         message: errorMessage,
-        onClose: () => {
-          console.log('Modal closed');
-        },
       });
     }
   }
@@ -60,6 +55,7 @@ const CreateAccountScreen = ({ navigation }) => {
           onClose={modalInfo.onClose}
           message={modalInfo.message}
         />
+
         <Text className='text-base mt-10 mb-8 text-3xl'>יצירת משתמש</Text>
         <Text className='text-xl'>שם פרטי</Text>
         <InputBar
