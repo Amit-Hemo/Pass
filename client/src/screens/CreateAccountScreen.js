@@ -29,6 +29,14 @@ const CreateAccountScreen = ({ navigation }) => {
     console.log(data);
     try {
       const { data: response } = await CreateUser(data);
+      setModalVisible(true);
+      setModalInfo({
+        isError: false,
+        message: 'המשתמש נוסף בהצלחה!',
+        onClose: () => {
+          console.log('Modal closed');
+        },
+      });
     } catch (error) {
       const errorMessage = handleApiError(error);
       setModalVisible(true);
