@@ -7,3 +7,5 @@ export const loginUser = (userDetails) =>
   client.post("/users/login", userDetails);
 export const validateOTP = (userDetails) =>
   client.post("/users/validateOTP", userDetails);
+export const forgotPassword = (email) =>
+  client.post("users/forgotPassword", { email });
