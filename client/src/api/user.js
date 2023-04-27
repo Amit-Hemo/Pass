@@ -9,3 +9,5 @@ export const validateOTP = (userDetails) =>
   client.post("/users/validateOTP", userDetails);
 export const forgotPassword = (email) =>
   client.post("users/forgotPassword", { email });
+export const resetPassword = (uuid, passwordsDetails) =>
+  client.put(`users/${uuid}/resetPassword`, passwordsDetails);
