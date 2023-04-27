@@ -201,6 +201,7 @@ export default function App() {
             <Stack.Screen
               name="ResetPassword"
               component={ResetPasswordScreen}
+              options={{ headerLeft: () => {} }}
             />
           </Stack.Group>
         )}
