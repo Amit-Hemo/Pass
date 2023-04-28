@@ -19,7 +19,8 @@ import ResetPasswordScreen from "./src/screens/ResetPasswordScreen";
 import ScanProductScreen from "./src/screens/ScanProductScreen";
 import SplashScreen from "./src/screens/SplashScreen";
 import UpdatePasswordScreen from "./src/screens/UpdatePasswordScreen";
-import React, { useState } from "react";
+import React from "react";
+import useAuthStore from "./src/stores/auth";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -152,7 +153,7 @@ function CartStackScreen() {
 }
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
   return (
     <NavigationContainer>
