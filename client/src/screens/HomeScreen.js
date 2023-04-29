@@ -5,13 +5,13 @@ import ActionButton from '../components/ActionButton';
 import ScannedProductDetails from '../components/ScannedProductDetails';
 import { setAccessToken, setIsLoggedIn } from '../stores/auth';
 import { clearUser } from '../stores/user';
+import { logoutUser } from '../api/user';
 
 const HomeScreen = ({ navigation }) => {
-
   return (
-    <View className='items-center mt-4'>
+    <View className="items-center mt-4">
       <ActionButton
-        title='לחץ לסריקת מוצר'
+        title="לחץ לסריקת מוצר"
         handler={() => {
           navigation.navigate('ScanProduct');
         }}
@@ -20,19 +20,21 @@ const HomeScreen = ({ navigation }) => {
       {/* In that part we will need to return the ID from the scanned RFID and send it to the DB.
        send it to ScannedProductDetails */}
       {/* Product details component */}
-      <ScannedProductDetails
-        productID='1'
-        navigation={navigation}
-      />
+      <ScannedProductDetails productID="1" navigation={navigation} />
       <ActionButton
-        title='התנתקות'
+        title="התנתקות"
         handler={async () => {
-          await SecureStore.deleteItemAsync('accessToken');
-          await SecureStore.deleteItemAsync('refreshToken');
-          //TODO: call the server to logout
-          clearUser()
-          setAccessToken('')
-          setIsLoggedIn(false)
+          try {
+            const refreshToken = await SecureStore.getItemAsync('refreshToken');
+            await SecureStore.deleteItemAsync('accessToken');
+            await SecureStore.deleteItemAsync('refreshToken');
+            await logoutUser(refreshToken);
+            clearUser();
+            setAccessToken('');
+            setIsLoggedIn(false);
+          } catch (error) {
+            console.log(error);
+          }
         }}
       />
     </View>
