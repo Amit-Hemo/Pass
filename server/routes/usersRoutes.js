@@ -113,7 +113,7 @@ router.post(
 );
 
 router.post(
-  '/:uuid/addProductToCart',
+  '/:uuid/cart',
   [
     verifyAccessToken,
     validateResource({
@@ -126,7 +126,7 @@ router.post(
 );
 
 router.delete(
-  '/:uuid/deleteProductFromCart/:tagUuid',
+  '/:uuid/cart/:tagUuid',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema.merge(tagUuidSchema) }),
@@ -136,7 +136,7 @@ router.delete(
 );
 
 router.delete(
-  '/:uuid/deleteCart',
+  '/:uuid/cart',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema }),
@@ -146,7 +146,7 @@ router.delete(
 );
 
 router.get(
-  '/:uuid',
+  '/:uuid/cart',
   [
     verifyAccessToken,
     validateResource({ params: uuidSchema }),
@@ -163,6 +163,16 @@ router.get(
     validateAuthUUID,
   ],
   usersController.watchPurchases
+);
+
+router.get(
+  '/:uuid',
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema }),
+    validateAuthUUID,
+  ],
+  usersController.getUser
 );
 
 router.get(

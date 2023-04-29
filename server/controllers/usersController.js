@@ -7,6 +7,21 @@ const generateOTP = require('../utils/generateOTP');
 const sendOTPEmail = require('../utils/sendOTPEmail');
 const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
 
+async function getUser(req, res) {
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid })
+      .select('uuid firstName lastName email -_id')
+      .lean();
+    if (!user) return res.status(404).send({ error: 'User not found' });
+
+    return res.json({ user });
+  } catch (error) {
+    return res.status(500).send({ error: 'Server error' });
+  }
+}
+
 async function createUser(req, res) {
   const {
     firstName: firstNameInput,
@@ -141,7 +156,7 @@ async function handleRefreshToken(req, res) {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await UserModel.findOne({ refreshToken }).lean();
+    const user = await UserModel.findOne({ refreshToken })
     if (!user)
       return res.status(403).json({ error: 'Refresh token not found' });
 
@@ -153,6 +168,7 @@ async function handleRefreshToken(req, res) {
     } else if (error.name === 'JsonWebTokenError') {
       return res.status(403).send({ error: 'Invalid Token' });
     } else {
+      console.log(error);
       return res.status(500).send({ error: 'Server error' });
     }
   }
@@ -482,4 +498,5 @@ module.exports = {
   deleteCart,
   watchPurchases,
   watchPurchaseById,
+  getUser,
 };
