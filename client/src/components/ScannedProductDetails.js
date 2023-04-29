@@ -21,7 +21,7 @@ const ScannedProductDetails = ({ productID, navigation }) => {
 
       {/* product image got from the DB */}
       <Image
-        className="rounded-xl w-80 mb-10"
+        className="rounded-xl w-30 h-20 mb-10"
         source={require("../../assets/1.png")}
       />
 

@@ -15,8 +15,9 @@ import {
 } from '../constants/regexes';
 import usePopup from '../hooks/usePopup';
 import { setAccessToken, setIsLoggedIn } from '../stores/auth';
-import handleApiError from '../utils/handleApiError';
 import { setEmail, setFirstName, setLastName, setUuid } from '../stores/user';
+import handleApiError from '../utils/handleApiError';
+import * as SecureStore from 'expo-secure-store'
 
 const LoginScreen = ({ navigation }) => {
   const { handleSubmit, control } = useForm();
@@ -26,17 +27,17 @@ const LoginScreen = ({ navigation }) => {
     console.log(data);
     try {
       const { data: response } = await loginUser(data);
-      
+      await SecureStore.setItemAsync('accessToken', response.accessToken)
+      await SecureStore.setItemAsync('refreshToken', response.refreshToken)
       setAccessToken(response.accessToken);
-      
-      const {uuid, firstName, lastName, email} = response.user
-      setUuid(uuid)
-      setFirstName(firstName)
-      setLastName(lastName)
-      setEmail(email)
-      
-      setIsLoggedIn(true)
-      //TODO: save refresh token in secure storage
+
+      const { uuid, firstName, lastName, email } = response.user;
+      setUuid(uuid);
+      setFirstName(firstName);
+      setLastName(lastName);
+      setEmail(email);
+
+      setIsLoggedIn(true);
     } catch (error) {
       const errorMessage = handleApiError(error);
 
