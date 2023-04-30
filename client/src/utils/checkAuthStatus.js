@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import jwtDecode from 'jwt-decode';
-import { handleRefreshToken } from '../api/user';
+import axios from 'axios';
+import { BASE_URL } from '../constants/baseURL';
 
 async function checkAuthStatus() {
   let accessToken;
@@ -24,9 +25,15 @@ async function checkAuthStatus() {
         throw new Error('Refresh Token has been expired');
       // use refresh token to get new access token
       console.log('refreshing');
-      const { data } = await handleRefreshToken(refreshToken);
+
+      //handle refresh token
+      const { data } = await axios.post(`${BASE_URL}/users/refreshToken`, {
+        refreshToken,
+      });
+
       console.log('created new access token!');
       accessToken = data.accessToken;
+
       await SecureStore.setItemAsync('accessToken', accessToken);
     }
   } catch (error) {
