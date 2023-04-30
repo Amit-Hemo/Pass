@@ -1,9 +1,12 @@
-import React from "react";
-import { Text, View } from "react-native";
-import ProductsBillList from ".././components/ProductsBillList";
-import ActionButton from "../components/ActionButton";
+import React from 'react';
+import { Text, View } from 'react-native';
+import ProductsBillList from '.././components/ProductsBillList';
+import ActionButton from '../components/ActionButton';
+import useAuth from '../hooks/useAuth';
 
 const CartScreen = ({ navigation }) => {
+  useAuth();
+
   return (
     <View className="mt-10 items-center">
       <Text className="text-base mb-20 text-3xl  ">עגלת קניות</Text>
@@ -26,7 +29,7 @@ const CartScreen = ({ navigation }) => {
         <ActionButton
           title="מעבר לתשלום"
           handler={() => {
-            navigation.navigate("Bill");
+            navigation.navigate('Bill');
           }}
         />
       </View>

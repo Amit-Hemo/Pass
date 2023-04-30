@@ -10,11 +10,14 @@ import { WebView } from "react-native-webview";
 import * as paymentApi from "../api/payment";
 import ActionButton from "../components/ActionButton";
 import KeyboardDismiss from "../components/KeyboardDismiss";
+import useAuth from "../hooks/useAuth";
 
 // for development
 const HOST = "http://192.168.1.32:5000";
 
 const ProfileScreen = ({ navigation }) => {
+  useAuth();
+
   const [show, setShow] = useState(false);
   const [user, setUser] = useState({
     userId: "1234",

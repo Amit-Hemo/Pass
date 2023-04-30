@@ -17,7 +17,7 @@ import usePopup from '../hooks/usePopup';
 import { setAccessToken, setIsLoggedIn } from '../stores/auth';
 import { setEmail, setFirstName, setLastName, setUuid } from '../stores/user';
 import handleApiError from '../utils/handleApiError';
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = ({ navigation }) => {
   const { handleSubmit, control } = useForm();
@@ -27,8 +27,8 @@ const LoginScreen = ({ navigation }) => {
     console.log(data);
     try {
       const { data: response } = await loginUser(data);
-      await SecureStore.setItemAsync('accessToken', response.accessToken)
-      await SecureStore.setItemAsync('refreshToken', response.refreshToken)
+      await SecureStore.setItemAsync('accessToken', response.accessToken);
+      await SecureStore.setItemAsync('refreshToken', response.refreshToken);
       setAccessToken(response.accessToken);
 
       const { uuid, firstName, lastName, email } = response.user;
@@ -69,7 +69,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='flex-1 items-center'>
+      <View className="flex-1 items-center">
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -78,13 +78,13 @@ const LoginScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className='mt-10 mb-5 text-3xl '>משתמש קיים</Text>
-        <View className='items-center mb-16'>
-          <Text className='text-xl'>אימייל</Text>
+        <Text className="mt-10 mb-5 text-3xl ">משתמש קיים</Text>
+        <View className="items-center mb-16">
+          <Text className="text-xl">אימייל</Text>
           <InputBar
-            input='email'
-            style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-            align='left'
+            input="email"
+            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+            align="left"
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -92,11 +92,11 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className='text-xl'>סיסמא</Text>
+          <Text className="text-xl">סיסמא</Text>
           <InputBar
-            input='password'
-            style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-            align='right'
+            input="password"
+            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+            align="right"
             visible={false}
             control={control}
             rules={{
@@ -118,12 +118,9 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
+          <ActionButton title="התחברות" handler={handleSubmit(onLogin)} />
           <ActionButton
-            title='התחברות'
-            handler={handleSubmit(onLogin)}
-          />
-          <ActionButton
-            title='שכחתי סיסמא'
+            title="שכחתי סיסמא"
             handler={() => {
               navigation.navigate('ForgotPassword');
             }}
@@ -131,7 +128,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <ActionButton
-          title='צור משתמש חדש'
+          title="צור משתמש חדש"
           handler={() => {
             navigation.navigate('CreateAccount');
           }}

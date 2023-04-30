@@ -10,9 +10,12 @@ async function checkAuthStatus() {
 
     const decodedToken = jwtDecode(accessToken);
     const currentTime = Date.now() / 1000;
+
     if (decodedToken.exp < currentTime) {
       // access token has expired
+
       const refreshToken = await SecureStore.getItemAsync('refreshToken');
+
       if (!refreshToken) throw new Error('No Refresh Token');
 
       const decodedToken = jwtDecode(refreshToken);
@@ -27,8 +30,6 @@ async function checkAuthStatus() {
       await SecureStore.setItemAsync('accessToken', accessToken);
     }
   } catch (error) {
-    await SecureStore.deleteItemAsync('accessToken');
-    await SecureStore.deleteItemAsync('refreshToken');
     accessToken = null;
     throw new Error(
       error.message ? error.message : 'Error while restoring the token'

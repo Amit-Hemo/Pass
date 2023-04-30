@@ -1,9 +1,10 @@
-import React from "react";
-import { Text, View, ScrollView } from "react-native";
-import ProductBillDetails from "../components/ProductBillDetails";
+import React from 'react';
+import { Text, View, ScrollView } from 'react-native';
+import useAuth from '../hooks/useAuth';
 
 // Here we will have to bring the product list from  ProductBillList component
 const ReleaseProductScreen = ({ navigation }) => {
+  useAuth();
   return (
     <View className="items-center mt-10">
       <Text className="text-3xl">תתחדשו!</Text>

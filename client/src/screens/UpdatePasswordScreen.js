@@ -10,8 +10,11 @@ import {
   SPECIAL_CHAR_REGEX,
   UPPERCASE_REGEX,
 } from '../constants/regexes';
+import useAuth from '../hooks/useAuth';
 
 const UpdatePasswordScreen = ({ navigation }) => {
+  useAuth();
+
   const { handleSubmit, watch, control } = useForm();
   const currPwd = watch('password');
   const newPwd = watch('newPassword');
@@ -38,14 +41,14 @@ const UpdatePasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='items-center'>
-        <Text className='text-base mt-10 mb-8 text-3xl'>יצירת סיסמא חדשה</Text>
+      <View className="items-center">
+        <Text className="text-base mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
 
-        <Text className='text-xl'>סיסמא</Text>
+        <Text className="text-xl">סיסמא</Text>
         <InputBar
-          input='password'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='right'
+          input="password"
+          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+          align="right"
           visible={false}
           control={control}
           rules={{
@@ -60,11 +63,11 @@ const UpdatePasswordScreen = ({ navigation }) => {
             },
           }}
         />
-        <Text className='text-xl'>סיסמא חדשה</Text>
+        <Text className="text-xl">סיסמא חדשה</Text>
         <InputBar
-          input='newPassword'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='right'
+          input="newPassword"
+          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+          align="right"
           visible={false}
           control={control}
           rules={{
@@ -81,11 +84,11 @@ const UpdatePasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <Text className='text-xl'>אימות סיסמא</Text>
+        <Text className="text-xl">אימות סיסמא</Text>
         <InputBar
-          input='confirmNewPassword'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='right'
+          input="confirmNewPassword"
+          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+          align="right"
           visible={false}
           control={control}
           rules={{
@@ -102,10 +105,7 @@ const UpdatePasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <ActionButton
-          title='אישור'
-          handler={handleSubmit(onUpdatePassword)}
-        />
+        <ActionButton title="אישור" handler={handleSubmit(onUpdatePassword)} />
       </View>
     </KeyboardDismiss>
   );

@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { getUser } from './src/api/user';
 import HeaderLogo from './src/components/HeaderLogo';
@@ -23,84 +23,117 @@ import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import ScanProductScreen from './src/screens/ScanProductScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
-import useAuthStore, { setAccessToken, setIsLoggedIn } from './src/stores/auth';
-import { setEmail, setFirstName, setLastName, setUuid } from './src/stores/user';
+import useAuthStore, {
+  setAccessToken,
+  setClearAuth,
+  setIsForcedLogout,
+  setIsLoggedIn,
+} from './src/stores/auth';
+import {
+  clearUser,
+  setEmail,
+  setFirstName,
+  setLastName,
+  setUuid,
+} from './src/stores/user';
 import checkAuthStatus from './src/utils/checkAuthStatus';
+import * as SecureStore from 'expo-secure-store';
+import useHandleAuth from './src/hooks/useHandleAuth';
+import usePopup from './src/hooks/usePopup';
+import Popup from './src/components/Popup';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function HomeTabs() {
-  //TODO: check this only after we check useAuth
-  // const appState = useRef(AppState.currentState);
-  // const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const handleAuth = useHandleAuth();
+  const isForced = useAuthStore((state) => state.isForcedLogout);
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
 
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener('change', nextAppState => {
-  //     if (
-  //       appState.current.match(/inactive|background/) &&
-  //       nextAppState === 'active'
-  //     ) {
-  //       console.log('App has come to the foreground!');
-  //     }
+  useEffect(() => {
+    if (isForced) {
+      setModalInfo({
+        ...modalInfo,
+        isError: true,
+        message: 'יש להתחבר מחדש',
+        onClose: () => {
+          setClearAuth();
+          clearUser();
+          setIsForcedLogout(false);
+        },
+      });
+      setModalVisible(true);
+    }
+  }, [isForced]);
 
-  //     appState.current = nextAppState;
-  //     setAppStateVisible(appState.current);
-  //     console.log('AppState', appState.current);
-  //   });
+  useEffect(() => {
+    let lastAppState = appState.current;
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (lastAppState !== nextAppState) {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          handleAuth();
+        }
+        lastAppState = nextAppState;
+      }
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      console.log('AppState', appState.current);
+    });
 
-  //   return () => {
-  //     subscription.remove();
-  //   };
-  // }, []);
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name='Home'
-        component={HomeStackScreen}
-        options={{
-          headerShown: false,
-          title: 'ראשי',
-          tabBarIcon: () => (
-            <AntDesign
-              name='home'
-              size={24}
-              color='black'
-            />
-          ),
-        }}
+    <View className="flex-1">
+      <Popup
+        visible={modalVisible}
+        setVisible={setModalVisible}
+        isError={modalInfo.isError}
+        onClose={modalInfo.onClose}
+        message={modalInfo.message}
       />
-      <Tab.Screen
-        name='Profile'
-        component={ProfileStackScreen}
-        options={{
-          headerShown: false,
-          title: 'פרופיל',
-          tabBarIcon: () => (
-            <AntDesign
-              name='profile'
-              size={24}
-              color='black'
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name='Cart'
-        component={CartStackScreen}
-        options={{
-          headerShown: false,
-          title: 'עגלה',
-          tabBarIcon: () => (
-            <AntDesign
-              name='shoppingcart'
-              size={24}
-              color='black'
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+      <Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={HomeStackScreen}
+          options={{
+            headerShown: false,
+            title: 'ראשי',
+            tabBarIcon: () => <AntDesign name="home" size={24} color="black" />,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStackScreen}
+          options={{
+            headerShown: false,
+            title: 'פרופיל',
+            tabBarIcon: () => (
+              <AntDesign name="profile" size={24} color="black" />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Cart"
+          component={CartStackScreen}
+          options={{
+            headerShown: false,
+            title: 'עגלה',
+            tabBarIcon: () => (
+              <AntDesign name="shoppingcart" size={24} color="black" />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </View>
   );
 }
 
@@ -120,23 +153,14 @@ function HomeStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <HomeStack.Screen
-        name='HomeScreen'
-        component={HomeScreen}
-      />
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+
+      <HomeStack.Screen name="ScanProduct" component={ScanProductScreen} />
+
+      <HomeStack.Screen name="Bill" component={BillScreen} />
 
       <HomeStack.Screen
-        name='ScanProduct'
-        component={ScanProductScreen}
-      />
-
-      <HomeStack.Screen
-        name='Bill'
-        component={BillScreen}
-      />
-
-      <HomeStack.Screen
-        name='ReleaseProduct'
+        name="ReleaseProduct"
         component={ReleaseProductScreen}
       />
     </HomeStack.Navigator>
@@ -159,18 +183,12 @@ function ProfileStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <ProfileStack.Screen
-        name='ProfileScreen'
-        component={ProfileScreen}
-      />
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+
+      <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
 
       <ProfileStack.Screen
-        name='EditProfile'
-        component={EditProfileScreen}
-      />
-
-      <ProfileStack.Screen
-        name='PurchasesHistory'
+        name="PurchasesHistory"
         component={PurchasesHistoryScreen}
       />
     </ProfileStack.Navigator>
@@ -193,18 +211,12 @@ function CartStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <CartStack.Screen
-        name='CartScreen'
-        component={CartScreen}
-      />
+      <CartStack.Screen name="CartScreen" component={CartScreen} />
+
+      <CartStack.Screen name="Bill" component={BillScreen} />
 
       <CartStack.Screen
-        name='Bill'
-        component={BillScreen}
-      />
-
-      <CartStack.Screen
-        name='ReleaseProduct'
+        name="ReleaseProduct"
         component={ReleaseProductScreen}
       />
     </CartStack.Navigator>
@@ -217,7 +229,7 @@ export default function App() {
   useEffect(() => {
     async function restoreToken() {
       console.log('====================================');
-      console.log('cheking');
+      console.log('checking');
       console.log('====================================');
       try {
         const accessToken = await checkAuthStatus();
@@ -231,9 +243,14 @@ export default function App() {
           setLastName(lastName);
           setEmail(email);
           setIsLoggedIn(true);
+        } else {
+          await SecureStore.deleteItemAsync('accessToken');
+          await SecureStore.deleteItemAsync('refreshToken');
         }
       } catch (error) {
-        console.log(error);
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        console.log(error?.response?.data?.error);
       }
     }
     restoreToken();
@@ -248,10 +265,7 @@ export default function App() {
       >
         {isLoggedIn ? (
           <Stack.Group>
-            <Stack.Screen
-              name='HomeTabs'
-              component={HomeTabs}
-            />
+            <Stack.Screen name="HomeTabs" component={HomeTabs} />
           </Stack.Group>
         ) : (
           <Stack.Group
@@ -268,29 +282,26 @@ export default function App() {
             }}
           >
             <Stack.Screen
-              name='Splash'
+              name="Splash"
               component={SplashScreen}
               options={{ headerTitle: () => '' }}
             />
             <Stack.Screen
-              name='Login'
+              name="Login"
               component={LoginScreen}
               options={{ headerLeft: () => {} }}
             />
             <Stack.Screen
-              name='CreateAccount'
+              name="CreateAccount"
               component={CreateAccountScreen}
             />
+            <Stack.Screen name="OTP" component={OTPScreen} />
             <Stack.Screen
-              name='OTP'
-              component={OTPScreen}
-            />
-            <Stack.Screen
-              name='ForgotPassword'
+              name="ForgotPassword"
               component={ForgotPasswordScreen}
             />
             <Stack.Screen
-              name='ResetPassword'
+              name="ResetPassword"
               component={ResetPasswordScreen}
               options={{ headerLeft: () => {} }}
             />

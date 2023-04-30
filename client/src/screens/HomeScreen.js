@@ -3,11 +3,13 @@ import React from 'react';
 import { View } from 'react-native';
 import ActionButton from '../components/ActionButton';
 import ScannedProductDetails from '../components/ScannedProductDetails';
-import { setAccessToken, setIsLoggedIn } from '../stores/auth';
+import { setClearAuth } from '../stores/auth';
 import { clearUser } from '../stores/user';
 import { logoutUser } from '../api/user';
+import useAuth from '../hooks/useAuth';
 
 const HomeScreen = ({ navigation }) => {
+  useAuth();
   return (
     <View className="items-center mt-4">
       <ActionButton
@@ -26,12 +28,11 @@ const HomeScreen = ({ navigation }) => {
         handler={async () => {
           try {
             const refreshToken = await SecureStore.getItemAsync('refreshToken');
+            await logoutUser(refreshToken);
             await SecureStore.deleteItemAsync('accessToken');
             await SecureStore.deleteItemAsync('refreshToken');
-            await logoutUser(refreshToken);
             clearUser();
-            setAccessToken('');
-            setIsLoggedIn(false);
+            setClearAuth();
           } catch (error) {
             console.log(error);
           }

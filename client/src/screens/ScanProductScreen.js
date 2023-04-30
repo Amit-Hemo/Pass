@@ -1,9 +1,11 @@
-import React from "react";
-import { Text, View } from "react-native";
-import { Video } from "expo-av";
-import video from "../.././assets/scan_video.mp4";
+import React from 'react';
+import { Text, View } from 'react-native';
+import { Video } from 'expo-av';
+import video from '../.././assets/scan_video.mp4';
+import useAuth from '../hooks/useAuth';
 
 const ScanProductScreen = ({ navigation }) => {
+  useAuth();
   return (
     <View className="items-center border-1 mt-10">
       <Text className="text-base text-3xl">הצמד את הטלפון החכם לאטב</Text>

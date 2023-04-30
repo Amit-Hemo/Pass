@@ -5,8 +5,11 @@ import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import { EMAIL_REGEX } from '../constants/regexes';
+import useAuth from '../hooks/useAuth';
 
 const EditProfileScreen = ({ navigation }) => {
+  useAuth();
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
       firstName: 'Albert',
@@ -22,16 +25,16 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='items-center flex-1 '>
-        <Text className='mt-10 mb-5 text-3xl '>עריכת פרופיל</Text>
+      <View className="items-center flex-1 ">
+        <Text className="mt-10 mb-5 text-3xl ">עריכת פרופיל</Text>
 
-        <View className='items-center mb-16'>
-          <Text className='text-xl'>שם פרטי</Text>
+        <View className="items-center mb-16">
+          <Text className="text-xl">שם פרטי</Text>
           <InputBar
-            input='firstName'
+            input="firstName"
             control={control}
             align={'right'}
-            style='mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5'
+            style="mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5"
             rules={{
               required: 'שדה זה חובה',
               minLength: {
@@ -45,11 +48,11 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className='text-xl'>שם משפחה</Text>
+          <Text className="text-xl">שם משפחה</Text>
           <InputBar
-            input='lastName'
-            style='mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5'
-            align='right'
+            input="lastName"
+            style="mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5"
+            align="right"
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -64,11 +67,11 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className='text-xl'>אימייל</Text>
+          <Text className="text-xl">אימייל</Text>
           <InputBar
-            input='email'
-            style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-            align='left'
+            input="email"
+            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
+            align="left"
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -76,12 +79,9 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
+          <ActionButton title="ערוך" handler={handleSubmit(onEditProfile)} />
           <ActionButton
-            title='ערוך'
-            handler={handleSubmit(onEditProfile)}
-          />
-          <ActionButton
-            title='ערוך סיסמא'
+            title="ערוך סיסמא"
             handler={() => navigation.navigate('UpdatePassword')}
           />
         </View>

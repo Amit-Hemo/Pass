@@ -1,17 +1,20 @@
-import React, { useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import * as paymentAPI from "../api/payment";
-import ProductsBillList from "../components/ProductsBillList";
+import React, { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import * as paymentAPI from '../api/payment';
+import ProductsBillList from '../components/ProductsBillList';
+import useAuth from '../hooks/useAuth';
 
 // The Screen should match a quick purchase  (1 product) but also a Flat list of products comes from the Cart
 //
 const BillScreen = ({ productName, price, navigation }) => {
+  useAuth();
+  
   const [user, setUser] = useState({
-    userId: "1234",
-    firstName: "Albert",
-    lastName: "Einstein",
+    userId: '1234',
+    firstName: 'Albert',
+    lastName: 'Einstein',
     payment: {
-      customerId: "82936746549",
+      customerId: '82936746549',
     },
   });
 
@@ -20,10 +23,10 @@ const BillScreen = ({ productName, price, navigation }) => {
     try {
       //should be user.userId when we get mongo and customerId will be stored securely in the server
       const { data } = await paymentAPI.makeTransaction(customerId);
-      navigation.navigate("Release");
-      console.log("====================================");
+      navigation.navigate('Release');
+      console.log('====================================');
       console.log(data.result);
-      console.log("====================================");
+      console.log('====================================');
     } catch (error) {
       console.error(error);
     }
@@ -64,4 +67,3 @@ const BillScreen = ({ productName, price, navigation }) => {
 };
 
 export default BillScreen;
-
