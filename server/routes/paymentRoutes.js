@@ -36,6 +36,9 @@ router.get(
   [validateResource({ params: uuidSchema }), validateAuthUUID],
   paymentController.getClientToken
 );
+
+router.get("/customers/:uuid/isBraintreeCustomer", [validateResource({ params: uuidSchema }), validateAuthUUID],paymentController.isBraintreeCustomer)
+
 router.post(
   "/transaction",
   [

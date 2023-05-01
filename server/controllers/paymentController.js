@@ -215,7 +215,7 @@ const updateCustomer = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
+
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
       return res.status(409).json({
@@ -231,6 +231,30 @@ const updateCustomer = async (req, res) => {
   }
 };
 
+const isBraintreeCustomer = async (req, res) => {
+  const { uuid } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ uuid })
+      .select('-_id braintreeCustomerId')
+      .lean();
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    if (!user.braintreeCustomerId)
+      return res.json({
+        message: 'braintreeCustomerId not found',
+        isBraintreeCustomer: false,
+      });
+    return res.json({
+      message: 'braintreeCustomerId found',
+      isBraintreeCustomer: true,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+};
+
 module.exports = {
   getBraintreeUI,
   createCustomer,
@@ -238,4 +262,5 @@ module.exports = {
   getClientToken,
   createTransaction,
   updateCustomer,
+  isBraintreeCustomer,
 };
