@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Video } from 'expo-av';
-import video from '../.././assets/scan_video.mp4';
 import useAuth from '../hooks/useAuth';
 
 const ScanProductScreen = ({ navigation }) => {
@@ -12,7 +11,9 @@ const ScanProductScreen = ({ navigation }) => {
       <View className="h-full flex-col items-center justify-center bottom-20">
         <Video
           style={{ height: 350, width: 400 }}
-          source={video}
+          source={{
+            uri: 'https://res.cloudinary.com/dawvcozos/video/upload/v1682935506/Pass/scan_video_w9izub.mp4',
+          }}
           shouldPlay
           isLooping
         />
