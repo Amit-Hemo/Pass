@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Image } from "react-native";
+import { Image } from "react-native";
 
 const HeaderLogo = () => {
   return (

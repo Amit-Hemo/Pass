@@ -42,7 +42,7 @@ const UpdatePasswordScreen = ({ navigation }) => {
   return (
     <KeyboardDismiss>
       <View className="items-center">
-        <Text className="text-base mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
+        <Text className="mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
 
         <Text className="text-xl">סיסמא</Text>
         <InputBar

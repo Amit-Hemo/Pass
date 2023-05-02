@@ -1,45 +1,117 @@
 import * as SecureStore from 'expo-secure-store';
-import React, { useCallback, useState } from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import ActionButton from '../components/ActionButton';
 import VideoBox from '../components/VideoBox';
 import ScannedProductDetails from '../components/ScannedProductDetails';
 import { setClearAuth } from '../stores/auth';
-import useUserStore, { clearUser } from '../stores/user';
+import useUserStore, {
+  clearUser,
+  setIsCustomer,
+  setCardLastDigits,
+  setHasCreditCard,
+} from '../stores/user';
 import { logoutUser } from '../api/user';
 import useAuth from '../hooks/useAuth';
-import { isBraintreeCustomer } from '../api/payment';
-import { useFocusEffect } from '@react-navigation/native';
+import {
+  isBraintreeCustomer,
+  createCustomer,
+  generateClientToken,
+  getPaymentMethod,
+} from '../api/payment';
+import OpenPaymentMethods from '../components/OpenPaymentMethods';
+import Popup from '../components/Popup';
+import usePopup from '../hooks/usePopup';
+import forcedLogout from '../utils/forcedLogout';
 
 const HomeScreen = ({ navigation }) => {
   useAuth();
-  const [isCustomer, setIsCustomer] = useState(false);
+
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+  const [show, setShow] = useState(false);
+  const [clientToken, setClientToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const uuid = useUserStore((state) => state.uuid);
-  console.log(useUserStore((state) => state.uuid));
+  const firstName = useUserStore((state) => state.firstName);
+  const lastName = useUserStore((state) => state.lastName);
+  const email = useUserStore((state) => state.email);
 
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-      const customerCheck = async () => {
-        try {
-          const { data } = await isBraintreeCustomer(uuid);
-          const isCustomer = data.isBraintreeCustomer;
-          if (isActive) setIsCustomer(isCustomer);
-        } catch (error) {
-          console.log(error);
+  const isCustomer = useUserStore((state) => state.isCustomer);
+  const hasCreditCard = useUserStore((state) => state.hasCreditCard);
+
+  useEffect(() => {
+    const checkValidCustomer = async () => {
+      try {
+        setIsLoading(true);
+        const { data: response } = await isBraintreeCustomer(uuid);
+        const { isBraintreeCustomer: braintreeCustomerExist } = response;
+        setIsCustomer(braintreeCustomerExist);
+
+        if (braintreeCustomerExist) {
+          const { data } = await getPaymentMethod(uuid);
+          const { firstMethod } = data;
+
+          if (firstMethod) {
+            const { last4 } = firstMethod;
+            setCardLastDigits(last4);
+            setHasCreditCard(true);
+          }
         }
-      };
-      customerCheck();
+      } catch (error) {
+        await forcedLogout();
+        console.log(error);
+      }
 
-      return () => {
-        isActive = false;
-      };
-    }, [uuid])
-  );
+      setIsLoading(false);
+    };
 
+    checkValidCustomer();
+  }, []);
+
+  const handleAddPaymentButton = async () => {
+    setIsLoading(true);
+
+    try {
+      if (!isCustomer) {
+        await createCustomer({
+          uuid,
+          firstName,
+          lastName,
+          email,
+        });
+        setIsCustomer(true);
+      }
+
+      const { data } = await generateClientToken(uuid);
+      const { clientToken } = data;
+      setClientToken(clientToken);
+      setShow(true);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      setModalInfo({
+        isError: true,
+        message: 'שגיאה בשירות התשלום, יש לנסות מאוחר יותר',
+      });
+      setModalVisible(true);
+      console.log(error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-xl text-center font-bold mb-8 ">
+          יש להמתין...
+        </Text>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
   return (
     <View className="items-center mt-4">
-      {isCustomer ? (
+      {isCustomer && hasCreditCard ? (
         <View className="items-center mt-4">
           <ActionButton
             title="לחץ לסריקת מוצר"
@@ -55,6 +127,7 @@ const HomeScreen = ({ navigation }) => {
           <Text className="text-2xl mb-4">
             פעם ראשונה אצלנו ? הכנו סרטון הסבר
           </Text>
+
           <View className="border-2">
             <VideoBox
               uri={
@@ -64,9 +137,31 @@ const HomeScreen = ({ navigation }) => {
           </View>
 
           <Text className="text-2xl  mt-10">יש להוסיף אמצעי תשלום </Text>
-          <ActionButton title="הוספת אמצעי תשלום" />
+
+          <TouchableOpacity
+            className="items-center content-center w-40 mt-1 mb-1 rounded-2xl border-t-2 border-b-4  "
+            onPress={() => {
+              handleAddPaymentButton();
+            }}
+          >
+            <Text className="text-lg ">בחירת אמצעי תשלום</Text>
+          </TouchableOpacity>
         </View>
       )}
+
+      <Popup
+        visible={modalVisible}
+        isError={modalInfo.isError}
+        setVisible={setModalVisible}
+        onClose={modalInfo.onClose}
+        message={modalInfo.message}
+      />
+
+      <OpenPaymentMethods
+        clientToken={clientToken}
+        show={show}
+        setShow={setShow}
+      />
 
       <View className="mt-10">
         <ActionButton

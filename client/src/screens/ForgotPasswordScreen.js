@@ -1,14 +1,14 @@
-import React from "react";
-import { useForm } from "react-hook-form";
-import usePopup from "../hooks/usePopup";
-import Popup from "../components/Popup";
-import { Text, View } from "react-native";
-import ActionButton from "../components/ActionButton";
-import InputBar from "../components/InputBar";
-import KeyboardDismiss from "../components/KeyboardDismiss";
-import { EMAIL_REGEX } from "../constants/regexes";
-import { forgotPassword, requestOTP } from "../api/user";
-import handleApiError from "../utils/handleApiError";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import usePopup from '../hooks/usePopup';
+import Popup from '../components/Popup';
+import { Text, View } from 'react-native';
+import ActionButton from '../components/ActionButton';
+import InputBar from '../components/InputBar';
+import KeyboardDismiss from '../components/KeyboardDismiss';
+import { EMAIL_REGEX } from '../constants/regexes';
+import { forgotPassword, requestOTP } from '../api/user';
+import handleApiError from '../utils/handleApiError';
 
 const ForgotPasswordScreen = ({ navigation }) => {
   const { handleSubmit, control } = useForm();
@@ -25,11 +25,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
       setModalInfo({
         ...modalInfo,
         isError: false,
-        message: "קוד זיהוי נשלח לכתובת האימייל",
+        message: 'קוד זיהוי נשלח לכתובת האימייל',
         onClose: async () => {
-          navigation.navigate("OTP", {
+          navigation.navigate('OTP', {
             email: data.email,
-            destination: "ResetPassword",
+            destination: 'ResetPassword',
           });
           await requestOTP(email);
         },
@@ -58,7 +58,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className="text-base mt-10 mb-8 text-3xl">שחזור סיסמא</Text>
+        <Text className=" mt-10 mb-8 text-3xl">שחזור סיסמא</Text>
 
         <Text className="text-xl">אימייל</Text>
         <InputBar
@@ -67,8 +67,8 @@ const ForgotPasswordScreen = ({ navigation }) => {
           align="left"
           control={control}
           rules={{
-            required: "שדה זה חובה",
-            pattern: { value: EMAIL_REGEX, message: "פורמט אימייל שגוי" },
+            required: 'שדה זה חובה',
+            pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
           }}
         />
 

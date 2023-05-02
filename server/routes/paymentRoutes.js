@@ -11,9 +11,11 @@ const storeSchema = require("../schemas/storeSchema");
 const tagUuidSchema = require("../schemas/tagUuidSchema");
 
 const router = express.Router();
-router.use(verifyAccessToken);
 
 router.get("/", paymentController.getBraintreeUI);
+
+router.use(verifyAccessToken);
+
 router.post(
   "/customers",
   [

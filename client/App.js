@@ -46,7 +46,6 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function HomeTabs() {
-  
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const handleAuth = useHandleAuth();
@@ -58,7 +57,7 @@ function HomeTabs() {
       setModalInfo({
         ...modalInfo,
         isError: true,
-        message: 'יש להתחבר מחדש',
+        message: 'קרתה שגיאה בלתי צפויה, יש לנסות להתחבר מחדש במועד מאוחר יותר',
         onClose: () => {
           setClearAuth();
           clearUser();

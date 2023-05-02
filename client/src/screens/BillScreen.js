@@ -34,14 +34,14 @@ const BillScreen = ({ productName, price, navigation }) => {
 
   return (
     <View className="items-center mt-10">
-      <Text className="text-base mb-20 text-3xl">פרטי תשלום</Text>
+      <Text className="mb-20 text-3xl">פרטי תשלום</Text>
       {/* We need to find a way to save the name and the price of the product and use it here, Maybe send it as a prop..
     The Problem is that we get here from button press action and its directly take us to here */}
 
       <View className="rounded-lg w-3/4 h-2/3 border-2">
         <View className="flex-row">
-          <Text className="text-base text-xl px-10 py-4 font-bold">מחיר</Text>
-          <Text className="text-base text-xl px-16 py-4 pb-5 font-bold">
+          <Text className="text-xl px-10 py-4 font-bold">מחיר</Text>
+          <Text className="text-xl px-16 py-4 pb-5 font-bold">
             שם מוצר
           </Text>
         </View>

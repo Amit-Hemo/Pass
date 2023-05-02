@@ -7,7 +7,7 @@ const ScanProductScreen = ({ navigation }) => {
   useAuth();
   return (
     <View className="items-center border-1 mt-10">
-      <Text className="text-base text-3xl">הצמד את הטלפון החכם לאטב</Text>
+      <Text className=" text-3xl">הצמד את הטלפון החכם לאטב</Text>
       <View className="h-full flex-col items-center justify-center bottom-20">
         <Video
           style={{ height: 350, width: 400 }}

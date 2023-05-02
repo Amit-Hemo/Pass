@@ -1,10 +1,9 @@
 import { useCallback } from 'react';
 import checkAuthStatus from '../utils/checkAuthStatus';
-import { setAccessToken} from '../stores/auth';
+import { setAccessToken } from '../stores/auth';
 import forcedLogout from '../utils/forcedLogout';
 
 function useHandleAuth() {
-  
   const handleAuth = useCallback(async () => {
     try {
       const accessToken = await checkAuthStatus();

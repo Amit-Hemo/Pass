@@ -5,6 +5,9 @@ const useUserStore = create(() => ({
   firstName: '',
   lastName: '',
   email: '',
+  isCustomer: false,
+  cardLastDigits: '',
+  hasCreditCard: false,
 }));
 
 export const setUuid = (uuid) => useUserStore.setState(() => ({ uuid }));
@@ -17,12 +20,22 @@ export const setLastName = (lastName) =>
 
 export const setEmail = (email) => useUserStore.setState(() => ({ email }));
 
+export const setIsCustomer = (status) =>
+  useUserStore.setState(() => ({ isCustomer: status }));
+
+export const setCardLastDigits = (lastDigits) =>
+  useUserStore.setState(() => ({ cardLastDigits: lastDigits }));
+
+export const setHasCreditCard = (status) =>
+  useUserStore.setState(() => ({ hasCreditCard: status }));
+
 export const clearUser = () =>
   useUserStore.setState(() => ({
     uuid: '',
     firstName: '',
     lastName: '',
     email: '',
+    isCustomer: false,
   }));
 
 export default useUserStore;
