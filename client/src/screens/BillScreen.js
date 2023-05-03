@@ -8,7 +8,7 @@ import useAuth from '../hooks/useAuth';
 //
 const BillScreen = ({ productName, price, navigation }) => {
   useAuth();
-  
+
   const [user, setUser] = useState({
     userId: '1234',
     firstName: 'Albert',
@@ -41,9 +41,7 @@ const BillScreen = ({ productName, price, navigation }) => {
       <View className="rounded-lg w-3/4 h-2/3 border-2">
         <View className="flex-row">
           <Text className="text-xl px-10 py-4 font-bold">מחיר</Text>
-          <Text className="text-xl px-16 py-4 pb-5 font-bold">
-            שם מוצר
-          </Text>
+          <Text className="text-xl px-16 py-4 pb-5 font-bold">שם מוצר</Text>
         </View>
         <ScrollView>
           <ProductsBillList />

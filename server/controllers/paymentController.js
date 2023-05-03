@@ -96,7 +96,8 @@ const getClientToken = async (req, res) => {
 };
 
 const createTransaction = async (req, res) => {
-  const { uuid, merchantID, tagUuid } = req.body;
+  let merchantID = '';
+  const { uuid, tagUuid } = req.body;
   try {
     const user = await UserModel.findOne({ uuid })
       .select('-cart._id -cart.tags')
@@ -117,17 +118,20 @@ const createTransaction = async (req, res) => {
     let products = [];
     //single payment
     if (tagUuid) {
+      
       const tag = await TagModel.findOne({ uuid: tagUuid })
         .lean()
-        .populate('attachedProduct');
+        .populate('attachedProduct attachedStore');
 
       if (!tag) {
         return res.status(404).json({ error: 'Tag not found' });
       }
       //TODO: check if tag is available, add client error
 
-      const { attachedProduct } = tag;
+      const { attachedProduct, attachedStore } = tag;
       const { price: productPrice } = attachedProduct;
+      merchantID = attachedStore.merchantID;
+
       price = productPrice;
 
       const singleProduct = {
@@ -136,14 +140,13 @@ const createTransaction = async (req, res) => {
       };
       products.push(singleProduct);
     }
-
+  
     //cart payment
     else {
       //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
       price = calculateCart(user.cart);
       products = user.cart;
     }
-
     // using default payment method
     const result = await gateway.transaction.sale({
       amount: price,

@@ -18,23 +18,23 @@ clientPrivate.interceptors.request.use(async (config) => {
     await forcedLogout();
   }
 
-  clientPrivate.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    async (error) => {
-      try {
-        if ([401, 403].includes(error?.response?.status)) {
-          await forcedLogout();
-        }
-        throw new Error(error);
-      } catch (error) {
-        throw new Error(error);
-      }
-    }
-  );
-
   config.headers.authorization = `Bearer ${accessToken}`;
 
   return config;
 });
+
+clientPrivate.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    try {
+      if ([401, 403].includes(error?.response?.status)) {
+        await forcedLogout();
+      }
+      return Promise.reject(error);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+);
