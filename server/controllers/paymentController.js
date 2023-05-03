@@ -100,8 +100,8 @@ const createTransaction = async (req, res) => {
   const { uuid, tagUuid } = req.body;
   try {
     const user = await UserModel.findOne({ uuid })
-      .select('-cart._id -cart.tags')
-      .populate('cart.product');
+      .select('-cart._id')
+      .populate('cart.product cart.tags')
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -146,6 +146,9 @@ const createTransaction = async (req, res) => {
       //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
       price = calculateCart(user.cart);
       products = user.cart;
+      //assuming that all products from the same store
+      const {attachedStore} = await products[0].tags[0].populate('attachedStore')
+      merchantID = attachedStore.merchantID
     }
     // using default payment method
     const result = await gateway.transaction.sale({
@@ -205,6 +208,7 @@ const createTransaction = async (req, res) => {
 
     return res.status(200).json({ result: result });
   } catch (error) {
+    console.log(error)
     return res.status(500).json({ error: error.message });
   }
 };

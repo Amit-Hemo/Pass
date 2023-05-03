@@ -24,3 +24,14 @@ export const updateUser = (uuid, userDetails) =>
   clientPrivate.put(`users/${uuid}`, userDetails);
 export const updatePassword = (uuid, data) =>
   clientPrivate.put(`users/${uuid}/updatePassword`, data);
+
+export const watchCart = async (uuid) => {
+  const { data } = await clientPrivate.get(`users/${uuid}/cart`);
+  return data;
+};
+export const addProductToCart = async ([uuid, tagUuid]) => {
+  return await clientPrivate.post(`users/${uuid}/cart`, { tagUuid });
+};
+export const deleteCart = async (uuid) => {
+  return await clientPrivate.delete(`users/${uuid}/cart`)
+}

@@ -407,7 +407,7 @@ async function watchCart(req, res) {
     const user = await UserModel.findOne({ uuid })
       .select('-cart._id')
       .lean()
-      .populate('cart.product', 'name size price image -_id')
+      .populate('cart.product', 'name size price image sku -_id')
       .populate('cart.tags', 'isAvailable attachedStore uuid -_id');
     if (!user) return res.status(404).json({ error: 'User not found' });
     const { cart } = user;
@@ -430,7 +430,7 @@ async function deleteCart(req, res) {
 
     return res.json({ message: 'Cart deleted successfuly' });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error', client: 'קרתה שגיאה בלתי צפויה במחיקת העגלה, המוצרים כבר נקנו' });
   }
 }
 
