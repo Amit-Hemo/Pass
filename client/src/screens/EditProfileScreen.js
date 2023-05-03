@@ -6,21 +6,65 @@ import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import { EMAIL_REGEX } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
+import useUserStore, {
+  setEmail,
+  setFirstName,
+  setLastName,
+} from '../stores/user';
+import Popup from '../components/Popup';
+import usePopup from '../hooks/usePopup';
+import handleApiError from '../utils/handleApiError';
+import { updateUser } from '../api/user';
+import { updateCustomer } from '../api/payment';
 
 const EditProfileScreen = ({ navigation }) => {
   useAuth();
 
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+
+  const uuid = useUserStore((state) => state.uuid);
+  const firstName = useUserStore((state) => state.firstName);
+  const lastName = useUserStore((state) => state.lastName);
+  const email = useUserStore((state) => state.email);
+  const isCustomer = useUserStore((state) => state.isCustomer);
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
-      firstName: 'Albert',
-      lastName: 'Einstein',
-      email: 'nadavGeneral@gmail.com',
+      firstName,
+      lastName,
+      email,
     },
   });
 
   const onEditProfile = async (data) => {
-    console.log(data);
-    navigation.navigate('Profile');
+    try {
+      await updateUser(uuid, data);
+
+      setFirstName(data.firstName);
+      setLastName(data.lastName);
+      setEmail(data.email);
+
+      if (isCustomer) await updateCustomer(uuid, data);
+
+      setModalInfo({
+        isError: false,
+        message: 'הפרטים עודכנו בהצלחה!',
+        onClose: () => {
+          navigation.navigate('ProfileScreen');
+        },
+      });
+      setModalVisible(true);
+    } catch (error) {
+      const errorMessage = handleApiError(error);
+
+      console.log(error);
+
+      setModalInfo({
+        isError: true,
+        message: errorMessage,
+      });
+      setModalVisible(true);
+    }
   };
 
   return (
@@ -83,6 +127,14 @@ const EditProfileScreen = ({ navigation }) => {
           <ActionButton
             title="ערוך סיסמא"
             handler={() => navigation.navigate('UpdatePassword')}
+          />
+
+          <Popup
+            visible={modalVisible}
+            isError={modalInfo.isError}
+            setVisible={setModalVisible}
+            onClose={modalInfo.onClose}
+            message={modalInfo.message}
           />
         </View>
       </View>

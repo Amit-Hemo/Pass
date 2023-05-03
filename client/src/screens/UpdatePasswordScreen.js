@@ -11,17 +11,43 @@ import {
   UPPERCASE_REGEX,
 } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
+import useUserStore from '../stores/user';
+import { updatePassword } from '../api/user';
+import Popup from '../components/Popup';
+import usePopup from '../hooks/usePopup';
+import handleApiError from '../utils/handleApiError';
 
 const UpdatePasswordScreen = ({ navigation }) => {
   useAuth();
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+
+  const uuid = useUserStore((state) => state.uuid);
 
   const { handleSubmit, watch, control } = useForm();
   const currPwd = watch('password');
   const newPwd = watch('newPassword');
 
-  const onUpdatePassword = (data) => {
-    console.log(data);
-    navigation.navigate('Profile');
+  const onUpdatePassword = async (data) => {
+    try {
+      await updatePassword(uuid, data);
+
+      setModalInfo({
+        isError: false,
+        message: 'סיסמא שונתה בהצלחה',
+        onClose: () => {
+          navigation.navigate('ProfileScreen');
+        },
+      });
+      setModalVisible(true);
+    } catch (error) {
+      const errorMessage = handleApiError(error);
+
+      setModalInfo({
+        isError: true,
+        message: errorMessage,
+      });
+      setModalVisible(true);
+    }
   };
 
   const validateNewPassword = (value) => {
@@ -106,6 +132,14 @@ const UpdatePasswordScreen = ({ navigation }) => {
         />
 
         <ActionButton title="אישור" handler={handleSubmit(onUpdatePassword)} />
+
+        <Popup
+          visible={modalVisible}
+          isError={modalInfo.isError}
+          setVisible={setModalVisible}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+        />
       </View>
     </KeyboardDismiss>
   );

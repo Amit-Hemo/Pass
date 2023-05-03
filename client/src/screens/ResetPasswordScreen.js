@@ -1,26 +1,26 @@
-import React, { useRef } from "react";
-import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
-import ActionButton from "../components/ActionButton";
-import InputBar from "../components/InputBar";
-import KeyboardDismiss from "../components/KeyboardDismiss";
+import React, { useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { Text, View } from 'react-native';
+import ActionButton from '../components/ActionButton';
+import InputBar from '../components/InputBar';
+import KeyboardDismiss from '../components/KeyboardDismiss';
 import {
   DIGIT_REGEX,
   LOWERCASE_REGEX,
   SPECIAL_CHAR_REGEX,
   UPPERCASE_REGEX,
-} from "../constants/regexes";
-import handleApiError from "../utils/handleApiError";
-import { resetPassword } from "../api/user";
-import Popup from "../components/Popup";
-import usePopup from "../hooks/usePopup";
+} from '../constants/regexes';
+import handleApiError from '../utils/handleApiError';
+import { resetPassword } from '../api/user';
+import Popup from '../components/Popup';
+import usePopup from '../hooks/usePopup';
 
 const ResetPasswordScreen = ({ navigation, route }) => {
   const { handleSubmit, watch, control, reset } = useForm();
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const inputRef = useRef();
 
-  const pwd = watch("newPassword");
+  const pwd = watch('newPassword');
 
   const uuid = route.params?.uuid;
 
@@ -33,9 +33,9 @@ const ResetPasswordScreen = ({ navigation, route }) => {
       setModalInfo({
         ...modalInfo,
         isError: false,
-        message: "הסיסמא שונתה בהצלחה!",
+        message: 'הסיסמא שונתה בהצלחה!',
         onClose: () => {
-          navigation.navigate("Login");
+          navigation.navigate('Login');
         },
       });
       setModalVisible(true);
@@ -66,7 +66,7 @@ const ResetPasswordScreen = ({ navigation, route }) => {
           message={modalInfo.message}
         />
 
-        <Text className="text-base mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
+        <Text className="mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
 
         <Text className="text-xl">סיסמא חדשה</Text>
         <InputBar
@@ -76,21 +76,21 @@ const ResetPasswordScreen = ({ navigation, route }) => {
           visible={false}
           control={control}
           rules={{
-            required: "שדה זה חובה",
+            required: 'שדה זה חובה',
             minLength: {
               value: 8,
-              message: "שדה זה מכיל לפחות 8 אותיות",
+              message: 'שדה זה מכיל לפחות 8 אותיות',
             },
             maxLength: {
               value: 100,
-              message: "שדה זה מכיל לכל היותר 100 אותיות",
+              message: 'שדה זה מכיל לכל היותר 100 אותיות',
             },
             validate: (value) =>
               (UPPERCASE_REGEX.test(value) &&
                 LOWERCASE_REGEX.test(value) &&
                 DIGIT_REGEX.test(value) &&
                 SPECIAL_CHAR_REGEX.test(value)) ||
-              "הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד",
+              'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
           }}
           ref={inputRef}
         />
@@ -103,16 +103,16 @@ const ResetPasswordScreen = ({ navigation, route }) => {
           visible={false}
           control={control}
           rules={{
-            required: "שדה זה חובה",
+            required: 'שדה זה חובה',
             minLength: {
               value: 8,
-              message: "שדה זה מכיל לפחות 8 אותיות",
+              message: 'שדה זה מכיל לפחות 8 אותיות',
             },
             maxLength: {
               value: 100,
-              message: "שדה זה מכיל לכל היותר 100 אותיות",
+              message: 'שדה זה מכיל לכל היותר 100 אותיות',
             },
-            validate: (value) => value === pwd || "הסיסמאות אינן תואמות",
+            validate: (value) => value === pwd || 'הסיסמאות אינן תואמות',
           }}
         />
 
