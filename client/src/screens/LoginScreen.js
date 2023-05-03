@@ -20,7 +20,12 @@ import handleApiError from '../utils/handleApiError';
 import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = ({ navigation }) => {
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm({
+    defaultValues: {
+      email: 'nadavGeneral@gmail.com',
+      password: 'Nadav123!!',
+    },
+  });
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
 
   const onLogin = async (data) => {
@@ -118,13 +123,18 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
-          <ActionButton title="התחברות" handler={handleSubmit(onLogin)} />
-          <ActionButton
-            title="שכחתי סיסמא"
-            handler={() => {
-              navigation.navigate('ForgotPassword');
-            }}
-          />
+          <View className="mt-6">
+            <ActionButton title="התחברות" handler={handleSubmit(onLogin)} />
+          </View>
+
+          <View className="mt-4">
+            <ActionButton
+              title="שכחתי סיסמא"
+              handler={() => {
+                navigation.navigate('ForgotPassword');
+              }}
+            />
+          </View>
         </View>
 
         <ActionButton

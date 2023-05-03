@@ -29,6 +29,7 @@ import useAuthStore, {
   setIsForcedLogout,
   setIsLoggedIn,
 } from './src/stores/auth';
+import useCartStore from './src/stores/cart';
 import {
   clearUser,
   setEmail,
@@ -51,6 +52,8 @@ function HomeTabs() {
   const handleAuth = useHandleAuth();
   const isForced = useAuthStore((state) => state.isForcedLogout);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+
+  const amount = useCartStore((state) => state.amount);
 
   useEffect(() => {
     if (isForced) {
@@ -129,6 +132,7 @@ function HomeTabs() {
             tabBarIcon: () => (
               <AntDesign name="shoppingcart" size={24} color="black" />
             ),
+            tabBarBadge: amount,
           }}
         />
       </Tab.Navigator>
@@ -185,6 +189,11 @@ function ProfileStackScreen() {
       <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
 
       <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
+
+      <ProfileStack.Screen
+        name="UpdatePassword"
+        component={UpdatePasswordScreen}
+      />
 
       <ProfileStack.Screen
         name="PurchasesHistory"

@@ -156,7 +156,7 @@ async function handleRefreshToken(req, res) {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await UserModel.findOne({ refreshToken })
+    const user = await UserModel.findOne({ refreshToken });
     if (!user)
       return res.status(403).json({ error: 'Refresh token not found' });
 
@@ -186,7 +186,7 @@ async function updatePassword(req, res) {
     if (!isValidPassword)
       return res
         .status(400)
-        .json({ error: 'Invalid password', client: 'הסיסמא שגויה' });
+        .json({ error: 'Invalid password', client: 'הסיסמא הנוכחית שגויה' });
 
     const isOriginal = await user.comparePassword(newPassword);
     if (isOriginal)

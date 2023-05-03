@@ -56,7 +56,7 @@ const CreateAccountScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className='text-base mt-10 mb-8 text-3xl'>יצירת משתמש</Text>
+        <Text className='mt-10 mb-8 text-3xl'>יצירת משתמש</Text>
         <Text className='text-xl'>שם פרטי</Text>
         <InputBar
           input='firstName'

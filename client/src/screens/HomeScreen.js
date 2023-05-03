@@ -31,6 +31,7 @@ const HomeScreen = ({ navigation }) => {
   const [show, setShow] = useState(false);
   const [clientToken, setClientToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [scannedProduct, setScannedProduct] = useState(null);
 
   const uuid = useUserStore((state) => state.uuid);
   const firstName = useUserStore((state) => state.firstName);
@@ -110,17 +111,18 @@ const HomeScreen = ({ navigation }) => {
     );
   }
   return (
-    <View className="items-center mt-4">
+    <View className="items-center ">
       {isCustomer && hasCreditCard ? (
-        <View className="items-center mt-4">
+        <View className="items-center mt-6">
           <ActionButton
             title="לחץ לסריקת מוצר"
             handler={() => {
               navigation.navigate('ScanProduct');
             }}
           />
-
-          <ScannedProductDetails productID="1" navigation={navigation} />
+         
+          <ScannedProductDetails  navigation={navigation}  />
+          
         </View>
       ) : (
         <View className="items-center mt-4">
@@ -163,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
         setShow={setShow}
       />
 
-      <View className="mt-10">
+      <View>
         <ActionButton
           title="התנתקות"
           handler={async () => {

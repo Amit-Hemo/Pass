@@ -20,3 +20,7 @@ export const logoutUser = (refreshToken) =>
 
 //Private routes (Access Token Is mandatory)
 export const getUser = (uuid) => clientPrivate.get(`users/${uuid}`);
+export const updateUser = (uuid, userDetails) =>
+  clientPrivate.put(`users/${uuid}`, userDetails);
+export const updatePassword = (uuid, data) =>
+  clientPrivate.put(`users/${uuid}/updatePassword`, data);
