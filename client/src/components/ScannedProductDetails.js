@@ -1,41 +1,41 @@
 import React from 'react';
 import { Text, View, Image } from 'react-native';
 import ProductBillDetails from './ProductBillDetails';
-import ActionButton from './ActionButton';
+import useProductStore from '../stores/product';
+import { MaterialIcons } from '@expo/vector-icons';
+import { setClearProduct, setScanned } from '../stores/product';
 
-{
-  /* This component needs to speak with the DB and gets the product details :
-name , price , image*/
-}
 const ScannedProductDetails = ({ productID, navigation }) => {
-  const handler = async () => {
-    //Need to implement 'add to cart'
-    navigation.navigate('Home');
-  };
+  const scannedProduct = useProductStore((state) => state.scanned);
+
   return (
-    <View className="items-center mt-10 border-2 rounded-lg">
-      <Text className="text-2xl font-bold">פרטי המוצר</Text>
+    <View className="items-center mt-6 p-6 border-2 rounded-lg">
+      {scannedProduct ? (
+        <View>
+          <View className="flex-row justify-between items-center">
+            <MaterialIcons
+              name="cancel"
+              size={30}
+              color="#FF6969"
+              onPress={setClearProduct}
+            />
+            <Text className="text-2xl font-bold mr-24">פרטי המוצר</Text>
+          </View>
+          <ProductBillDetails navigation={navigation} />
+        </View>
+      ) : (
+        <View className="items-center mx-2 w-66">
+          <Text className="text-2xl font-bold">פרטי המוצר</Text>
 
-      {/* Add product name and price got from the DB */}
-      <ProductBillDetails productName="חולצה לבנה" price="100" />
-
-      {/* product image got from the DB */}
-      <Image
-        className="rounded-xl w-30 h-20 mb-10"
-        source={require('../../assets/1.png')}
-      />
-
-      {/* Quick purchase / Add to cart */}
-      <View className="flex-row">
-        <ActionButton
-          title="רכישה מהירה"
-          handler={() => {
-            navigation.navigate('Bill');
-          }}
-        />
-        <View className="px-1" />
-        <ActionButton title="הוספה לסל" handler={handler} />
-      </View>
+          <Text className="text-xl text-center mt-2">לא נסרק מוצר</Text>
+          <Image
+            className="rounded-xl w-80 h-80"
+            source={{
+              uri: 'https://res.cloudinary.com/dawvcozos/image/upload/o_45/v1683048746/Pass/WhatsApp_Image_2023-05-02_at_20.26.08_byuo2a.jpg',
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 };
