@@ -38,9 +38,9 @@ const CreateAccountScreen = ({ navigation }) => {
       const errorMessage = handleApiError(error);
       setModalVisible(true);
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: errorMessage,
+        onClose: () => {}
       });
     }
   }

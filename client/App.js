@@ -61,7 +61,6 @@ function HomeTabs() {
   useEffect(() => {
     if (isForced) {
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: 'קרתה שגיאה בלתי צפויה, יש לנסות להתחבר מחדש במועד מאוחר יותר',
         onClose: () => {

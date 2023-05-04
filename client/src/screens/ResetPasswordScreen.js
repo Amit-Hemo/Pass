@@ -31,7 +31,6 @@ const ResetPasswordScreen = ({ navigation, route }) => {
       await resetPassword(uuid, data);
 
       setModalInfo({
-        ...modalInfo,
         isError: false,
         message: 'הסיסמא שונתה בהצלחה!',
         onClose: () => {
@@ -43,7 +42,6 @@ const ResetPasswordScreen = ({ navigation, route }) => {
       const errorMessage = handleApiError(error);
 
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: errorMessage,
         onClose: () => {

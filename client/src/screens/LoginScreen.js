@@ -50,7 +50,6 @@ const LoginScreen = ({ navigation }) => {
         error.response?.data?.error === 'User must be verified before login'
       ) {
         setModalInfo({
-          ...modalInfo,
           isError: true,
           message: errorMessage,
           onClose: async () => {
@@ -63,7 +62,6 @@ const LoginScreen = ({ navigation }) => {
         });
       } else {
         setModalInfo({
-          ...modalInfo,
           isError: true,
           message: errorMessage,
         });

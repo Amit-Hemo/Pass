@@ -23,7 +23,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
       await forgotPassword(email);
 
       setModalInfo({
-        ...modalInfo,
         isError: false,
         message: 'קוד זיהוי נשלח לכתובת האימייל',
         onClose: async () => {
@@ -39,7 +38,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
       const errorMessage = handleApiError(error);
 
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: errorMessage,
       });

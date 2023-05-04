@@ -34,7 +34,6 @@ const OTPScreen = ({ navigation, route }) => {
     try {
       const { data: response } = await validateOTP({ otp, email });
       setModalInfo({
-        ...modalInfo,
         isError: false,
         message: "תהליך האימות הסתיים בהצלחה!",
         onClose: () => {
@@ -46,7 +45,6 @@ const OTPScreen = ({ navigation, route }) => {
       const errorMessage = handleApiError(error);
 
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: errorMessage,
         onClose: () => {
@@ -60,13 +58,13 @@ const OTPScreen = ({ navigation, route }) => {
 
   const onResendOTP = async () => {
     const email = route.params?.email;
+    console.log(route.params);
 
     setIsLoading(true);
     try {
       setModalVisible(true);
       await requestOTP(email);
       setModalInfo({
-        ...modalInfo,
         isError: false,
         message: "קוד חדש נשלח בהצלחה!",
       });
@@ -76,7 +74,6 @@ const OTPScreen = ({ navigation, route }) => {
       setIsLoading(false);
 
       setModalInfo({
-        ...modalInfo,
         isError: true,
         message: errorMessage,
       });
