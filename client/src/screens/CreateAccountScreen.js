@@ -30,7 +30,7 @@ const CreateAccountScreen = ({ navigation }) => {
         isError: false,
         message: 'המשתמש נוסף בהצלחה!',
         onClose: async () => {
-          navigation.navigate('OTP');
+          navigation.navigate('OTP', {email: data.email, destination: 'Login'});
           await requestOTP(response.email);
         },
       });

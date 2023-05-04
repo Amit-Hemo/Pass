@@ -58,7 +58,6 @@ const OTPScreen = ({ navigation, route }) => {
 
   const onResendOTP = async () => {
     const email = route.params?.email;
-    console.log(route.params);
 
     setIsLoading(true);
     try {
