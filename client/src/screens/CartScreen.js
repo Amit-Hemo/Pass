@@ -20,7 +20,9 @@ const CartScreen = ({ navigation }) => {
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
   const uuid = useUserStore((state) => state.uuid);
   const queryClient = useQueryClient();
-  const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
+  const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
+    select: (data) => [...data.cart].reverse(),
+  });
   const clearCartMutation = useMutation(deleteCart, {
     onSuccess: () => {
       queryClient.invalidateQueries(['cart', uuid]);
@@ -37,14 +39,14 @@ const CartScreen = ({ navigation }) => {
   });
 
   let totalPrice = 0;
-  if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
+  if (cart) totalPrice = calculateCartPrice(cart);
 
   const handleCartPurchase = () => {
     setVisible(true); //Start purchase popup
   };
 
   const handleClearCart = () => {
-    clearCartMutation.mutate(uuid)
+    clearCartMutation.mutate(uuid);
   };
 
   return (
@@ -60,18 +62,20 @@ const CartScreen = ({ navigation }) => {
               <Text className='text-2xl font-bold w-2/12 text-center'>
                 כמות{' '}
               </Text>
-              <Text className='text-2xl font-bold w-4/12 text-center'>מחיר</Text>
+              <Text className='text-2xl font-bold w-4/12 text-center'>
+                מחיר
+              </Text>
               <Text className='text-2xl font-bold w-1/12 text-center'></Text>
             </View>
 
             <View className='h-80'>
-              <ProductsBillList cart={data?.cart} />
+              <ProductsBillList cart={cart} />
             </View>
           </View>
 
           <View className='mt-5 items-center'>
             <Text className='text-xl mb-3'>סך הכל {totalPrice} ש"ח</Text>
-            {data?.cart?.length > 0 && (
+            {cart?.length > 0 && (
               <View className='flex-row'>
                 <ActionButton
                   title='מעבר לתשלום'

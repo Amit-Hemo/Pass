@@ -33,8 +33,13 @@ export const addProductToCart = async ([uuid, tagUuid]) => {
   return await clientPrivate.post(`users/${uuid}/cart`, { tagUuid });
 };
 export const deleteCart = async (uuid) => {
-  return await clientPrivate.delete(`users/${uuid}/cart`)
-}
+  return await clientPrivate.delete(`users/${uuid}/cart`);
+};
 export const deleteProductFromCart = async ([uuid, tagUuid]) => {
-  return await clientPrivate.delete(`users/${uuid}/cart/${tagUuid}`)
-}
+  return await clientPrivate.delete(`users/${uuid}/cart/${tagUuid}`);
+};
+
+export const watchPurchases = async (uuid) => {
+  const { data } = await clientPrivate.get(`users/${uuid}/purchases`);
+  return data;
+};

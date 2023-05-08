@@ -156,16 +156,6 @@ router.get(
 );
 
 router.get(
-  '/:uuid/purchases',
-  [
-    verifyAccessToken,
-    validateResource({ params: uuidSchema }),
-    validateAuthUUID,
-  ],
-  usersController.watchPurchases
-);
-
-router.get(
   '/:uuid',
   [
     verifyAccessToken,
@@ -173,6 +163,16 @@ router.get(
     validateAuthUUID,
   ],
   usersController.getUser
+);
+
+router.get(
+  '/:uuid/purchases',
+  [
+    verifyAccessToken,
+    validateResource({ params: uuidSchema }),
+    validateAuthUUID,
+  ],
+  usersController.watchPurchases
 );
 
 router.get(

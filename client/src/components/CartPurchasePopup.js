@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
@@ -14,10 +14,13 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-  const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
+  const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
+    select: (data) => data.cart,
+  });
+  const queryClient = useQueryClient();
 
   let totalPrice = 0;
-  if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
+  if (cart) totalPrice = calculateCartPrice(cart);
 
   const handleCartPurchase = async () => {
     try {
@@ -26,7 +29,6 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
       setModalVisible(true);
       const { data } = await createCartTransaction(uuid);
       const { result } = data;
-      console.log(result);
       setIsLoading(false);
       setModalVisible(false);
       setModalInfo({
@@ -34,7 +36,7 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
         message: 'הרכישה התבצעה בהצלחה, תתחדשו!',
         onClose: () => {
           navigation.navigate('ReleaseProduct');
-          //TODO: remove this from here after we figure put the nfc release
+          queryClient.invalidateQueries(['purchases', uuid]);
         },
       });
       setModalVisible(true);

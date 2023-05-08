@@ -3,15 +3,12 @@ import React, { useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { addProductToCart } from '../api/user';
 import usePopup from '../hooks/usePopup';
-import useProductStore, {
-  setClearProduct,
-  setScanned,
-} from '../stores/product';
+import useProductStore, { setClearProduct } from '../stores/product';
 import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
 import ActionButton from './ActionButton';
-import Popup from './Popup';
 import FastPurchasePopup from './FastPurchasePopup';
+import Popup from './Popup';
 
 const ProductBillDetails = ({ navigation }) => {
   const name = useProductStore((state) => state.name);

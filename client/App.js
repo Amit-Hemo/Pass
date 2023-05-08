@@ -59,11 +59,13 @@ function HomeTabs() {
   const handleAuth = useHandleAuth();
   const isForced = useAuthStore((state) => state.isForcedLogout);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-  const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
+  const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
+    select: (data) => data.cart,
+  });
 
   let cartAmount = 0;
-  if (data?.cart) {
-    cartAmount = countCartAmount(data.cart);
+  if (cart) {
+    cartAmount = countCartAmount(cart);
   }
 
   useEffect(() => {

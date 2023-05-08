@@ -3,10 +3,11 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { createFastTransaction } from '../api/payment';
 import usePopup from '../hooks/usePopup';
-import useProductStore, { setScanned } from '../stores/product';
+import useProductStore from '../stores/product';
 import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
 import Popup from './Popup';
+import { useQueryClient } from '@tanstack/react-query';
 
 const PurchasePopup = ({ visible, setVisible, navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
@@ -14,6 +15,7 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
   const price = useProductStore((state) => state.price);
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+  const queryClient = useQueryClient()
 
   const handleFastPurchase = async () => {
     try {
@@ -22,7 +24,6 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
       setModalVisible(true);
       const { data } = await createFastTransaction(uuid, tagUuid);
       const { result } = data;
-      console.log(result);
       setIsLoading(false);
       setModalVisible(false);
       setModalInfo({
@@ -30,9 +31,7 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
         message: 'המוצר נרכש בהצלחה, תתחדשו !',
         onClose: () => {
           navigation.navigate('ReleaseProduct');
-
-          //TODO: remove this from here after we figure put the nfc release
-          setScanned(false);
+          queryClient.invalidateQueries(['purchases', uuid])
         },
       });
       setModalVisible(true);
