@@ -6,7 +6,7 @@ import { createCartTransaction } from '../api/payment';
 import { deleteCart, watchCart } from '../api/user';
 import usePopup from '../hooks/usePopup';
 import useUserStore from '../stores/user';
-import calculateCart from '../utils/calculateCart';
+import calculateCartPrice from '../utils/calculateCartPrice';
 import handleApiError from '../utils/handleApiError';
 import Popup from './Popup';
 
@@ -31,7 +31,7 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
   });
 
   let totalPrice = 0;
-  if (data?.cart) totalPrice = calculateCart(data?.cart);
+  if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
 
   const handleCartPurchase = async () => {
     try {

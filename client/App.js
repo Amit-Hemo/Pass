@@ -2,7 +2,11 @@ import { AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
@@ -42,6 +46,7 @@ import useUserStore, {
   setUuid,
 } from './src/stores/user';
 import checkAuthStatus from './src/utils/checkAuthStatus';
+import countCartAmount from './src/utils/countCartAmount';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -50,13 +55,17 @@ const queryClient = new QueryClient();
 function HomeTabs() {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const uuid = useUserStore((state) => state.uuid)
+  const uuid = useUserStore((state) => state.uuid);
   const handleAuth = useHandleAuth();
   const isForced = useAuthStore((state) => state.isForcedLogout);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
 
-  const cartAmount = data?.cart?.length ?? 0
+  let cartAmount = 0;
+  if (data?.cart) {
+    console.log(data.cart);
+    cartAmount = countCartAmount(data.cart);
+  }
 
   useEffect(() => {
     if (isForced) {

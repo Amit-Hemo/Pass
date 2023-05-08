@@ -38,7 +38,7 @@ const OpenPaymentMethods = ({ clientToken, show, setShow }) => {
             setShow(false);
           }}
         >
-          <View className="flex-1">
+          <View className="flex-1 mt-10">
             <WebView
               source={{ uri: `${HOST}/payment` }}
               onMessage={(event) => {

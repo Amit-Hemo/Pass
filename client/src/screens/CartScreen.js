@@ -7,7 +7,7 @@ import ActionButton from '../components/ActionButton';
 import CartPurchasePopup from '../components/CartPurchasePopup';
 import useAuth from '../hooks/useAuth';
 import useUserStore from '../stores/user';
-import calculateCart from '../utils/calculateCart';
+import calculateCartPrice from '../utils/calculateCartPrice';
 
 const CartScreen = ({ navigation }) => {
   useAuth();
@@ -18,7 +18,7 @@ const CartScreen = ({ navigation }) => {
   const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
 
   let totalPrice = 0;
-  if (data?.cart) totalPrice = calculateCart(data?.cart);
+  if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
 
   const handleCartPurchase = () => {
     setVisible(true);
