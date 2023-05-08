@@ -35,3 +35,6 @@ export const addProductToCart = async ([uuid, tagUuid]) => {
 export const deleteCart = async (uuid) => {
   return await clientPrivate.delete(`users/${uuid}/cart`)
 }
+export const deleteProductFromCart = async ([uuid, tagUuid]) => {
+  return await clientPrivate.delete(`users/${uuid}/cart/${tagUuid}`)
+}

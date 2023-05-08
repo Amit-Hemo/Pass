@@ -51,16 +51,17 @@ const CartScreen = ({ navigation }) => {
     <View className='mt-10 items-center'>
       <Text className='mb-20 text-3xl  '>עגלת קניות</Text>
       {isCustomer && hasCreditCard ? (
-        <View className='items-center px-9'>
+        <View className='items-center px-7'>
           <View className='rounded-lg border-2 px-2'>
             <View className='flex-row-reverse w-full my-4'>
-              <Text className='text-2xl font-bold w-3/6 text-center'>
+              <Text className='text-2xl font-bold w-5/12 text-center'>
                 שם מוצר
               </Text>
-              <Text className='text-2xl font-bold w-1/6 text-center'>
+              <Text className='text-2xl font-bold w-2/12 text-center'>
                 כמות{' '}
               </Text>
-              <Text className='text-2xl font-bold w-2/6 text-center'>מחיר</Text>
+              <Text className='text-2xl font-bold w-4/12 text-center'>מחיר</Text>
+              <Text className='text-2xl font-bold w-1/12 text-center'></Text>
             </View>
 
             <View className='h-80'>

@@ -14,6 +14,7 @@ const ProductsBillList = ({ cart }) => {
               name={item.product.name}
               size={item.product.size}
               quantity={item.quantity}
+              tags={item.tags}
             />
           )}
           keyExtractor={(item) => item.product.sku}

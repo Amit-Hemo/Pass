@@ -3,9 +3,9 @@ import { Text, View, Image } from 'react-native';
 import ProductBillDetails from './ProductBillDetails';
 import useProductStore from '../stores/product';
 import { MaterialIcons } from '@expo/vector-icons';
-import { setClearProduct, setScanned } from '../stores/product';
+import { setClearProduct } from '../stores/product';
 
-const ScannedProductDetails = ({ productID, navigation }) => {
+const ScannedProductDetails = ({ navigation }) => {
   const scannedProduct = useProductStore((state) => state.scanned);
 
   return (
