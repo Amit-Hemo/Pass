@@ -168,9 +168,6 @@ const createTransaction = async (req, res) => {
       });
     }
 
-    //delete user cart after successful purchase
-    user.cart = [];
-
     //TODO: create createPurchase handler, gets uuid (check tokens as usual) and transactionId, the cart that he payed for
     const { transaction } = result;
 
