@@ -1,27 +1,50 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import ProductsBillList from '.././components/ProductsBillList';
-import { watchCart } from '../api/user';
+import { deleteCart, watchCart } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import CartPurchasePopup from '../components/CartPurchasePopup';
+import Popup from '../components/Popup';
 import useAuth from '../hooks/useAuth';
+import usePopup from '../hooks/usePopup';
 import useUserStore from '../stores/user';
 import calculateCartPrice from '../utils/calculateCartPrice';
+import handleApiError from '../utils/handleApiError';
 
 const CartScreen = ({ navigation }) => {
   useAuth();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false); //For purchase popup
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
   const uuid = useUserStore((state) => state.uuid);
+  const queryClient = useQueryClient();
   const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
+  const clearCartMutation = useMutation(deleteCart, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['cart', uuid]);
+    },
+    onError: (err) => {
+      console.log('Cart error:', err);
+      const errorMessage = handleApiError(err);
+      setModalInfo({
+        isError: true,
+        message: errorMessage,
+      });
+      setModalVisible(true);
+    },
+  });
 
   let totalPrice = 0;
   if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
 
   const handleCartPurchase = () => {
-    setVisible(true);
+    setVisible(true); //Start purchase popup
+  };
+
+  const handleClearCart = () => {
+    clearCartMutation.mutate(uuid)
   };
 
   return (
@@ -46,12 +69,27 @@ const CartScreen = ({ navigation }) => {
           </View>
 
           <View className='mt-5 items-center'>
-            <Text className='text-lg mb-3'>סך הכל {totalPrice} ש"ח</Text>
-           {data?.cart?.length > 0 && <ActionButton
-              title='מעבר לתשלום'
-              handler={handleCartPurchase}
-            />}
+            <Text className='text-xl mb-3'>סך הכל {totalPrice} ש"ח</Text>
+            {data?.cart?.length > 0 && (
+              <View className='flex-row'>
+                <ActionButton
+                  title='מעבר לתשלום'
+                  handler={handleCartPurchase}
+                />
+                <ActionButton
+                  title='מחיקת עגלה'
+                  handler={handleClearCart}
+                />
+              </View>
+            )}
           </View>
+          <Popup
+            visible={modalVisible}
+            isError={modalInfo.isError}
+            setVisible={setModalVisible}
+            onClose={modalInfo.onClose}
+            message={modalInfo.message}
+          />
           <CartPurchasePopup
             visible={visible}
             setVisible={setVisible}

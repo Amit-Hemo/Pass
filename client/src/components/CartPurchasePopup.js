@@ -1,9 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { createCartTransaction } from '../api/payment';
-import { deleteCart, watchCart } from '../api/user';
+import { watchCart } from '../api/user';
 import usePopup from '../hooks/usePopup';
 import useUserStore from '../stores/user';
 import calculateCartPrice from '../utils/calculateCartPrice';
@@ -15,20 +15,6 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const { data } = useQuery(['cart', uuid], () => watchCart(uuid));
-  const queryClient = useQueryClient();
-  const mutation = useMutation(deleteCart, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['cart', uuid]);
-    },
-    onError: (err) => {
-      const errorMessage = handleApiError(err);
-      setModalInfo({
-        isError: true,
-        message: errorMessage,
-      });
-      setModalVisible(true);
-    },
-  });
 
   let totalPrice = 0;
   if (data?.cart) totalPrice = calculateCartPrice(data?.cart);
@@ -47,8 +33,6 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
         isError: false,
         message: 'הרכישה התבצעה בהצלחה, תתחדשו!',
         onClose: () => {
-          //TODO: move the delete mutation to the releaseScreen
-          // mutation.mutate(uuid)
           navigation.navigate('ReleaseProduct');
           //TODO: remove this from here after we figure put the nfc release
         },

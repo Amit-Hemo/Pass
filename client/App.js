@@ -63,7 +63,6 @@ function HomeTabs() {
 
   let cartAmount = 0;
   if (data?.cart) {
-    console.log(data.cart);
     cartAmount = countCartAmount(data.cart);
   }
 
