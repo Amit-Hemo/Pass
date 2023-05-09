@@ -73,12 +73,11 @@ const EditProfileScreen = ({ navigation }) => {
         <Text className="mt-10 mb-5 text-3xl ">עריכת פרופיל</Text>
 
         <View className="items-center mb-16">
-          <Text className="text-xl">שם פרטי</Text>
+          <Text className="text-lg font-semibold">שם פרטי</Text>
           <InputBar
             input="firstName"
             control={control}
             align={'right'}
-            style="mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5"
             rules={{
               required: 'שדה זה חובה',
               minLength: {
@@ -92,10 +91,9 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className="text-xl">שם משפחה</Text>
+          <Text className="text-lg font-semibold">שם משפחה</Text>
           <InputBar
             input="lastName"
-            style="mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5"
             align="right"
             control={control}
             rules={{
@@ -111,10 +109,9 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className="text-xl">אימייל</Text>
+          <Text className="text-lg font-semibold">אימייל</Text>
           <InputBar
             input="email"
-            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
             align="left"
             control={control}
             rules={{

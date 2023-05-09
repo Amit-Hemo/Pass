@@ -70,10 +70,9 @@ const UpdatePasswordScreen = ({ navigation }) => {
       <View className="items-center">
         <Text className="mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
 
-        <Text className="text-xl">סיסמא</Text>
+        <Text className="text-lg font-semibold">סיסמא</Text>
         <InputBar
           input="password"
-          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
           align="right"
           visible={false}
           control={control}
@@ -89,10 +88,9 @@ const UpdatePasswordScreen = ({ navigation }) => {
             },
           }}
         />
-        <Text className="text-xl">סיסמא חדשה</Text>
+        <Text className="text-lg font-semibold">סיסמא חדשה</Text>
         <InputBar
           input="newPassword"
-          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
           align="right"
           visible={false}
           control={control}
@@ -110,10 +108,9 @@ const UpdatePasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <Text className="text-xl">אימות סיסמא</Text>
+        <Text className="text-lg font-semibold">אימות סיסמא</Text>
         <InputBar
           input="confirmNewPassword"
-          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
           align="right"
           visible={false}
           control={control}

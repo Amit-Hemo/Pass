@@ -58,10 +58,9 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
         <Text className=" mt-10 mb-8 text-3xl">שחזור סיסמא</Text>
 
-        <Text className="text-xl">אימייל</Text>
+        <Text className="text-lg font-semibold">אימייל</Text>
         <InputBar
           input="email"
-          style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
           align="left"
           control={control}
           rules={{

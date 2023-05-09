@@ -50,6 +50,7 @@ const LoginScreen = ({ navigation }) => {
         error.response?.data?.error === 'User must be verified before login'
       ) {
         setModalInfo({
+          ...modalInfo,
           isError: true,
           message: errorMessage,
           onClose: async () => {
@@ -62,6 +63,7 @@ const LoginScreen = ({ navigation }) => {
         });
       } else {
         setModalInfo({
+          ...modalInfo,
           isError: true,
           message: errorMessage,
         });
@@ -72,7 +74,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="flex-1 items-center">
+      <View className="flex-1 items-center mt-10">
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -81,12 +83,11 @@ const LoginScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className="mt-10 mb-5 text-3xl ">משתמש קיים</Text>
+        <Text className="text-3xl font-bold text-center mb-10">משתמש קיים</Text>
         <View className="items-center mb-16">
-          <Text className="text-xl">אימייל</Text>
+          <Text className="text-lg font-semibold ">אימייל</Text>
           <InputBar
             input="email"
-            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
             align="left"
             control={control}
             rules={{
@@ -95,10 +96,9 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className="text-xl">סיסמא</Text>
+          <Text className="text-lg font-semibold">סיסמא</Text>
           <InputBar
             input="password"
-            style="mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5"
             align="right"
             visible={false}
             control={control}

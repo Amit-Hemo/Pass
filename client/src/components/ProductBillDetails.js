@@ -57,7 +57,7 @@ const ProductBillDetails = ({ navigation }) => {
           source={{ uri: image }}
         />
 
-        <View className='flex-row'>
+        <View className='flex-row space-x-10'>
           <ActionButton
             title='רכישה מהירה'
             handler={handleFastPurchase}

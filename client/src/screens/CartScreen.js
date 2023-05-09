@@ -50,41 +50,38 @@ const CartScreen = ({ navigation }) => {
   };
 
   return (
-    <View className='mt-10 items-center'>
-      <Text className='mb-20 text-3xl  '>עגלת קניות</Text>
+    <View className="mt-10 items-center">
+      <Text className="mb-20 text-3xl  ">עגלת קניות</Text>
       {isCustomer && hasCreditCard ? (
-        <View className='items-center px-7'>
-          <View className='rounded-lg border-2 px-2'>
-            <View className='flex-row-reverse w-full my-4'>
-              <Text className='text-2xl font-bold w-5/12 text-center'>
+        <View className="items-center px-7">
+          <View className="rounded-lg border-2 px-2">
+            <View className="flex-row-reverse w-full my-4">
+              <Text className="text-2xl font-bold w-5/12 text-center">
                 שם מוצר
               </Text>
-              <Text className='text-2xl font-bold w-2/12 text-center'>
+              <Text className="text-2xl font-bold w-2/12 text-center">
                 כמות{' '}
               </Text>
-              <Text className='text-2xl font-bold w-4/12 text-center'>
+              <Text className="text-2xl font-bold w-4/12 text-center">
                 מחיר
               </Text>
-              <Text className='text-2xl font-bold w-1/12 text-center'></Text>
+              <Text className="text-2xl font-bold w-1/12 text-center"></Text>
             </View>
 
-            <View className='h-80'>
+            <View className="h-80">
               <ProductsBillList cart={cart} />
             </View>
           </View>
 
-          <View className='mt-5 items-center'>
-            <Text className='text-xl mb-3'>סך הכל {totalPrice} ש"ח</Text>
+          <View className="mt-5 items-center">
+            <Text className="text-xl mb-3">סך הכל {totalPrice} ש"ח</Text>
             {cart?.length > 0 && (
-              <View className='flex-row'>
+              <View className="flex-row">
                 <ActionButton
-                  title='מעבר לתשלום'
+                  title="מעבר לתשלום"
                   handler={handleCartPurchase}
                 />
-                <ActionButton
-                  title='מחיקת עגלה'
-                  handler={handleClearCart}
-                />
+                <ActionButton title="מחיקת עגלה" handler={handleClearCart} />
               </View>
             )}
           </View>
@@ -102,8 +99,8 @@ const CartScreen = ({ navigation }) => {
           />
         </View>
       ) : (
-        <View className='items-center border-2 rounded-xl mx-2'>
-          <Text className='text-xl text-center font-bold mb-2 text-red-500 p-10'>
+        <View className="items-center border-2 rounded-xl mx-2">
+          <Text className="text-xl text-center font-bold mb-2 text-red-500 p-10">
             {' '}
             קיימות אופציות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני בעמוד
             הראשי{' '}

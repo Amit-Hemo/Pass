@@ -1,6 +1,6 @@
-import { Controller } from "react-hook-form";
-import { Text, TextInput, View } from "react-native";
-import React, { forwardRef } from "react";
+import { Controller } from 'react-hook-form';
+import { Text, TextInput, View } from 'react-native';
+import React, { forwardRef } from 'react';
 
 const InputBar = forwardRef(
   (
@@ -26,7 +26,7 @@ const InputBar = forwardRef(
           fieldState: { error },
         }) => (
           <>
-            <View className="w-44 items-center">
+            <View className="w-60 px-4 py-2 mb-4 bg-white rounded-lg border border-gray-300">
               {/* Check if the input should be visible or invisible */}
               <TextInput
                 className={style}
@@ -44,7 +44,7 @@ const InputBar = forwardRef(
             </View>
             {error && (
               <Text className="text-red-500 mb-3">
-                {error.message || "קרתה שגיאה לא צפויה, אנא נסו להיכנס מחדש"}
+                {error.message || 'קרתה שגיאה לא צפויה, אנא נסו להיכנס מחדש'}
               </Text>
             )}
           </>

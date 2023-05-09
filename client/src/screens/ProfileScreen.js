@@ -81,18 +81,21 @@ const ProfileScreen = ({ navigation }) => {
         <Text className=" mt-14 mb-6 text-2xl">פרטי אשראי</Text>
         {isCustomer && hasCreditCard ? (
           <View className="items-center ">
-            <Text className=" mb-2 text-lg"> כרטיס ראשי</Text>
-            <Text className=" text-xl border-0.5 rounded-lg px-5 h-7 mb-5">
+            <Text className=" mb-2 text-lg font-semibold"> כרטיס ראשי</Text>
+            <Text className="text-xl bg-gray-100 rounded-lg px-5 py-2 mb-5">
               {`XXXX-XXXX-XXXX-${lastDigits}`}
             </Text>
 
             <TouchableOpacity
-              className="items-center content-center w-40 mt-1 mb-1 rounded-2xl border-t-2 border-b-4  "
+              className="py-3 px-6 mb-6 bg-blue-400 rounded-lg items-center justify-center shadow-black"
+              style={{ elevation: 5 }}
               onPress={() => {
                 handleAddPaymentButton();
               }}
             >
-              <Text className="text-lg ">בחירת אמצעי תשלום</Text>
+              <Text className="text-white font-semibold">
+                בחירת אמצעי תשלום
+              </Text>
             </TouchableOpacity>
 
             <OpenPaymentMethods

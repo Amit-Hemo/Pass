@@ -30,7 +30,10 @@ const CreateAccountScreen = ({ navigation }) => {
         isError: false,
         message: 'המשתמש נוסף בהצלחה!',
         onClose: async () => {
-          navigation.navigate('OTP', {email: data.email, destination: 'Login'});
+          navigation.navigate('OTP', {
+            email: data.email,
+            destination: 'Login',
+          });
           await requestOTP(response.email);
         },
       });
@@ -40,14 +43,14 @@ const CreateAccountScreen = ({ navigation }) => {
       setModalInfo({
         isError: true,
         message: errorMessage,
-        onClose: () => {}
+        onClose: () => {},
       });
     }
   }
 
   return (
     <KeyboardDismiss>
-      <View className='flex-1 items-center'>
+      <View className="flex-1 items-center">
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -56,13 +59,12 @@ const CreateAccountScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className='mt-10 mb-8 text-3xl'>יצירת משתמש</Text>
-        <Text className='text-xl'>שם פרטי</Text>
+        <Text className="mt-10 mb-8 text-3xl">יצירת משתמש</Text>
+        <Text className="text-lg font-semibold">שם פרטי</Text>
         <InputBar
-          input='firstName'
+          input="firstName"
           control={control}
           align={'right'}
-          style='mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5'
           rules={{
             required: 'שדה זה חובה',
             minLength: {
@@ -75,11 +77,10 @@ const CreateAccountScreen = ({ navigation }) => {
             },
           }}
         />
-        <Text className='text-xl'>שם משפחה</Text>
+        <Text className="text-lg font-semibold">שם משפחה</Text>
         <InputBar
-          input='lastName'
-          style='mt-2 mb-1 h-9 w-60 text-xl border-2 rounded-lg p-0.5'
-          align='right'
+          input="lastName"
+          align="right"
           control={control}
           rules={{
             required: 'שדה זה חובה',
@@ -93,22 +94,20 @@ const CreateAccountScreen = ({ navigation }) => {
             },
           }}
         />
-        <Text className='text-xl'>אימייל</Text>
+        <Text className="text-lg font-semibold">אימייל</Text>
         <InputBar
-          input='email'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='left'
+          input="email"
+          align="left"
           control={control}
           rules={{
             required: 'שדה זה חובה',
             pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
           }}
         />
-        <Text className='text-xl'>סיסמא</Text>
+        <Text className="text-lg font-semibold">סיסמא</Text>
         <InputBar
-          input='password'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='right'
+          input="password"
+          align="right"
           visible={false}
           control={control}
           rules={{
@@ -129,11 +128,10 @@ const CreateAccountScreen = ({ navigation }) => {
               'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
           }}
         />
-        <Text className='text-xl'>אימות סיסמא</Text>
+        <Text className="text-lg font-semibold">אימות סיסמא</Text>
         <InputBar
-          input='confirmPassword'
-          style='mt-2 mb-1 h-9 w-60 text-lg border-2 rounded-lg p-0.5'
-          align='right'
+          input="confirmPassword"
+          align="right"
           visible={false}
           control={control}
           rules={{
@@ -149,10 +147,7 @@ const CreateAccountScreen = ({ navigation }) => {
             validate: (value) => value === pwd || 'הסיסמאות אינן תואמות',
           }}
         />
-        <ActionButton
-          title='צור משתמש'
-          handler={handleSubmit(onRegister)}
-        />
+        <ActionButton title="צור משתמש" handler={handleSubmit(onRegister)} />
       </View>
     </KeyboardDismiss>
   );

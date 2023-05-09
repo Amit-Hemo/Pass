@@ -4,12 +4,13 @@ import { Text, TouchableOpacity } from 'react-native';
 const ActionButton = ({ title, handler }) => {
   return (
     <TouchableOpacity
-      className='items-center content-center w-40  mb-1 rounded-2xl border-t-2 border-b-4  '
+      className="py-3 px-6 mb-6 mx-2 bg-blue-400 rounded-lg items-center justify-center shadow-black"
       onPress={() => {
         handler ? handler() : null;
       }}
+      style={{ elevation: 5 }}
     >
-      <Text className='text-lg '>{title}</Text>
+      <Text className="text-white font-semibold">{title}</Text>
     </TouchableOpacity>
   );
 };
