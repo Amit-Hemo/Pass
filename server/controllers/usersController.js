@@ -471,7 +471,6 @@ async function watchPurchaseById(req, res) {
         },
       });
     if (!user) return res.status(404).json({ error: 'User not found' });
-    console.log(user.purchases[0].products);
 
     const transaction = await PurchaseModel.findOne({ transactionId }).lean();
     if (!transaction)

@@ -6,12 +6,16 @@ import PurchasesList from '../components/PurchasesList';
 import useAuth from '../hooks/useAuth';
 import useUserStore from '../stores/user';
 
-const PurchasesHistoryScreen = () => {
+const PurchasesHistoryScreen = ({ navigation }) => {
   useAuth();
   const uuid = useUserStore((state) => state.uuid);
-  const { data: purchases } = useQuery(['purchases', uuid], () => watchPurchases(uuid), {
-    select: (data) => [...data.purchases].reverse(),
-  });
+  const { data: purchases } = useQuery(
+    ['purchases', uuid],
+    () => watchPurchases(uuid),
+    {
+      select: (data) => [...data.purchases].reverse(),
+    }
+  );
 
   return (
     <View className='items-center mt-10'>
@@ -29,7 +33,10 @@ const PurchasesHistoryScreen = () => {
           </View>
 
           <View className='h-80'>
-            <PurchasesList purchases={purchases} />
+            <PurchasesList
+              purchases={purchases}
+              navigation={navigation}
+            />
           </View>
         </View>
       </View>

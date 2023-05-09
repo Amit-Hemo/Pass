@@ -43,3 +43,9 @@ export const watchPurchases = async (uuid) => {
   const { data } = await clientPrivate.get(`users/${uuid}/purchases`);
   return data;
 };
+export const watchPurchaseById = async (uuid, transactionId) => {
+  const { data } = await clientPrivate.get(
+    `users/${uuid}/purchases/${transactionId}`
+    );
+  return data;
+};

@@ -47,6 +47,7 @@ import useUserStore, {
 } from './src/stores/user';
 import checkAuthStatus from './src/utils/checkAuthStatus';
 import countCartAmount from './src/utils/countCartAmount';
+import PurchaseDetailsScreen from './src/screens/PurchaseDetailsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -239,6 +240,11 @@ function ProfileStackScreen() {
       <ProfileStack.Screen
         name='PurchasesHistory'
         component={PurchasesHistoryScreen}
+      />
+
+      <ProfileStack.Screen 
+        name='PurchaseDetails'
+        component={PurchaseDetailsScreen}
       />
     </ProfileStack.Navigator>
   );
