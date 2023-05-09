@@ -180,6 +180,7 @@ const createTransaction = async (req, res) => {
         transactionId: transaction.id,
         merchantID: transaction.merchantAccountId,
         cardType: transaction.creditCard.cardType,
+        last4: transaction.creditCard.last4,
         totalAmount: transaction.amount,
         transactionTimeStamp: { transactionDate: date, transactionTime: time },
         products,

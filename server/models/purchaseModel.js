@@ -36,6 +36,16 @@ const purchaseSchema = new mongoose.Schema({
       message: "invalid amount",
     },
   },
+  last4: {
+    type: String,
+    required: true,
+    minLength: 4,
+    maxLength: 4,
+    validate: {
+      validator: (value) => /\d{4}/.test(value),
+      message: "invalid 4 digits"
+    }
+  },
   transactionTimeStamp: {
     transactionTime: {
       type: String,
