@@ -15,12 +15,14 @@ import {
 } from '../stores/product';
 import Popup from '../components/Popup';
 import usePopup from '../hooks/usePopup';
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import readNFC from '../utils/readNFC';
 
 // for development
 // const tagUuid = '5d570740-87d5-45ab-a0e6-8bc73fa77107'; //Boruto Shirt
 // const tagUuid = 'c9c8584e-ac63-4b6f-a0cf-029e8e44789c'; //Another Boruto Shirt
 // const tagUuid = '6b78940e-7b26-45b0-8e30-829e998b2e37'; //Zoo shirt
-const tagUuid = '344cc5b4-7a9c-4b7b-b6f0-9d7c467f0ad0'; //Gucci shirt
+// const tagUuid = '344cc5b4-7a9c-4b7b-b6f0-9d7c467f0ad0'; //Gucci shirt
 
 const ScanProductScreen = ({ navigation }) => {
   useAuth();
@@ -31,6 +33,8 @@ const ScanProductScreen = ({ navigation }) => {
       const scanProduct = async () => {
         try {
           //TODO: Should implement the nfc scan (get tagUuid)
+          const tagUuid = await readNFC();
+//
           setTagUuid(tagUuid);
           const { data } = await getProduct(tagUuid);
           const { product } = data;

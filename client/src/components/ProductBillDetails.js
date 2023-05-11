@@ -46,10 +46,11 @@ const ProductBillDetails = ({ navigation }) => {
 
   return (
     <View className='items-center'>
-      <View className='items-center w-80'>
+      <View className='items-center w-60'>
         <View className='flex-row mt-4'>
+         <Text className=' text-xl px-10 mb-2'>{`${name} - ${size}`}</Text>
           <Text className='text-xl px-10 '>{`${price} ש"ח`}</Text>
-          <Text className=' text-xl px-10 mb-2'>{`${name} - ${size}`}</Text>
+
         </View>
 
         <Image
@@ -57,7 +58,7 @@ const ProductBillDetails = ({ navigation }) => {
           source={{ uri: image }}
         />
 
-        <View className='flex-row space-x-10'>
+        <View className='flex-row space-x-2'>
           <ActionButton
             title='רכישה מהירה'
             handler={handleFastPurchase}

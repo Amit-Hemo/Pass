@@ -112,7 +112,7 @@ const ProfileScreen = ({ navigation }) => {
               message={modalInfo.message}
             />
 
-            <View className="mt-20">
+            <View className="mt-4">
               <ActionButton
                 title="היסטורית רכישות"
                 handler={() => {

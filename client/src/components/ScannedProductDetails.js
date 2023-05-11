@@ -11,7 +11,7 @@ const ScannedProductDetails = ({ navigation }) => {
   return (
     <View className="items-center mt-6 p-6 border-2 rounded-lg">
       {scannedProduct ? (
-        <View>
+        <View className="w-60 h-66">
           <View className="flex-row justify-between items-center">
             <MaterialIcons
               name="cancel"
@@ -24,12 +24,12 @@ const ScannedProductDetails = ({ navigation }) => {
           <ProductBillDetails navigation={navigation} />
         </View>
       ) : (
-        <View className="items-center mx-2 w-66">
+        <View className="items-center mx-2 w-60 h-66">
           <Text className="text-2xl font-bold">פרטי המוצר</Text>
 
           <Text className="text-xl text-center mt-2">לא נסרק מוצר</Text>
           <Image
-            className="rounded-xl w-80 h-80"
+            className="rounded-xl w-60 h-60"
             source={{
               uri: 'https://res.cloudinary.com/dawvcozos/image/upload/o_45/v1683048746/Pass/WhatsApp_Image_2023-05-02_at_20.26.08_byuo2a.jpg',
             }}

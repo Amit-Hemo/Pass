@@ -55,11 +55,11 @@ const CartScreen = ({ navigation }) => {
       {isCustomer && hasCreditCard ? (
         <View className="items-center px-7">
           <View className="rounded-lg border-2 px-2">
-            <View className="flex-row-reverse w-full my-4">
+            <View className="flex-row w-full my-4">
               <Text className="text-2xl font-bold w-5/12 text-center">
                 שם מוצר
               </Text>
-              <Text className="text-2xl font-bold w-2/12 text-center">
+              <Text className="text-2xl font-bold w-3/12 text-center">
                 כמות{' '}
               </Text>
               <Text className="text-2xl font-bold w-4/12 text-center">
@@ -68,7 +68,7 @@ const CartScreen = ({ navigation }) => {
               <Text className="text-2xl font-bold w-1/12 text-center"></Text>
             </View>
 
-            <View className="h-80">
+            <View className="h-60">
               <ProductsBillList cart={cart} />
             </View>
           </View>

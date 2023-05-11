@@ -48,6 +48,7 @@ import useUserStore, {
 import checkAuthStatus from './src/utils/checkAuthStatus';
 import countCartAmount from './src/utils/countCartAmount';
 import PurchaseDetailsScreen from './src/screens/PurchaseDetailsScreen';
+import 'react-native-gesture-handler';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -107,7 +108,7 @@ function HomeTabs() {
   }, []);
 
   return (
-    <View className='flex-1'>
+    <View className="flex-1">
       <Popup
         visible={modalVisible}
         setVisible={setModalVisible}
@@ -117,47 +118,33 @@ function HomeTabs() {
       />
       <Tab.Navigator>
         <Tab.Screen
-          name='Home'
+          name="Home"
           component={HomeStackScreen}
           options={{
             headerShown: false,
             title: 'ראשי',
-            tabBarIcon: () => (
-              <AntDesign
-                name='home'
-                size={24}
-                color='black'
-              />
-            ),
+            tabBarIcon: () => <AntDesign name="home" size={24} color="black" />,
           }}
         />
         <Tab.Screen
-          name='Profile'
+          name="Profile"
           component={ProfileStackScreen}
           options={{
             headerShown: false,
             title: 'פרופיל',
             tabBarIcon: () => (
-              <AntDesign
-                name='profile'
-                size={24}
-                color='black'
-              />
+              <AntDesign name="profile" size={24} color="black" />
             ),
           }}
         />
         <Tab.Screen
-          name='Cart'
+          name="Cart"
           component={CartStackScreen}
           options={{
             headerShown: false,
             title: 'עגלה',
             tabBarIcon: () => (
-              <AntDesign
-                name='shoppingcart'
-                size={24}
-                color='black'
-              />
+              <AntDesign name="shoppingcart" size={24} color="black" />
             ),
             tabBarBadge: cartAmount,
           }}
@@ -183,23 +170,14 @@ function HomeStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <HomeStack.Screen
-        name='HomeScreen'
-        component={HomeScreen}
-      />
+      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
+
+      <HomeStack.Screen name="ScanProduct" component={ScanProductScreen} />
+
+      <HomeStack.Screen name="Bill" component={BillScreen} />
 
       <HomeStack.Screen
-        name='ScanProduct'
-        component={ScanProductScreen}
-      />
-
-      <HomeStack.Screen
-        name='Bill'
-        component={BillScreen}
-      />
-
-      <HomeStack.Screen
-        name='ReleaseProduct'
+        name="ReleaseProduct"
         component={ReleaseProductScreen}
       />
     </HomeStack.Navigator>
@@ -222,28 +200,22 @@ function ProfileStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <ProfileStack.Screen
-        name='ProfileScreen'
-        component={ProfileScreen}
-      />
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+
+      <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
 
       <ProfileStack.Screen
-        name='EditProfile'
-        component={EditProfileScreen}
-      />
-
-      <ProfileStack.Screen
-        name='UpdatePassword'
+        name="UpdatePassword"
         component={UpdatePasswordScreen}
       />
 
       <ProfileStack.Screen
-        name='PurchasesHistory'
+        name="PurchasesHistory"
         component={PurchasesHistoryScreen}
       />
 
-      <ProfileStack.Screen 
-        name='PurchaseDetails'
+      <ProfileStack.Screen
+        name="PurchaseDetails"
         component={PurchaseDetailsScreen}
       />
     </ProfileStack.Navigator>
@@ -266,18 +238,12 @@ function CartStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <CartStack.Screen
-        name='CartScreen'
-        component={CartScreen}
-      />
+      <CartStack.Screen name="CartScreen" component={CartScreen} />
+
+      <CartStack.Screen name="Bill" component={BillScreen} />
 
       <CartStack.Screen
-        name='Bill'
-        component={BillScreen}
-      />
-
-      <CartStack.Screen
-        name='ReleaseProduct'
+        name="ReleaseProduct"
         component={ReleaseProductScreen}
       />
     </CartStack.Navigator>
@@ -327,10 +293,7 @@ export default function App() {
         >
           {isLoggedIn ? (
             <Stack.Group>
-              <Stack.Screen
-                name='HomeTabs'
-                component={HomeTabs}
-              />
+              <Stack.Screen name="HomeTabs" component={HomeTabs} />
             </Stack.Group>
           ) : (
             <Stack.Group
@@ -347,29 +310,26 @@ export default function App() {
               }}
             >
               <Stack.Screen
-                name='Splash'
+                name="Splash"
                 component={SplashScreen}
                 options={{ headerTitle: () => '' }}
               />
               <Stack.Screen
-                name='Login'
+                name="Login"
                 component={LoginScreen}
                 options={{ headerLeft: () => {} }}
               />
               <Stack.Screen
-                name='CreateAccount'
+                name="CreateAccount"
                 component={CreateAccountScreen}
               />
+              <Stack.Screen name="OTP" component={OTPScreen} />
               <Stack.Screen
-                name='OTP'
-                component={OTPScreen}
-              />
-              <Stack.Screen
-                name='ForgotPassword'
+                name="ForgotPassword"
                 component={ForgotPasswordScreen}
               />
               <Stack.Screen
-                name='ResetPassword'
+                name="ResetPassword"
                 component={ResetPasswordScreen}
                 options={{ headerLeft: () => {} }}
               />
