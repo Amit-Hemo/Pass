@@ -49,6 +49,7 @@ import checkAuthStatus from './src/utils/checkAuthStatus';
 import countCartAmount from './src/utils/countCartAmount';
 import PurchaseDetailsScreen from './src/screens/PurchaseDetailsScreen';
 import 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -285,6 +286,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <StatusBar />
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
