@@ -89,9 +89,9 @@ const getClientToken = async (req, res) => {
       customerId,
     });
     const clientToken = result.clientToken;
-    res.status(200).json({ clientToken });
+    return res.status(200).json({ clientToken });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
 
