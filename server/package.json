@@ -1,14 +1,14 @@
 {
-  "name": "braintree-test-server",
+  "name": "pass-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A server for Pass application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Amit Hemo & Nadav Buchwalter",
   "license": "ISC",
   "devDependencies": {
     "dotenv": "^16.0.3"
