@@ -1,10 +1,10 @@
-const mailer = require("../config/mailer");
-const puppeteer = require("puppeteer");
-const path = require("path");
-const fs = require("fs");
+const mailer = require('../config/mailer');
+const puppeteer = require('puppeteer');
+const path = require('path');
+const fs = require('fs');
 
 function createCartTable(cart, tdStyle) {
-  let table = "";
+  let table = '';
 
   cart.forEach((cartItem) => {
     table += `<tr>
@@ -49,13 +49,13 @@ async function sendReceiptEmail({
   border: 1px solid #ddd;
   text-align:center;`;
 
-  const imageId = require("crypto").randomBytes(10).toString("hex");
-  const logoPath = path.join(__dirname, "..", "assets", "header_logo.png");
+  const imageId = require('crypto').randomBytes(10).toString('hex');
+  const logoPath = path.join(__dirname, '..', 'assets', 'header_logo.png');
 
   const mailOptions = {
     from: process.env.EMAIL_AUTH_USER,
     to: targetEmail,
-    subject: "Receipt",
+    subject: 'Receipt',
     html: `
     <!DOCTYPE html>
     <html lang="he">
@@ -122,7 +122,7 @@ async function sendReceiptEmail({
     attachments: [
       {
         cid: imageId,
-        filename: "header_logo.png",
+        filename: 'header_logo.png',
         path: logoPath,
       },
     ],
@@ -135,29 +135,29 @@ async function sendReceiptEmail({
 
     const html = mailOptions.html;
 
-    const imageBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
+    const imageBase64 = fs.readFileSync(logoPath, { encoding: 'base64' });
     const htmlWithImage = html.replace(
       `cid:${imageId}`,
       `data:image/png;base64,${imageBase64}`
     );
-    await page.setContent(htmlWithImage, { waitUntil: "networkidle2" });
+    await page.setContent(htmlWithImage, { waitUntil: 'networkidle2' });
 
     const pdfBuffer = await page.pdf({
-      format: "A4",
+      format: 'A4',
       printBackground: true,
     });
 
     mailOptions.attachments.push({
-      filename: "receipt.pdf",
+      filename: 'receipt.pdf',
       content: pdfBuffer,
     });
 
     await mailer.sendMail(mailOptions);
     await browser.close();
 
-    console.log("Receipt sent successfully");
+    console.log('Receipt sent successfully');
   } catch (err) {
-    throw new Error("Error while sending email was occurred");
+    throw new Error(err);
   }
 }
 
