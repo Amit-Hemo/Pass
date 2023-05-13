@@ -6,9 +6,8 @@ const validateAuthUUID = require('../middlewares/validateAuthUUID');
 const verifyAccessToken = require('../middlewares/verifyAccessToken');
 const uuidSchema = require('../schemas/uuidSchema');
 const userSchema = require('../schemas/userSchema');
-const productSchema = require('../schemas/productSchema');
-const storeSchema = require('../schemas/storeSchema');
 const tagUuidSchema = require('../schemas/tagUuidSchema');
+const transactionSchema = require('../schemas/transactionSchema');
 
 const router = express.Router();
 
@@ -54,6 +53,18 @@ router.post(
     validateAuthUUID,
   ],
   paymentController.createTransaction
+);
+
+router.post(
+  '/customers/:uuid/receipt',
+  [
+    validateResource({
+      params: uuidSchema,
+      body: transactionSchema,
+    }),
+    validateAuthUUID,
+  ],
+  paymentController.sendReceipt
 );
 
 router.put(

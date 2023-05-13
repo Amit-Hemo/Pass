@@ -112,16 +112,15 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View className="items-center ">
       {isCustomer && hasCreditCard ? (
-        <View className="items-center mt-6">
+        <View className="items-center mt-16">
           <ActionButton
             title="לחץ לסריקת מוצר"
             handler={() => {
               navigation.navigate('ScanProduct');
             }}
           />
-         
-          <ScannedProductDetails  navigation={navigation}  />
-          
+
+          <ScannedProductDetails navigation={navigation} />
         </View>
       ) : (
         <View className="items-center mt-4">

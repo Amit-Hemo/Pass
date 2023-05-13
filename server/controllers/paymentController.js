@@ -98,10 +98,11 @@ const getClientToken = async (req, res) => {
 const createTransaction = async (req, res) => {
   let merchantID = '';
   const { uuid, tagUuid } = req.body;
+
   try {
     const user = await UserModel.findOne({ uuid })
       .select('-cart._id')
-      .populate('cart.product cart.tags')
+      .populate('cart.product cart.tags');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -118,7 +119,6 @@ const createTransaction = async (req, res) => {
     let products = [];
     //single payment
     if (tagUuid) {
-      
       const tag = await TagModel.findOne({ uuid: tagUuid })
         .lean()
         .populate('attachedProduct attachedStore');
@@ -140,16 +140,19 @@ const createTransaction = async (req, res) => {
       };
       products.push(singleProduct);
     }
-  
+
     //cart payment
     else {
       //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
       price = calculateCart(user.cart);
       products = user.cart;
       //assuming that all products from the same store
-      const {attachedStore} = await products[0].tags[0].populate('attachedStore')
-      merchantID = attachedStore.merchantID
+      const { attachedStore } = await products[0].tags[0].populate(
+        'attachedStore'
+      );
+      merchantID = attachedStore.merchantID;
     }
+
     // using default payment method
     const result = await gateway.transaction.sale({
       amount: price,
@@ -168,46 +171,83 @@ const createTransaction = async (req, res) => {
       });
     }
 
-    //TODO: create createPurchase handler, gets uuid (check tokens as usual) and transactionId, the cart that he payed for
     const { transaction } = result;
 
     const utcTime = new Date(transaction.createdAt);
     const date = utcTime.toLocaleDateString('he-IL');
     const time = utcTime.toLocaleTimeString('he-IL');
 
-    const { _id: purchaseID, transactionTimeStamp } =
-      await PurchaseModel.create({
-        transactionId: transaction.id,
-        merchantID: transaction.merchantAccountId,
-        cardType: transaction.creditCard.cardType,
-        last4: transaction.creditCard.last4,
-        totalAmount: transaction.amount,
-        transactionTimeStamp: { transactionDate: date, transactionTime: time },
-        products,
-      });
+    const { _id: purchaseID } = await PurchaseModel.create({
+      transactionId: transaction.id,
+      merchantID: transaction.merchantAccountId,
+      cardType: transaction.creditCard.cardType,
+      last4: transaction.creditCard.last4,
+      totalAmount: transaction.amount,
+      transactionTimeStamp: { transactionDate: date, transactionTime: time },
+      products,
+    });
 
     user.purchases.push(purchaseID);
     await user.save();
 
-    await sendReceiptEmail({
-      targetEmail: user.email,
+    return res.status(200).json({
+      message: 'Transaction made successfully',
       transactionId: transaction.id,
-      merchantId: transaction.merchantAccountId,
-      amount: transaction.amount,
-      transactionDate: transactionTimeStamp.transactionDate,
-      transactionTime: transactionTimeStamp.transactionTime,
-      cardType: transaction.creditCard.cardType,
-      last4: transaction.creditCard.last4,
-      firstName: transaction.customer.firstName,
-      lastName: transaction.customer.lastName,
-      email: transaction.customer.email,
-      cart: products,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: error });
+  }
+};
+
+const sendReceipt = async (req, res) => {
+  const { uuid } = req.params;
+  const { transactionId } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ uuid })
+      .populate({
+        path: 'purchases',
+        select: '-_id -products._id',
+        populate: {
+          path: 'products.product',
+          select: '-_id',
+        },
+      })
+      .lean();
+
+    if (!user)
+      return res.status(404).json({
+        error: 'User not found',
+      });
+
+    const transaction = user.purchases.find((purchase) => {
+      return purchase.transactionId === transactionId;
     });
 
-    return res.status(200).json({ result: result });
+    if (!transaction)
+      return res.status(404).json({ error: 'purchase doesnt exist' });
+
+    await sendReceiptEmail({
+      targetEmail: user.email,
+      transactionId,
+      merchantId: transaction.merchantID,
+      amount: transaction.totalAmount,
+      transactionDate: transaction.transactionTimeStamp.transactionDate,
+      transactionTime: transaction.transactionTimeStamp.transactionTime,
+      cardType: transaction.cardType,
+      last4: transaction.last4,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      cart: transaction.products,
+    });
+
+    return res.json({
+      message: `Reciept sent successfully to email: ${user.email}`,
+    });
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error });
   }
 };
 
@@ -268,4 +308,5 @@ module.exports = {
   createTransaction,
   updateCustomer,
   isBraintreeCustomer,
+  sendReceipt,
 };

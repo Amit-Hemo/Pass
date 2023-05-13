@@ -7,7 +7,7 @@ function handleApiError(error) {
     //Axios Error object
     errorMessage = error.response.data.client;
   }
-  return errorMessage
+  return errorMessage;
 }
 
 export default handleApiError;

@@ -17,3 +17,5 @@ export const createFastTransaction = (uuid, tagUuid) =>
   clientPrivate.post('/payment/transaction', { uuid, tagUuid });
 export const createCartTransaction = (uuid) =>
   clientPrivate.post('/payment/transaction', { uuid });
+export const sendReceipt = (uuid, transactionId) =>
+  clientPrivate.post(`/payment/customers/${uuid}/receipt`, { transactionId });
