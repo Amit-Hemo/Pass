@@ -56,7 +56,7 @@ const getPaymentMethod = async (req, res) => {
 
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
-      return res.status(409).json({
+      return res.status(404).json({
         error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
       });
     }
@@ -80,7 +80,7 @@ const getClientToken = async (req, res) => {
 
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
-      return res.status(409).json({
+      return res.status(404).json({
         error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
       });
     }
@@ -110,7 +110,7 @@ const createTransaction = async (req, res) => {
 
     const { braintreeCustomerId: customerId } = user;
     if (!customerId) {
-      return res.status(409).json({
+      return res.status(404).json({
         error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
       });
     }
@@ -144,6 +144,10 @@ const createTransaction = async (req, res) => {
     //cart payment
     else {
       //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
+      //nothing to charge
+      if (user.cart?.length === 0) {
+        return res.sendStatus(204);
+      }
       price = calculateCart(user.cart);
       products = user.cart;
       //assuming that all products from the same store

@@ -14,12 +14,13 @@ function verifyAccessToken(req, res, next) {
     req.user = decoded.uuid;
     next();
   } catch (error) {
-    if (error.name === 'TokenExpiredError') {
-      return res.status(403).send({ error: 'Token is expired' });
-    } else if (error.name === 'JsonWebTokenError') {
-      return res.status(403).send({ error: 'Invalid Token' });
+    if (
+      error.name === 'TokenExpiredError' ||
+      error.name === 'JsonWebTokenError'
+    ) {
+      return res.status(403).json({ error: 'Invalid token' });
     } else {
-      return res.status(500).send({ error: 'Server error' });
+      return res.status(500).json({ error: 'Server error' });
     }
   }
 }

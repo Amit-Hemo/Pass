@@ -394,7 +394,7 @@ async function deleteProductFromCart(req, res) {
       foundProduct.quantity--;
     }
     await user.save();
-    return res.json({ message: 'product deleted from cart' });
+    return res.sendStatus(204);
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }
