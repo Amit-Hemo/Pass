@@ -407,8 +407,19 @@ async function watchCart(req, res) {
     const user = await UserModel.findOne({ uuid })
       .select('-cart._id')
       .lean()
-      .populate('cart.product', 'name size price image sku -_id')
-      .populate('cart.tags', 'isAvailable attachedStore uuid -_id');
+      .populate({
+        path: 'cart.product',
+        select: 'name size price image sku -_id'
+      })
+      .populate({
+        path: 'cart.tags',
+        select: 'isAvailable attachedStore uuid -_id',
+        populate: {
+          path: 'attachedStore',
+          select: 'merchantID -_id'
+        }
+      });
+  
     if (!user) return res.status(404).json({ error: 'User not found' });
     const { cart } = user;
 

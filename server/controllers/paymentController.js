@@ -7,6 +7,7 @@ const PurchaseModel = require('../models/purchaseModel');
 
 const sendReceiptEmail = require('../../server/utils/sendReceipt');
 const calculateCart = require('../../server/utils/calculateCart');
+const filterUnavailableTags = require('../utils/filterUnavailableTags');
 
 const getBraintreeUI = async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
@@ -126,9 +127,14 @@ const createTransaction = async (req, res) => {
       if (!tag) {
         return res.status(404).json({ error: 'Tag not found' });
       }
-      //TODO: check if tag is available, add client error
 
-      const { attachedProduct, attachedStore } = tag;
+      const { attachedProduct, attachedStore, isAvailable } = tag;
+      if (!isAvailable) {
+        return res.status(404).json({
+          error: 'Product is unavailable',
+          client: 'לא בוצע תשלום, ייתכן והמוצר נקנה מלקוח אחר',
+        });
+      }
       const { price: productPrice } = attachedProduct;
       merchantID = attachedStore.merchantID;
 
@@ -143,15 +149,22 @@ const createTransaction = async (req, res) => {
 
     //cart payment
     else {
-      //TODO: make calculateCart calc only the isAvailable tags, the user.cart may be selected without the tags -> check it
       //nothing to charge
       if (user.cart?.length === 0) {
         return res.sendStatus(204);
       }
-      price = calculateCart(user.cart);
-      products = user.cart;
+
+      products = filterUnavailableTags(user.cart.toObject());
+      if (products.length === 0) {
+        return res.status(404).json({
+          error: 'No available tags in the cart',
+          client:
+            'לא בוצע תשלום, כלל המוצרים בעגלה לא זמינים. יש לרענן את העגלה ולנסות שוב',
+        });
+      }
+      price = calculateCart(products);
       //assuming that all products from the same store
-      const { attachedStore } = await products[0].tags[0].populate(
+      const { attachedStore } = await user.cart[0].tags[0].populate(
         'attachedStore'
       );
       merchantID = attachedStore.merchantID;
@@ -173,6 +186,17 @@ const createTransaction = async (req, res) => {
         client:
           'אירעה שגיאה בתהליך התשלום, יש לנסות בשנית או לחכות למועד מאוחר יותר',
       });
+    }
+
+    if (tagUuid) {
+      //for fast transaction, make the tag unavailable
+      await TagModel.updateOne(
+        { uuid: tagUuid },
+        { $set: { isAvailable: false } }
+      );
+    } else {
+      //for cart transaction, make the cart tags unavailable
+      await user.disableCartTags();
     }
 
     const { transaction } = result;

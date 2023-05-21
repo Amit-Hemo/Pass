@@ -7,11 +7,63 @@ const {
   noCustomerUserDetails,
   noCartUserDetails,
 } = require('./testUsers');
-const { borutoShirtTag, mockTag, transactionErrorTag } = require('./testTags');
+const {
+  borutoShirtTag,
+  mockTag,
+  transactionErrorTag,
+  anotherBorutoShirtTag,
+  zooShirtTag,
+  thirdBorutoShirtTag,
+} = require('./testTags');
 const PurchaseModel = require('../models/purchaseModel');
+const TagModel = require('../models/tagModel');
 
 let accessToken;
 let uuid;
+
+async function makeTagsAvailable() {
+  await TagModel.updateMany(
+    {
+      $or: [
+        { uuid: borutoShirtTag },
+        { uuid: anotherBorutoShirtTag },
+        { uuid: thirdBorutoShirtTag },
+        { uuid: zooShirtTag },
+      ],
+    },
+    { $set: { isAvailable: true } }
+  );
+}
+
+async function purchaseCartHappyFlow(uuid, accessToken) {
+  const response = await request(app)
+    .post('/payment/transaction')
+    .send({ uuid })
+    .set('Accept', 'application/json')
+    .set('authorization', `Bearer ${accessToken}`);
+
+  expect(response.statusCode).toEqual(200);
+  expect(response.headers['content-type']).toEqual(
+    expect.stringContaining('json')
+  );
+  expect(response.body?.transactionId).toEqual(expect.any(String));
+
+  //check if purchase exists in this user
+  const { transactionId } = response.body;
+  const user = await UserModel.findOne({ uuid })
+    .select('purchases')
+    .populate('purchases');
+  const {
+    transactionId: lastPurchaseId,
+    products: paidProducts,
+    totalAmount,
+  } = user.purchases.pop();
+  await user.save();
+  await PurchaseModel.deleteOne({ transactionId });
+  expect(lastPurchaseId).toEqual(transactionId);
+
+  return { paidProducts, totalAmount };
+}
 
 describe('GET /payment/customers/:uuid/generateToken', () => {
   beforeAll(async () => {
@@ -86,6 +138,8 @@ describe('POST /transaction', () => {
 
     accessToken = response.body.accessToken;
     uuid = response.body.user.uuid;
+
+    await makeTagsAvailable();
   });
 
   it('should respond with a transactionId which is in the Purchase collection(FAST)', async () => {
@@ -112,28 +166,65 @@ describe('POST /transaction', () => {
     expect(lastPurchaseId).toEqual(transactionId);
   });
 
-  it('should respond with a transactionId which is in the Purchase collection(CART)', async () => {
+  it('should respond with 404 status code if tag is unavailable while trying to purchase(FAST)', async () => {
     const response = await request(app)
       .post('/payment/transaction')
-      .send({ uuid })
+      .send({ uuid, tagUuid: borutoShirtTag })
       .set('Accept', 'application/json')
       .set('authorization', `Bearer ${accessToken}`);
 
-    expect(response.statusCode).toEqual(200);
+    expect(response.statusCode).toEqual(404);
     expect(response.headers['content-type']).toEqual(
       expect.stringContaining('json')
     );
-    expect(response.body?.transactionId).toEqual(expect.any(String));
+    expect(response.body?.error).toEqual('Product is unavailable');
+  });
 
-    //check if purchase exists in this user
-    const { transactionId } = response.body;
-    const user = await UserModel.findOne({ uuid })
-      .select('purchases')
-      .populate('purchases');
-    const lastPurchaseId = user.purchases.pop().transactionId;
-    await user.save();
-    await PurchaseModel.deleteOne({ transactionId });
-    expect(lastPurchaseId).toEqual(transactionId);
+  it('should respond with a transactionId which is in the Purchase collection and the tags are disabled(CART)', async () => {
+    const { paidProducts, totalAmount } = await purchaseCartHappyFlow(
+      uuid,
+      accessToken
+    );
+
+    //2 * boruto = 160, zoo = 45, total = 205
+    expect(Number(totalAmount)).toEqual(205);
+    //2 because AnotherBoruto and ThirdBoruto are of the same product and zooShirt is a different one
+    expect(paidProducts?.length).toEqual(2);
+
+    //check if there is still any available tag from those in the user cart
+    const availableTags = await TagModel.find({
+      uuid: { $in: [anotherBorutoShirtTag, thirdBorutoShirtTag, zooShirtTag] },
+      isAvailable: true,
+    }).lean();
+    expect(availableTags?.length).toEqual(0);
+  });
+
+  it('should respond with a transactionId that has one product(CART)', async () => {
+    await TagModel.updateMany(
+      { uuid: { $in: [anotherBorutoShirtTag, thirdBorutoShirtTag] } },
+      { $set: { isAvailable: true } }
+    );
+    await TagModel.updateOne(
+      { uuid: zooShirtTag },
+      { $set: { isAvailable: false } }
+    );
+
+    const { paidProducts, totalAmount } = await purchaseCartHappyFlow(
+      uuid,
+      accessToken
+    );
+
+    //2 * boruto = 160
+    expect(Number(totalAmount)).toEqual(160);
+    //2 boruto is 1 product
+    expect(paidProducts?.length).toEqual(1);
+
+    //check if there is still any available tag from those in the user cart
+    const availableTags = await TagModel.find({
+      uuid: { $in: [anotherBorutoShirtTag, thirdBorutoShirtTag, zooShirtTag] },
+      isAvailable: true,
+    }).lean();
+    expect(availableTags?.length).toEqual(0);
   });
 
   it('should respond with 204 status code if the user cart is empty', async () => {
@@ -238,5 +329,6 @@ describe('POST /transaction', () => {
       { email: readyUserDetails.email },
       { refreshToken: null }
     );
+    await makeTagsAvailable();
   });
 });
