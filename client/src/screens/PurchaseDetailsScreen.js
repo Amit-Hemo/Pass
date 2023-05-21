@@ -1,13 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-import { watchPurchaseById } from '../api/user';
-import useAuth from '../hooks/useAuth';
-import useUserStore from '../stores/user';
 import { sendReceipt } from '../api/payment';
-import usePopup from '../hooks/usePopup';
-import Popup from '../components/Popup';
+import { watchPurchaseById } from '../api/user';
 import ActionButton from '../components/ActionButton';
+import Popup from '../components/Popup';
+import useAuth from '../hooks/useAuth';
+import usePopup from '../hooks/usePopup';
+import useUserStore from '../stores/user';
 
 const PurchaseDetailsScreen = ({ route }) => {
   useAuth();
@@ -47,57 +47,56 @@ const PurchaseDetailsScreen = ({ route }) => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-xl text-center font-bold mb-8 ">
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-xl text-center font-bold mb-8 '>
           יש להמתין...
         </Text>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size='large' />
       </View>
     );
   }
 
   return (
-    <View className="items-center mt-10 px-7">
-      <Text className="mb-10 text-3xl">פרטי רכישה</Text>
-      <View className="self-end mb-5">
-        <Text className="mb-2 text-xl">
+    <View className='items-center mt-10 px-7'>
+      <Text className='mb-5 text-3xl'>פרטי רכישה</Text>
+      <View className='self-start mb-5'>
+        <Text className='mb-2 text-xl'>
           שם החנות: {foundPurchase?.merchantID}
         </Text>
-        <Text className="mb-2 text-xl">
+        <Text className='mb-2 text-xl'>
           תאריך: {foundPurchase?.transactionTimeStamp.transactionDate}
         </Text>
-        <Text className="mb-2 text-xl">
+        <Text className='mb-2 text-xl'>
           שעה: {foundPurchase?.transactionTimeStamp.transactionTime}
         </Text>
-        <Text className="mb-2 text-xl">
+        <Text className='mb-2 text-xl'>
           סוג כרטיס: {foundPurchase?.cardType}
         </Text>
-        <Text className="mb-2 text-xl">
+        <Text className='mb-2 text-xl'>
           ספרות אחרונות: {foundPurchase?.last4}
         </Text>
-        <Text className="mb-2 text-xl">
+        <Text className='mb-2 text-xl'>
           מספר עסקה: {foundPurchase?.transactionId}
         </Text>
       </View>
-
-      <View className="rounded-lg border-2 px-2 mb-4">
-        <View className="flex-row-reverse w-full my-4">
-          <Text className="text-2xl font-bold w-5/12 text-center">פריט</Text>
-          <Text className="text-2xl font-bold w-3/12 text-center">כמות </Text>
-          <Text className="text-2xl font-bold w-4/12 text-center">מחיר</Text>
+      <View className='rounded-lg border-2 px-2 mb-4'>
+        <View className='flex-row w-full my-4'>
+          <Text className='text-2xl font-bold w-5/12 text-center'>פריט</Text>
+          <Text className='text-2xl font-bold w-3/12 text-center'>כמות </Text>
+          <Text className='text-2xl font-bold w-4/12 text-center'>מחיר</Text>
         </View>
-        <View className="h-60">
+        <View className='h-52'>
           <FlatList
             data={foundPurchase?.products}
             renderItem={({ item }) => (
-              <View className="flex-row-reverse mb-2">
-                <Text className="text-xl w-5/12 text-center">
+              <View className='flex-row mb-2'>
+                <Text className='text-xl w-5/12 text-center'>
                   {`${item.product.name} ${item.product.size}`}
                 </Text>
-                <Text className="text-xl w-3/12 text-center">
+                <Text className='text-xl w-3/12 text-center'>
                   {item.quantity}
                 </Text>
-                <Text className="text-xl w-4/12 text-center">
+                <Text className='text-xl w-4/12 text-center'>
                   {item.quantity * item.product.price} ש"ח
                 </Text>
               </View>
@@ -106,11 +105,13 @@ const PurchaseDetailsScreen = ({ route }) => {
           />
         </View>
       </View>
-      <Text className="text-xl mb-4">
+      <Text className='text-xl mb-4'>
         סך הכל {foundPurchase?.totalAmount} ש"ח
       </Text>
-      <ActionButton title="שלח קבלה" handler={handleSendReceipt} />
-
+      <ActionButton
+        title='שלח קבלה'
+        handler={handleSendReceipt}
+      />
       <Popup
         visible={modalVisible}
         isError={modalInfo.isError}

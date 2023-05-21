@@ -61,7 +61,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
         <Text className="text-lg font-semibold">אימייל</Text>
         <InputBar
           input="email"
-          align="left"
           control={control}
           rules={{
             required: 'שדה זה חובה',

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { watchPurchases } from '../api/user';
 import PurchasesList from '../components/PurchasesList';
 import useAuth from '../hooks/useAuth';
@@ -18,11 +18,11 @@ const PurchasesHistoryScreen = ({ navigation }) => {
   );
 
   return (
-    <View className='items-center mt-10'>
+    <View className='items-center mt-10 px-7'>
       <Text className='mb-20 text-3xl'>היסטורית רכישות </Text>
-      <View className='items-center px-7'>
+      <View className='items-center'>
         <View className='rounded-lg border-2 px-2 pb-4'>
-          <View className='flex-row-reverse w-full my-4'>
+          <View className='flex-row w-full my-4'>
             <Text className='text-2xl font-bold w-5/12 text-center'>
               שם החנות
             </Text>

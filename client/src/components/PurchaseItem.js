@@ -15,7 +15,7 @@ const PurchaseItem = ({
       }
       className='mb-4'
     >
-      <View className='flex-row-reverse items-center bg-blue-50 rounded-lg p-1'>
+      <View className='flex-row items-center bg-blue-50 rounded-lg p-1'>
         <Text className='text-lg text-center mb-2 w-5/12'>{merchantID}</Text>
         <Text className='text-lg text-center mb-2 w-4/12'>
           {totalAmount} ש"ח

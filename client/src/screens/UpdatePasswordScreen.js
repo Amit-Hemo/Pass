@@ -1,9 +1,11 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { updatePassword } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
+import Popup from '../components/Popup';
 import {
   DIGIT_REGEX,
   LOWERCASE_REGEX,
@@ -11,10 +13,8 @@ import {
   UPPERCASE_REGEX,
 } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
-import useUserStore from '../stores/user';
-import { updatePassword } from '../api/user';
-import Popup from '../components/Popup';
 import usePopup from '../hooks/usePopup';
+import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
 
 const UpdatePasswordScreen = ({ navigation }) => {
@@ -67,13 +67,12 @@ const UpdatePasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="items-center">
-        <Text className="mt-10 mb-8 text-3xl">יצירת סיסמא חדשה</Text>
+      <View className='items-center px-7'>
+        <Text className='mt-10 mb-8 text-3xl'>יצירת סיסמא חדשה</Text>
 
-        <Text className="text-lg font-semibold">סיסמא</Text>
+        <Text className='text-lg font-semibold'>סיסמא</Text>
         <InputBar
-          input="password"
-          align="right"
+          input='password'
           visible={false}
           control={control}
           rules={{
@@ -88,10 +87,9 @@ const UpdatePasswordScreen = ({ navigation }) => {
             },
           }}
         />
-        <Text className="text-lg font-semibold">סיסמא חדשה</Text>
+        <Text className='text-lg font-semibold'>סיסמא חדשה</Text>
         <InputBar
-          input="newPassword"
-          align="right"
+          input='newPassword'
           visible={false}
           control={control}
           rules={{
@@ -108,10 +106,9 @@ const UpdatePasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <Text className="text-lg font-semibold">אימות סיסמא</Text>
+        <Text className='text-lg font-semibold'>אימות סיסמא</Text>
         <InputBar
-          input="confirmNewPassword"
-          align="right"
+          input='confirmNewPassword'
           visible={false}
           control={control}
           rules={{
@@ -128,7 +125,10 @@ const UpdatePasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <ActionButton title="אישור" handler={handleSubmit(onUpdatePassword)} />
+        <ActionButton
+          title='אישור'
+          handler={handleSubmit(onUpdatePassword)}
+        />
 
         <Popup
           visible={modalVisible}

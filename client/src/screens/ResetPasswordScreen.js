@@ -69,7 +69,6 @@ const ResetPasswordScreen = ({ navigation, route }) => {
         <Text className="text-lg font-semibold">סיסמא חדשה</Text>
         <InputBar
           input="newPassword"
-          align="right"
           visible={false}
           control={control}
           rules={{
@@ -95,7 +94,6 @@ const ResetPasswordScreen = ({ navigation, route }) => {
         <Text className="text-lg font-semibold">אימות סיסמא</Text>
         <InputBar
           input="confirmNewPassword"
-          align="right"
           visible={false}
           control={control}
           rules={{

@@ -1,3 +1,4 @@
+import * as SecureStore from 'expo-secure-store';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
@@ -17,13 +18,12 @@ import usePopup from '../hooks/usePopup';
 import { setAccessToken, setIsLoggedIn } from '../stores/auth';
 import { setEmail, setFirstName, setLastName, setUuid } from '../stores/user';
 import handleApiError from '../utils/handleApiError';
-import * as SecureStore from 'expo-secure-store';
 
 const LoginScreen = ({ navigation }) => {
   const { handleSubmit, control } = useForm({
     defaultValues: {
-      email: 'nadavGeneral@gmail.com',
-      password: 'Nadav123!!',
+      email: 'itsamit442@gmail.com',
+      password: 'Amit123!!',
     },
   });
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
@@ -74,7 +74,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="flex-1 items-center mt-10">
+      <View className='flex-1 items-center mt-10'>
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -83,12 +83,11 @@ const LoginScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className="text-3xl font-bold text-center mb-10">משתמש קיים</Text>
-        <View className="items-center mb-16">
-          <Text className="text-lg font-semibold ">אימייל</Text>
+        <Text className='text-3xl font-bold text-center mb-10'>משתמש קיים</Text>
+        <View className='items-center mb-16'>
+          <Text className='text-lg font-semibold '>אימייל</Text>
           <InputBar
-            input="email"
-            align="left"
+            input='email'
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -96,10 +95,9 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className="text-lg font-semibold">סיסמא</Text>
+          <Text className='text-lg font-semibold'>סיסמא</Text>
           <InputBar
-            input="password"
-            align="right"
+            input='password'
             visible={false}
             control={control}
             rules={{
@@ -121,13 +119,16 @@ const LoginScreen = ({ navigation }) => {
             }}
           />
 
-          <View className="mt-6">
-            <ActionButton title="התחברות" handler={handleSubmit(onLogin)} />
+          <View className='mt-6'>
+            <ActionButton
+              title='התחברות'
+              handler={handleSubmit(onLogin)}
+            />
           </View>
 
-          <View className="mt-4">
+          <View className='mt-4'>
             <ActionButton
-              title="שכחתי סיסמא"
+              title='שכחתי סיסמא'
               handler={() => {
                 navigation.navigate('ForgotPassword');
               }}
@@ -136,7 +137,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
 
         <ActionButton
-          title="צור משתמש חדש"
+          title='צור משתמש חדש'
           handler={() => {
             navigation.navigate('CreateAccount');
           }}

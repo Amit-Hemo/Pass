@@ -8,7 +8,6 @@ const InputBar = forwardRef(
       input,
       visible = true,
       placeHolder,
-      align,
       style,
       keyboardType,
       control,
@@ -36,7 +35,6 @@ const InputBar = forwardRef(
                 value={value}
                 onBlur={onBlur}
                 placeholder={placeHolder}
-                textAlign={align}
                 keyboardType={keyboardType}
                 secureTextEntry={!visible}
                 ref={ref}

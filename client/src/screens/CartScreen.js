@@ -8,20 +8,28 @@ import CartPurchasePopup from '../components/CartPurchasePopup';
 import Popup from '../components/Popup';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
+import useRefreshOnFocus from '../hooks/useRefreshOnFocus';
 import useUserStore from '../stores/user';
 import calculateCartPrice from '../utils/calculateCartPrice';
+import filterUnavailableTags from '../utils/filterUnavailableTags';
 import handleApiError from '../utils/handleApiError';
 
 const CartScreen = ({ navigation }) => {
   useAuth();
+
   const [visible, setVisible] = useState(false); //For purchase popup
+
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
   const uuid = useUserStore((state) => state.uuid);
+
   const queryClient = useQueryClient();
   const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
-    select: (data) => [...data.cart].reverse(),
+    select: (data) => {
+      const filteredCart = filterUnavailableTags([...data.cart]);
+      return filteredCart.reverse();
+    },
   });
   const clearCartMutation = useMutation(deleteCart, {
     onSuccess: () => {
@@ -50,40 +58,37 @@ const CartScreen = ({ navigation }) => {
   };
 
   return (
-    <View className="mt-10 items-center">
-      <Text className="mb-20 text-3xl  ">עגלת קניות</Text>
+    <View className='mt-10 px-10 items-center'>
+      <Text className='mb-12 text-3xl'>עגלת קניות</Text>
       {isCustomer && hasCreditCard ? (
-        <View className="items-center px-7">
-          <View className="rounded-lg border-2 px-2">
-            <View className="flex-row w-full my-4">
-              <Text className="text-2xl font-bold w-5/12 text-center">
-                שם מוצר
+        <View className='items-center'>
+          {cart?.length > 0 && (
+            <View className='mb-4'>
+              <Text className='text-2xl'>
+                {cart[0]?.tags[0]?.attachedStore?.merchantID ?? ''}
               </Text>
-              <Text className="text-2xl font-bold w-3/12 text-center">
-                כמות{' '}
-              </Text>
-              <Text className="text-2xl font-bold w-4/12 text-center">
-                מחיר
-              </Text>
-              <Text className="text-2xl font-bold w-1/12 text-center"></Text>
             </View>
+          )}
+          <ProductsBillList cart={cart} />
 
-            <View className="h-60">
-              <ProductsBillList cart={cart} />
-            </View>
-          </View>
-
-          <View className="mt-5 items-center">
-            <Text className="text-xl mb-3">סך הכל {totalPrice} ש"ח</Text>
+          <View className='mt-5 items-center'>
+            <Text className='text-xl mb-3'>סך הכל {totalPrice} ש"ח</Text>
             {cart?.length > 0 && (
-              <View className="flex-row">
+              <View className='flex-row mb-3'>
                 <ActionButton
-                  title="מעבר לתשלום"
+                  title='מעבר לתשלום'
                   handler={handleCartPurchase}
                 />
-                <ActionButton title="מחיקת עגלה" handler={handleClearCart} />
+                <ActionButton
+                  title='מחיקת עגלה'
+                  handler={handleClearCart}
+                />
               </View>
             )}
+            <Text className='text-xl text-center text-red-500 my-2'>
+              שימו לב! מוצרים שכבר לא זמינים לקנייה (היו בעגלה אבל נקנו על ידי
+              לקוח אחר) לא יוצגו בעגלה ולא תתבצע עבורם רכישה
+            </Text>
           </View>
           <Popup
             visible={modalVisible}
@@ -99,8 +104,8 @@ const CartScreen = ({ navigation }) => {
           />
         </View>
       ) : (
-        <View className="items-center border-2 rounded-xl mx-2">
-          <Text className="text-xl text-center font-bold mb-2 text-red-500 p-10">
+        <View className='items-center border-2 rounded-xl mx-2'>
+          <Text className='text-xl text-center font-bold mb-2 text-red-500 p-10'>
             {' '}
             קיימות אופציות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני בעמוד
             הראשי{' '}

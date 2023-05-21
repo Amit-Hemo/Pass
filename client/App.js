@@ -5,12 +5,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import {
   QueryClient,
   QueryClientProvider,
+  focusManager,
   useQuery,
 } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
+import { StatusBar } from 'expo-status-bar';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppState, View } from 'react-native';
+import { AppState, I18nManager, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { getUser, watchCart } from './src/api/user';
 import HeaderLogo from './src/components/HeaderLogo';
@@ -26,6 +28,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import OTPScreen from './src/screens/OTPScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import PurchaseDetailsScreen from './src/screens/PurchaseDetailsScreen';
 import PurchasesHistoryScreen from './src/screens/PurchasesHistoryScreen';
 import ReleaseProductScreen from './src/screens/ReleaseProductScreen';
 import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
@@ -47,9 +50,11 @@ import useUserStore, {
 } from './src/stores/user';
 import checkAuthStatus from './src/utils/checkAuthStatus';
 import countCartAmount from './src/utils/countCartAmount';
-import PurchaseDetailsScreen from './src/screens/PurchaseDetailsScreen';
-import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
+import filterUnavailableTags from './src/utils/filterUnavailableTags';
+import useRefreshOnFocus from './src/hooks/useRefreshOnFocus';
+
+//Force right to left - Hebrew App
+I18nManager.forceRTL(true);
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -63,8 +68,13 @@ function HomeTabs() {
   const isForced = useAuthStore((state) => state.isForcedLogout);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
-    select: (data) => data.cart,
+    select: (data) => {
+      const filteredCart = filterUnavailableTags([...data.cart])
+      return filteredCart.reverse()
+    },
   });
+  useRefreshOnFocus(() => queryClient.invalidateQueries(['cart', uuid]));
+
 
   let cartAmount = 0;
   if (cart) {
@@ -98,6 +108,7 @@ function HomeTabs() {
         }
         lastAppState = nextAppState;
       }
+      focusManager.setFocused(nextAppState === 'active');
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
       console.log('AppState', appState.current);
@@ -109,7 +120,7 @@ function HomeTabs() {
   }, []);
 
   return (
-    <View className="flex-1">
+    <View className='flex-1'>
       <Popup
         visible={modalVisible}
         setVisible={setModalVisible}
@@ -119,33 +130,47 @@ function HomeTabs() {
       />
       <Tab.Navigator>
         <Tab.Screen
-          name="Home"
+          name='Home'
           component={HomeStackScreen}
           options={{
             headerShown: false,
             title: 'ראשי',
-            tabBarIcon: () => <AntDesign name="home" size={24} color="black" />,
+            tabBarIcon: () => (
+              <AntDesign
+                name='home'
+                size={24}
+                color='black'
+              />
+            ),
           }}
         />
         <Tab.Screen
-          name="Profile"
+          name='Profile'
           component={ProfileStackScreen}
           options={{
             headerShown: false,
             title: 'פרופיל',
             tabBarIcon: () => (
-              <AntDesign name="profile" size={24} color="black" />
+              <AntDesign
+                name='profile'
+                size={24}
+                color='black'
+              />
             ),
           }}
         />
         <Tab.Screen
-          name="Cart"
+          name='Cart'
           component={CartStackScreen}
           options={{
             headerShown: false,
             title: 'עגלה',
             tabBarIcon: () => (
-              <AntDesign name="shoppingcart" size={24} color="black" />
+              <AntDesign
+                name='shoppingcart'
+                size={24}
+                color='black'
+              />
             ),
             tabBarBadge: cartAmount,
           }}
@@ -171,14 +196,23 @@ function HomeStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <HomeStack.Screen name="HomeScreen" component={HomeScreen} />
-
-      <HomeStack.Screen name="ScanProduct" component={ScanProductScreen} />
-
-      <HomeStack.Screen name="Bill" component={BillScreen} />
+      <HomeStack.Screen
+        name='HomeScreen'
+        component={HomeScreen}
+      />
 
       <HomeStack.Screen
-        name="ReleaseProduct"
+        name='ScanProduct'
+        component={ScanProductScreen}
+      />
+
+      <HomeStack.Screen
+        name='Bill'
+        component={BillScreen}
+      />
+
+      <HomeStack.Screen
+        name='ReleaseProduct'
         component={ReleaseProductScreen}
       />
     </HomeStack.Navigator>
@@ -201,22 +235,28 @@ function ProfileStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
-
-      <ProfileStack.Screen name="EditProfile" component={EditProfileScreen} />
+      <ProfileStack.Screen
+        name='ProfileScreen'
+        component={ProfileScreen}
+      />
 
       <ProfileStack.Screen
-        name="UpdatePassword"
+        name='EditProfile'
+        component={EditProfileScreen}
+      />
+
+      <ProfileStack.Screen
+        name='UpdatePassword'
         component={UpdatePasswordScreen}
       />
 
       <ProfileStack.Screen
-        name="PurchasesHistory"
+        name='PurchasesHistory'
         component={PurchasesHistoryScreen}
       />
 
       <ProfileStack.Screen
-        name="PurchaseDetails"
+        name='PurchaseDetails'
         component={PurchaseDetailsScreen}
       />
     </ProfileStack.Navigator>
@@ -239,12 +279,18 @@ function CartStackScreen() {
         headerTitleAlign: 'center',
       }}
     >
-      <CartStack.Screen name="CartScreen" component={CartScreen} />
-
-      <CartStack.Screen name="Bill" component={BillScreen} />
+      <CartStack.Screen
+        name='CartScreen'
+        component={CartScreen}
+      />
 
       <CartStack.Screen
-        name="ReleaseProduct"
+        name='Bill'
+        component={BillScreen}
+      />
+
+      <CartStack.Screen
+        name='ReleaseProduct'
         component={ReleaseProductScreen}
       />
     </CartStack.Navigator>
@@ -295,7 +341,10 @@ export default function App() {
         >
           {isLoggedIn ? (
             <Stack.Group>
-              <Stack.Screen name="HomeTabs" component={HomeTabs} />
+              <Stack.Screen
+                name='HomeTabs'
+                component={HomeTabs}
+              />
             </Stack.Group>
           ) : (
             <Stack.Group
@@ -312,26 +361,29 @@ export default function App() {
               }}
             >
               <Stack.Screen
-                name="Splash"
+                name='Splash'
                 component={SplashScreen}
                 options={{ headerTitle: () => '' }}
               />
               <Stack.Screen
-                name="Login"
+                name='Login'
                 component={LoginScreen}
                 options={{ headerLeft: () => {} }}
               />
               <Stack.Screen
-                name="CreateAccount"
+                name='CreateAccount'
                 component={CreateAccountScreen}
               />
-              <Stack.Screen name="OTP" component={OTPScreen} />
               <Stack.Screen
-                name="ForgotPassword"
+                name='OTP'
+                component={OTPScreen}
+              />
+              <Stack.Screen
+                name='ForgotPassword'
                 component={ForgotPasswordScreen}
               />
               <Stack.Screen
-                name="ResetPassword"
+                name='ResetPassword'
                 component={ResetPasswordScreen}
                 options={{ headerLeft: () => {} }}
               />

@@ -1,12 +1,12 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Text, TextInput, View } from "react-native";
-import ActionButton from "../components/ActionButton";
-import KeyboardDismiss from "../components/KeyboardDismiss";
-import { validateOTP, requestOTP } from "../api/user";
-import Popup from "../components/Popup";
-import usePopup from "../hooks/usePopup";
-import handleApiError from "../utils/handleApiError";
+import React, { useEffect, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Text, TextInput, View } from 'react-native';
+import { requestOTP, validateOTP } from '../api/user';
+import ActionButton from '../components/ActionButton';
+import KeyboardDismiss from '../components/KeyboardDismiss';
+import Popup from '../components/Popup';
+import usePopup from '../hooks/usePopup';
+import handleApiError from '../utils/handleApiError';
 
 const OTPScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ const OTPScreen = ({ navigation, route }) => {
 
   const onOTPSend = async (data) => {
     console.log(data);
-    const otp = Object.values(data).join("");
+    const otp = Object.values(data).join('');
 
     const email = route.params?.email;
     const destination = route.params?.destination;
@@ -35,7 +35,7 @@ const OTPScreen = ({ navigation, route }) => {
       const { data: response } = await validateOTP({ otp, email });
       setModalInfo({
         isError: false,
-        message: "תהליך האימות הסתיים בהצלחה!",
+        message: 'תהליך האימות הסתיים בהצלחה!',
         onClose: () => {
           navigation.navigate(destination, { uuid: response.uuid });
         },
@@ -65,7 +65,7 @@ const OTPScreen = ({ navigation, route }) => {
       await requestOTP(email);
       setModalInfo({
         isError: false,
-        message: "קוד חדש נשלח בהצלחה!",
+        message: 'קוד חדש נשלח בהצלחה!',
       });
       setIsLoading(false);
     } catch (error) {
@@ -94,7 +94,7 @@ const OTPScreen = ({ navigation, route }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="items-center flex-1">
+      <View className='items-center flex-1'>
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -104,10 +104,10 @@ const OTPScreen = ({ navigation, route }) => {
           isLoading={isLoading}
         />
 
-        <Text className="mt-10 mb-5 text-3xl ">אימות</Text>
-        <Text className="mb-5 text-lg">נא להזין את הקוד שנשלח לאימייל</Text>
+        <Text className='mt-10 mb-5 text-3xl '>אימות</Text>
+        <Text className='mb-5 text-lg'>נא להזין את הקוד שנשלח לאימייל</Text>
 
-        <View className="flex-row items-center justify-center mb-2">
+        <View className='flex-row-reverse items-center justify-center mb-2'>
           {[...Array(4)].map((_, index) => (
             <Controller
               key={index}
@@ -117,13 +117,13 @@ const OTPScreen = ({ navigation, route }) => {
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   className={`border-[1.5px] ${
-                    errors[`otp${index + 1}`] && "border-red-500"
+                    errors[`otp${index + 1}`] && 'border-red-500'
                   } rounded-md text-3xl text-center p-2 mr-2`}
-                  keyboardType="numeric"
+                  keyboardType='numeric'
                   value={value}
                   onChangeText={(value) => {
                     onChange(value);
-                    if (value === "") {
+                    if (value === '') {
                       focusPrevInput(index);
                     } else {
                       focusNextInput(index);
@@ -140,11 +140,16 @@ const OTPScreen = ({ navigation, route }) => {
           ))}
         </View>
         {isSubmitted && !isValid && (
-          <Text className="text-red-500 text-lg">אנא הזן קוד תקין</Text>
+          <Text className='text-red-500 text-lg mb-4'>אנא הזן קוד תקין</Text>
         )}
-
-        <ActionButton title="אישור" handler={handleSubmit(onOTPSend)} />
-        <ActionButton title="שליחת קוד מחדש" handler={onResendOTP} />
+        <ActionButton
+          title='אישור'
+          handler={handleSubmit(onOTPSend)}
+        />
+        <ActionButton
+          title='שליחת קוד מחדש'
+          handler={onResendOTP}
+        />
       </View>
     </KeyboardDismiss>
   );

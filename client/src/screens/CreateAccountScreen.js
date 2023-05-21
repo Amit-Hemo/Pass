@@ -64,7 +64,6 @@ const CreateAccountScreen = ({ navigation }) => {
         <InputBar
           input="firstName"
           control={control}
-          align={'right'}
           rules={{
             required: 'שדה זה חובה',
             minLength: {
@@ -80,7 +79,6 @@ const CreateAccountScreen = ({ navigation }) => {
         <Text className="text-lg font-semibold">שם משפחה</Text>
         <InputBar
           input="lastName"
-          align="right"
           control={control}
           rules={{
             required: 'שדה זה חובה',
@@ -97,7 +95,6 @@ const CreateAccountScreen = ({ navigation }) => {
         <Text className="text-lg font-semibold">אימייל</Text>
         <InputBar
           input="email"
-          align="left"
           control={control}
           rules={{
             required: 'שדה זה חובה',
@@ -107,7 +104,6 @@ const CreateAccountScreen = ({ navigation }) => {
         <Text className="text-lg font-semibold">סיסמא</Text>
         <InputBar
           input="password"
-          align="right"
           visible={false}
           control={control}
           rules={{
@@ -131,7 +127,6 @@ const CreateAccountScreen = ({ navigation }) => {
         <Text className="text-lg font-semibold">אימות סיסמא</Text>
         <InputBar
           input="confirmPassword"
-          align="right"
           visible={false}
           control={control}
           rules={{

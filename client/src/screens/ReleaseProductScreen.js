@@ -5,22 +5,21 @@ import { watchCart } from '../api/user';
 import useProductStore from '../stores/product';
 import useUserStore from '../stores/user';
 import countCartAmount from '../utils/countCartAmount';
+import filterUnavailableTags from '../utils/filterUnavailableTags';
 
-const ReleaseProductScreen = ({ navigation }) => {
+const ReleaseProductScreen = ({ navigation, route }) => {
   const isScanned = useProductStore((state) => state.scanned);
   const name = useProductStore((state) => state.name);
   const size = useProductStore((state) => state.size);
   const uuid = useUserStore((state) => state.uuid);
-  const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
-    select: (data) => [...data.cart].reverse(),
-  });
+  const cart = route.params?.cart
 
   //TODO: after finishing releasing, cart/scanned product must be removed!!!
 
   const productsToRelease = () => {
     if (isScanned) {
       return (
-        <View className='flex-row-reverse items-center justify-between'>
+        <View className='flex-row items-center justify-between'>
           <Text className='text-xl pl-20 py-4'>{`${name} - ${size}`} </Text>
           <Text className='text-xl font-bold text-stone-600'>1</Text>
         </View>
@@ -28,7 +27,7 @@ const ReleaseProductScreen = ({ navigation }) => {
     } else {
       return cart?.map(({ product, tags }) => (
         <View
-          className='flex-row-reverse items-center justify-between'
+          className='flex-row items-center justify-between'
           key={product.sku}
         >
           <Text className='text-xl pl-20 py-4 font-bold'>{`${product.name} - ${product.size}`}</Text>
@@ -46,13 +45,13 @@ const ReleaseProductScreen = ({ navigation }) => {
   }
 
   return (
-    <View className='items-center mt-10'>
+    <View className='items-center mt-10 px-7'>
       <Text className='text-3xl'>תתחדשו!</Text>
       <Text className='mt-5 mb-20 text-xl'>
         הצמידו את הטלפון החכם לאטב לצורך שחרורו
       </Text>
 
-      <View className='border-2 rounded-lg h-3/5 w-3/4 items-center'>
+      <View className='border-2 rounded-lg h-3/6 items-center mb-2 px-4'>
         <ScrollView>{productsToRelease()}</ScrollView>
       </View>
 

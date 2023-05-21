@@ -46,29 +46,26 @@ const ProductBillDetails = ({ navigation }) => {
 
   return (
     <View className='items-center'>
-      <View className='items-center w-60'>
-        <View className='flex-row mt-4'>
-         <Text className=' text-xl px-10 mb-2'>{`${name} - ${size}`}</Text>
-          <Text className='text-xl px-10 '>{`${price} ש"ח`}</Text>
+      <View className='flex-row my-4 items-center'>
+        <Text className=' text-xl flex-1'>{`${name} - ${size}`}</Text>
+        <Text className='text-xl '>{`${price} ש"ח`}</Text>
+      </View>
 
-        </View>
+      <Image
+        className='rounded-xl w-60 h-60 mb-6'
+        source={{ uri: image }}
+      />
 
-        <Image
-          className='rounded-xl w-60 h-60 mb-6'
-          source={{ uri: image }}
+      <View className='flex-row space-x-2'>
+        <ActionButton
+          title='רכישה מהירה'
+          handler={handleFastPurchase}
         />
-
-        <View className='flex-row space-x-2'>
-          <ActionButton
-            title='רכישה מהירה'
-            handler={handleFastPurchase}
-          />
-          <View className='' />
-          <ActionButton
-            title='הוספה לסל'
-            handler={handleAddToCart}
-          />
-        </View>
+        <View className='' />
+        <ActionButton
+          title='הוספה לסל'
+          handler={handleAddToCart}
+        />
       </View>
 
       <FastPurchasePopup

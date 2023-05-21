@@ -1,6 +1,6 @@
 import {
   ActivityIndicator,
-  Modal,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -65,72 +65,68 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="items-center mt-10">
-        <Text className="mb-6 text-3xl"> פרופיל משתמש</Text>
-        <Text className="mb-2 text-xl font-bold">{firstName}</Text>
-        <Text className="mb-2 text-xl font-bold">{lastName}</Text>
-        <Text className="mb-6 text-xl font-bold">{email}</Text>
-
-        <ActionButton
-          title="ערוך פרטים"
-          handler={() => {
-            navigation.navigate('EditProfile');
-          }}
-        />
-
-        <Text className=" mt-14 mb-6 text-2xl">פרטי אשראי</Text>
-        {isCustomer && hasCreditCard ? (
-          <View className="items-center ">
-            <Text className=" mb-2 text-lg font-semibold"> כרטיס ראשי</Text>
-            <Text className="text-xl bg-gray-100 rounded-lg px-5 py-2 mb-5">
-              {`XXXX-XXXX-XXXX-${lastDigits}`}
-            </Text>
-
-            <TouchableOpacity
-              className="py-3 px-6 mb-6 bg-blue-400 rounded-lg items-center justify-center shadow-black"
-              style={{ elevation: 5 }}
-              onPress={() => {
-                handleAddPaymentButton();
-              }}
-            >
-              <Text className="text-white font-semibold">
-                בחירת אמצעי תשלום
+      <ScrollView>
+        <View className="items-center mt-10 px-7">
+          <Text className="mb-6 text-3xl">פרופיל משתמש</Text>
+          <Text className="mb-2 text-xl font-bold">{firstName}</Text>
+          <Text className="mb-2 text-xl font-bold">{lastName}</Text>
+          <Text className="mb-6 text-xl font-bold">{email}</Text>
+          <ActionButton
+            title="ערוך פרטים"
+            handler={() => {
+              navigation.navigate('EditProfile');
+            }}
+          />
+          <Text className=" mt-10 mb-6 text-2xl">פרטי אשראי</Text>
+          {isCustomer && hasCreditCard ? (
+            <View className="items-center ">
+              <Text className=" mb-2 text-lg font-semibold"> כרטיס ראשי</Text>
+              <Text className="text-xl bg-gray-100 rounded-lg px-5 py-2 mb-5">
+                {`XXXX-XXXX-XXXX-${lastDigits}`}
               </Text>
-            </TouchableOpacity>
-
-            <OpenPaymentMethods
-              clientToken={clientToken}
-              show={show}
-              setShow={setShow}
-            />
-
-            <Popup
-              visible={modalVisible}
-              isError={modalInfo.isError}
-              setVisible={setModalVisible}
-              onClose={modalInfo.onClose}
-              message={modalInfo.message}
-            />
-
-            <View className="mt-4">
-              <ActionButton
-                title="היסטורית רכישות"
-                handler={() => {
-                  navigation.navigate('PurchasesHistory');
+              <TouchableOpacity
+                className="py-3 px-6 mb-6 bg-blue-400 rounded-lg items-center justify-center shadow-black"
+                style={{ elevation: 5 }}
+                onPress={() => {
+                  handleAddPaymentButton();
                 }}
+              >
+                <Text className="text-white font-semibold">
+                  בחירת אמצעי תשלום
+                </Text>
+              </TouchableOpacity>
+              <OpenPaymentMethods
+                clientToken={clientToken}
+                show={show}
+                setShow={setShow}
               />
+              <Popup
+                visible={modalVisible}
+                isError={modalInfo.isError}
+                setVisible={setModalVisible}
+                onClose={modalInfo.onClose}
+                message={modalInfo.message}
+              />
+              <View className="mt-4">
+                <ActionButton
+                  title="היסטורית רכישות"
+                  handler={() => {
+                    navigation.navigate('PurchasesHistory');
+                  }}
+                />
+              </View>
             </View>
-          </View>
-        ) : (
-          <View className="items-center border-2 rounded-xl mx-2">
-            <Text className="text-xl text-center font-bold mb-2 text-red-500 p-10">
-              {' '}
-              קיימות אופציות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני בעמוד
-              הראשי{' '}
-            </Text>
-          </View>
-        )}
-      </View>
+          ) : (
+            <View className="items-center border-2 rounded-xl mx-2">
+              <Text className="text-xl text-center font-bold mb-2 text-red-500 p-10">
+                {' '}
+                קיימות אופציות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני בעמוד
+                הראשי{' '}
+              </Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </KeyboardDismiss>
   );
 };

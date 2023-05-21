@@ -1,21 +1,21 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
+import { updateCustomer } from '../api/payment';
+import { updateUser } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
+import Popup from '../components/Popup';
 import { EMAIL_REGEX } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
+import usePopup from '../hooks/usePopup';
 import useUserStore, {
   setEmail,
   setFirstName,
   setLastName,
 } from '../stores/user';
-import Popup from '../components/Popup';
-import usePopup from '../hooks/usePopup';
 import handleApiError from '../utils/handleApiError';
-import { updateUser } from '../api/user';
-import { updateCustomer } from '../api/payment';
 
 const EditProfileScreen = ({ navigation }) => {
   useAuth();
@@ -69,32 +69,13 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="items-center flex-1 ">
-        <Text className="mt-10 mb-5 text-3xl ">עריכת פרופיל</Text>
+      <View className='items-center flex-1 px-7'>
+        <Text className='mt-10 mb-5 text-3xl '>עריכת פרופיל</Text>
 
-        <View className="items-center mb-16">
-          <Text className="text-lg font-semibold">שם פרטי</Text>
+        <View className='items-center mb-16'>
+          <Text className='text-lg font-semibold'>שם פרטי</Text>
           <InputBar
-            input="firstName"
-            control={control}
-            align={'right'}
-            rules={{
-              required: 'שדה זה חובה',
-              minLength: {
-                value: 2,
-                message: 'שדה זה מכיל לפחות 2 אותיות',
-              },
-              maxLength: {
-                value: 100,
-                message: 'שדה זה מכיל לכל היותר 100 אותיות',
-              },
-            }}
-          />
-
-          <Text className="text-lg font-semibold">שם משפחה</Text>
-          <InputBar
-            input="lastName"
-            align="right"
+            input='firstName'
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -109,10 +90,26 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className="text-lg font-semibold">אימייל</Text>
+          <Text className='text-lg font-semibold'>שם משפחה</Text>
           <InputBar
-            input="email"
-            align="left"
+            input='lastName'
+            control={control}
+            rules={{
+              required: 'שדה זה חובה',
+              minLength: {
+                value: 2,
+                message: 'שדה זה מכיל לפחות 2 אותיות',
+              },
+              maxLength: {
+                value: 100,
+                message: 'שדה זה מכיל לכל היותר 100 אותיות',
+              },
+            }}
+          />
+
+          <Text className='text-lg font-semibold'>אימייל</Text>
+          <InputBar
+            input='email'
             control={control}
             rules={{
               required: 'שדה זה חובה',
@@ -120,9 +117,12 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <ActionButton title="ערוך" handler={handleSubmit(onEditProfile)} />
           <ActionButton
-            title="ערוך סיסמא"
+            title='ערוך'
+            handler={handleSubmit(onEditProfile)}
+          />
+          <ActionButton
+            title='ערוך סיסמא'
             handler={() => navigation.navigate('UpdatePassword')}
           />
 

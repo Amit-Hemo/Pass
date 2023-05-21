@@ -33,7 +33,7 @@ const CartProduct = ({ name, size, price, quantity, tags }) => {
   };
 
   return (
-    <View className='flex-row-reverse items-center'>
+    <View className='flex-row items-center'>
       <Text className='text-xl text-center w-5/12 mb-2'>
         {name} - {size}
       </Text>

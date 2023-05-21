@@ -1,32 +1,33 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import ActionButton from '../components/ActionButton';
-import VideoBox from '../components/VideoBox';
-import ScannedProductDetails from '../components/ScannedProductDetails';
-import { setClearAuth } from '../stores/auth';
-import useUserStore, {
-  clearUser,
-  setIsCustomer,
-  setCardLastDigits,
-  setHasCreditCard,
-} from '../stores/user';
-import { logoutUser } from '../api/user';
-import useAuth from '../hooks/useAuth';
+import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import {
-  isBraintreeCustomer,
   createCustomer,
   generateClientToken,
   getPaymentMethod,
+  isBraintreeCustomer,
 } from '../api/payment';
+import { logoutUser } from '../api/user';
+import ActionButton from '../components/ActionButton';
 import OpenPaymentMethods from '../components/OpenPaymentMethods';
 import Popup from '../components/Popup';
+import ScannedProductDetails from '../components/ScannedProductDetails';
+import VideoBox from '../components/VideoBox';
+import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
+import { setClearAuth } from '../stores/auth';
+import useUserStore, {
+  clearUser,
+  setCardLastDigits,
+  setHasCreditCard,
+  setIsCustomer,
+} from '../stores/user';
 import forcedLogout from '../utils/forcedLogout';
+import useProductStore, { setScanned } from '../stores/product';
 
 const HomeScreen = ({ navigation }) => {
   useAuth();
-
+  
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const [show, setShow] = useState(false);
   const [clientToken, setClientToken] = useState(null);
@@ -36,9 +37,11 @@ const HomeScreen = ({ navigation }) => {
   const firstName = useUserStore((state) => state.firstName);
   const lastName = useUserStore((state) => state.lastName);
   const email = useUserStore((state) => state.email);
-
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
+
+  const scannedProduct = useProductStore((state) => state.scanned);
+
 
   useEffect(() => {
     const checkValidCustomer = async () => {
@@ -62,10 +65,8 @@ const HomeScreen = ({ navigation }) => {
         await forcedLogout();
         console.log(error);
       }
-
       setIsLoading(false);
     };
-
     checkValidCustomer();
   }, []);
 
@@ -99,22 +100,36 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
+      await logoutUser(refreshToken);
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
+      setClearAuth();
+      if(scannedProduct) setScanned(false)
+      clearUser();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-xl text-center font-bold mb-8 ">
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-xl text-center font-bold mb-8 '>
           יש להמתין...
         </Text>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size='large' />
       </View>
     );
   }
   return (
-    <View className="items-center ">
+    <View className='items-center px-7'>
       {isCustomer && hasCreditCard ? (
-        <View className="items-center mt-16">
+        <View className='items-center mt-16'>
           <ActionButton
-            title="לחץ לסריקת מוצר"
+            title='לחץ לסריקת מוצר'
             handler={() => {
               navigation.navigate('ScanProduct');
             }}
@@ -123,12 +138,12 @@ const HomeScreen = ({ navigation }) => {
           <ScannedProductDetails navigation={navigation} />
         </View>
       ) : (
-        <View className="items-center mt-4">
-          <Text className="text-2xl mb-4">
+        <View className='items-center mt-10'>
+          <Text className='text-2xl mb-4'>
             פעם ראשונה אצלנו ? הכנו סרטון הסבר
           </Text>
 
-          <View className="border-2">
+          <View className='mb-8 border-2 rounded-md'>
             <VideoBox
               uri={
                 'https://res.cloudinary.com/dawvcozos/video/upload/v1682934904/Pass/instructions_gwz40s.mp4'
@@ -136,15 +151,15 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
 
-          <Text className="text-2xl  mt-10">יש להוסיף אמצעי תשלום </Text>
+          <Text className='text-xl mb-4 text-red-500'>יש להוסיף אמצעי תשלום כדי להתחיל בקנייה</Text>
 
           <TouchableOpacity
-            className="items-center content-center w-40 mt-1 mb-1 rounded-2xl border-t-2 border-b-4  "
+            className='items-center content-center my-1 rounded-2xl border-t-2 border-b-4 px-4'
             onPress={() => {
               handleAddPaymentButton();
             }}
           >
-            <Text className="text-lg ">בחירת אמצעי תשלום</Text>
+            <Text className='text-lg '>בחירת אמצעי תשלום</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -165,21 +180,8 @@ const HomeScreen = ({ navigation }) => {
 
       <View>
         <ActionButton
-          title="התנתקות"
-          handler={async () => {
-            try {
-              const refreshToken = await SecureStore.getItemAsync(
-                'refreshToken'
-              );
-              await logoutUser(refreshToken);
-              await SecureStore.deleteItemAsync('accessToken');
-              await SecureStore.deleteItemAsync('refreshToken');
-              setClearAuth();
-              clearUser();
-            } catch (error) {
-              console.log(error);
-            }
-          }}
+          title='התנתקות'
+          handler={handleLogout}
         />
       </View>
     </View>

@@ -1,13 +1,13 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { createFastTransaction, sendReceipt } from '../api/payment';
 import usePopup from '../hooks/usePopup';
-import Popup from './Popup';
 import useProductStore from '../stores/product';
 import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
-import { useQueryClient } from '@tanstack/react-query';
+import Popup from './Popup';
 
 const PurchasePopup = ({ visible, setVisible, navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
@@ -42,7 +42,6 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
       });
       setModalVisible(true);
     } catch (error) {
-      console.log(error);
       const errorMessage = handleApiError(error);
       setIsLoading(false);
       setModalVisible(false);
@@ -60,32 +59,21 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
         isVisible={visible}
         animationIn={'bounceIn'}
         animationOut={'bounceOutDown'}
-        className="w-2/3 self-center"
+        className='w-2/3 self-center'
       >
-        <View className="bg-white py-16 px-5 rounded-3xl border border-gray-300 shadow-md justify-center items-center">
+        <View className='bg-white py-16 px-5 rounded-3xl border border-gray-300 shadow-md justify-center items-center'>
           <>
             <Image
-              className="w-28 h-28 mb-8"
+              className='w-28 h-28 mb-8'
               source={{
                 uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1683056863/Pass/payment_gnz7bw.png',
               }}
             />
-            <Text className="text-xl text-center font-bold mb-4">
+            <Text className='text-xl text-center font-bold mb-4'>
               {` סכום סופי לתשלום: ${price} ש"ח`}
             </Text>
 
-            <View className="flex-row p-2 justify-evenly ">
-              <TouchableOpacity
-                className={` border-2 border-red-700 rounded-full px-6 pt-2 mx-4 ${
-                  Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
-                } items-center justify-center`}
-                onPress={() => {
-                  setVisible(false);
-                }}
-              >
-                <Text className="text-red-600 font-bold text-lg">בטל</Text>
-              </TouchableOpacity>
-
+            <View className='flex-row p-2 justify-evenly '>
               <TouchableOpacity
                 className={`border-2 border-green-600 rounded-full px-6 pt-2 mx-4 ${
                   Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
@@ -95,7 +83,17 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
                   setVisible(false);
                 }}
               >
-                <Text className=" text-green-600 font-bold text-lg">שלם</Text>
+                <Text className=' text-green-600 font-bold text-lg'>שלם</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={` border-2 border-red-700 rounded-full px-6 pt-2 mx-4 ${
+                  Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
+                } items-center justify-center`}
+                onPress={() => {
+                  setVisible(false);
+                }}
+              >
+                <Text className='text-red-600 font-bold text-lg'>בטל</Text>
               </TouchableOpacity>
             </View>
           </>
