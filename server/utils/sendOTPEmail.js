@@ -23,7 +23,7 @@ async function sendOTPEmail({ otp, otpExpire, actionMessage, targetEmail }) {
                       <img src="cid:${imageId}" alt="PASS logo"
                           style="object-fit: cover; width: 10rem; height: 4rem; margin: 0 auto;">
                   </div>
-                  <p>תודה שבחרת להשתמש בשירותי PASS. השתמש ב-OTP הבא כדי ${actionMessage}. <br> <b>OTP תקף למשך ${otpExpire} דקות.</b></p>
+                  <p>תודה שבחרת להשתמש בשירותי PASS. השתמש בקוד הבא כדי ${actionMessage}. <br> <b> הקוד תקף למשך ${otpExpire} דקות.</b></p>
                   <h2
                   style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px; letter-spacing: 4px;">
                       ${otp}</h2>

@@ -28,7 +28,6 @@ const ProfileScreen = ({ navigation }) => {
   const firstName = useUserStore((state) => state.firstName);
   const lastName = useUserStore((state) => state.lastName);
   const email = useUserStore((state) => state.email);
-
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
   const lastDigits = useUserStore((state) => state.cardLastDigits);

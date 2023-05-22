@@ -17,6 +17,10 @@ export const handleRefreshToken = (refreshToken) =>
   clientPublic.post('users/refreshToken', { refreshToken });
 export const logoutUser = (refreshToken) =>
   clientPublic.post('users/logout', { refreshToken });
+export const getGoogleClient = (platformOs) =>
+  clientPublic.get(`users/providers/google/${platformOs}/getClientId`);
+export const handleGoogleSignIn = (userDetails) =>
+  clientPublic.post(`users/providers/google/signIn`, userDetails);
 
 //Private routes (Access Token Is mandatory)
 export const getUser = (uuid) => clientPrivate.get(`users/${uuid}`);
@@ -46,6 +50,6 @@ export const watchPurchases = async (uuid) => {
 export const watchPurchaseById = async (uuid, transactionId) => {
   const { data } = await clientPrivate.get(
     `users/${uuid}/purchases/${transactionId}`
-    );
+  );
   return data;
 };

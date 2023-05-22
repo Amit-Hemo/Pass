@@ -37,7 +37,6 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
     minLength: 8,
     maxLength: 100,
     validate: {
@@ -68,6 +67,9 @@ const userSchema = new mongoose.Schema({
   verified: {
     type: Boolean,
     default: false,
+  },
+  provider: {
+    type: String
   },
   cart: [
     {

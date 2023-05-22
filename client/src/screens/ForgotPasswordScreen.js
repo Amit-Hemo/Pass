@@ -1,13 +1,13 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import usePopup from '../hooks/usePopup';
-import Popup from '../components/Popup';
 import { Text, View } from 'react-native';
+import { forgotPassword, requestOTP } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
+import Popup from '../components/Popup';
 import { EMAIL_REGEX } from '../constants/regexes';
-import { forgotPassword, requestOTP } from '../api/user';
+import usePopup from '../hooks/usePopup';
 import handleApiError from '../utils/handleApiError';
 
 const ForgotPasswordScreen = ({ navigation }) => {
@@ -15,8 +15,6 @@ const ForgotPasswordScreen = ({ navigation }) => {
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
 
   const onForgotPassword = async (data) => {
-    console.log(data);
-
     const email = data.email;
 
     try {
@@ -47,7 +45,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className="items-center flex-1">
+      <View className='items-center flex-1'>
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -56,11 +54,11 @@ const ForgotPasswordScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
 
-        <Text className=" mt-10 mb-8 text-3xl">שחזור סיסמא</Text>
+        <Text className=' mt-10 mb-8 text-3xl'>שחזור סיסמא</Text>
 
-        <Text className="text-lg font-semibold">אימייל</Text>
+        <Text className='text-lg font-semibold'>אימייל</Text>
         <InputBar
-          input="email"
+          input='email'
           control={control}
           rules={{
             required: 'שדה זה חובה',
@@ -68,7 +66,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
           }}
         />
 
-        <ActionButton title="המשך" handler={handleSubmit(onForgotPassword)} />
+        <ActionButton
+          title='המשך'
+          handler={handleSubmit(onForgotPassword)}
+        />
       </View>
     </KeyboardDismiss>
   );

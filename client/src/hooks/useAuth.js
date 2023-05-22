@@ -6,10 +6,6 @@ import { useCallback, useEffect, useState } from 'react';
 function useAuth() {
   const handleAuth = useHandleAuth();
 
-  useEffect(() => {
-    console.log('component rendered');
-  }, []);
-
   useFocusEffect(
     useCallback(() => {
       let isActive = true;

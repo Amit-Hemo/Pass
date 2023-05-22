@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "PassApp",
-    "slug": "PassApp",
+    "name": "passapp",
+    "slug": "passapp", 
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -31,7 +31,7 @@
       "permissions": [
         "android.permission.NFC"
       ],
-      "package": "com.nadavbu.PassApp"
+      "package": "com.nadavbu.passapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

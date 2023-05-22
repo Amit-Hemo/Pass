@@ -1,4 +1,4 @@
-package com.nadavbu.PassApp.newarchitecture;
+package com.nadavbu.passapp.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -20,9 +20,9 @@ import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.nadavbu.PassApp.BuildConfig;
-import com.nadavbu.PassApp.newarchitecture.components.MainComponentsRegistry;
-import com.nadavbu.PassApp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
+import com.nadavbu.passapp.BuildConfig;
+import com.nadavbu.passapp.newarchitecture.components.MainComponentsRegistry;
+import com.nadavbu.passapp.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-query';
 import * as SecureStore from 'expo-secure-store';
 import { StatusBar } from 'expo-status-bar';
+import * as WebBrowser from 'expo-web-browser';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
 import { AppState, I18nManager, View } from 'react-native';
@@ -19,6 +20,7 @@ import HeaderLogo from './src/components/HeaderLogo';
 import Popup from './src/components/Popup';
 import useHandleAuth from './src/hooks/useHandleAuth';
 import usePopup from './src/hooks/usePopup';
+import useRefreshOnFocus from './src/hooks/useRefreshOnFocus';
 import BillScreen from './src/screens/BillScreen';
 import CartScreen from './src/screens/CartScreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
@@ -51,10 +53,11 @@ import useUserStore, {
 import checkAuthStatus from './src/utils/checkAuthStatus';
 import countCartAmount from './src/utils/countCartAmount';
 import filterUnavailableTags from './src/utils/filterUnavailableTags';
-import useRefreshOnFocus from './src/hooks/useRefreshOnFocus';
 
 //Force right to left - Hebrew App
 I18nManager.forceRTL(true);
+//For oAuth browsers
+WebBrowser.maybeCompleteAuthSession();
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,12 +72,11 @@ function HomeTabs() {
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
     select: (data) => {
-      const filteredCart = filterUnavailableTags([...data.cart])
-      return filteredCart.reverse()
+      const filteredCart = filterUnavailableTags([...data.cart]);
+      return filteredCart.reverse();
     },
   });
   useRefreshOnFocus(() => queryClient.invalidateQueries(['cart', uuid]));
-
 
   let cartAmount = 0;
   if (cart) {

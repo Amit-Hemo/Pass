@@ -11,6 +11,7 @@ const refreshTokenSchema = require('../schemas/refreshTokenSchema');
 const changePasswordSchema = require('../schemas/changePasswordSchema');
 const tagUuidSchema = require('../schemas/tagUuidSchema');
 const transactionSchema = require('../schemas/transactionSchema');
+const platformOsSchema = require('../schemas/platformOsSchema');
 
 const router = express.Router();
 
@@ -183,6 +184,20 @@ router.get(
     validateAuthUUID,
   ],
   usersController.watchPurchaseById
+);
+
+router.get(
+  '/providers/google/:platformOs/getClientId',
+  validateResource({ params: platformOsSchema }),
+  usersController.getProviderClientId
+);
+
+router.post(
+  '/providers/google/signIn',
+  validateResource({
+    body: userSchema.pick({ email: true, firstName: true, lastName: true }),
+  }),
+  usersController.handleProviderSignIn
 );
 
 module.exports = router;

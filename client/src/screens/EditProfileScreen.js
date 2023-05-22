@@ -10,6 +10,7 @@ import Popup from '../components/Popup';
 import { EMAIL_REGEX } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
+import useAuthStore from '../stores/auth';
 import useUserStore, {
   setEmail,
   setFirstName,
@@ -21,6 +22,10 @@ const EditProfileScreen = ({ navigation }) => {
   useAuth();
 
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+
+  const isSignedWithProvider = useAuthStore(
+    (state) => state.isSignedWithProvider
+  );
 
   const uuid = useUserStore((state) => state.uuid);
   const firstName = useUserStore((state) => state.firstName);
@@ -121,10 +126,12 @@ const EditProfileScreen = ({ navigation }) => {
             title='ערוך'
             handler={handleSubmit(onEditProfile)}
           />
-          <ActionButton
-            title='ערוך סיסמא'
-            handler={() => navigation.navigate('UpdatePassword')}
-          />
+          {!isSignedWithProvider && (
+            <ActionButton
+              title='ערוך סיסמא'
+              handler={() => navigation.navigate('UpdatePassword')}
+            />
+          )}
 
           <Popup
             visible={modalVisible}

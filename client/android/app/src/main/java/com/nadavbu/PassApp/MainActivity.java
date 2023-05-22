@@ -1,4 +1,4 @@
-package com.nadavbu.PassApp;
+package com.nadavbu.passapp;
 
 import android.os.Build;
 import android.os.Bundle;

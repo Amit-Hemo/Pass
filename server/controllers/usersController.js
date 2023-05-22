@@ -242,7 +242,15 @@ async function forgotPassword(req, res) {
         error: 'User not found',
         client: 'כתובת האימייל לא נמצאה במערכת',
       });
-
+    if (!user.password) {
+      return res
+        .status(400)
+        .json({
+          error: 'No password found',
+          client:
+            'עבור אימייל זה לא קיימת סיסמא, התחבר באמצעות נותן השירות שבחרת',
+        });
+    }
     return res.json({ message: 'Forgot password request has been approved' });
   } catch (error) {
     return res.status(500).json({ error: 'Server Error' });
@@ -265,7 +273,7 @@ async function requestOTP(req, res) {
 
     await sendOTPEmail({
       otp,
-      otpExpire: 5,
+      otpExpire: 30,
       targetEmail: email,
       actionMessage: 'לסיים את תהליך האימות',
     });
@@ -409,17 +417,17 @@ async function watchCart(req, res) {
       .lean()
       .populate({
         path: 'cart.product',
-        select: 'name size price image sku -_id'
+        select: 'name size price image sku -_id',
       })
       .populate({
         path: 'cart.tags',
         select: 'isAvailable attachedStore uuid -_id',
         populate: {
           path: 'attachedStore',
-          select: 'merchantID -_id'
-        }
+          select: 'merchantID -_id',
+        },
       });
-  
+
     if (!user) return res.status(404).json({ error: 'User not found' });
     const { cart } = user;
 
@@ -502,6 +510,62 @@ async function watchPurchaseById(req, res) {
   }
 }
 
+async function getProviderClientId(req, res) {
+  const { platformOs } = req.params;
+  let clientId;
+  if (platformOs === 'android') {
+    clientId = process.env.GOOGLE_ANDROID_CLIENT_ID;
+  }
+  //? When the app will accept ios
+  // else if (platformOs === 'ios') {
+  //   clientId = process.env.GOOGLE_IOS_CLIENT_ID;
+  // }
+  return res.status(200).json({ clientId });
+}
+
+async function handleProviderSignIn(req, res) {
+  const {
+    email: emailInput,
+    firstName: firstNameInput,
+    lastName: lastNameInput,
+  } = req.body;
+  try {
+    let user = await UserModel.findOne({ email: emailInput });
+    if (!user) {
+      //register user
+      user = await UserModel.create({
+        firstName: firstNameInput,
+        lastName: lastNameInput,
+        email: emailInput,
+        verified: true,
+        provider: 'google',
+      });
+    }
+    //login user
+    const { uuid, firstName, lastName, email } = user;
+    const accessToken = user.generateAccessToken(user.uuid);
+    const refreshToken = user.generateRefreshToken(user.uuid);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return res.json({
+      accessToken,
+      refreshToken,
+      user: { uuid, firstName, lastName, email },
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).send({
+        error: 'The email is already used by an account',
+        client: 'כתובת האימייל תפוסה',
+      });
+    } else {
+      return res.status(500).send({ error });
+    }
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
@@ -520,4 +584,6 @@ module.exports = {
   watchPurchases,
   watchPurchaseById,
   getUser,
+  getProviderClientId,
+  handleProviderSignIn,
 };

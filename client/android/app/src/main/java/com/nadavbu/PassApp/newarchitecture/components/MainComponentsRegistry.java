@@ -1,4 +1,4 @@
-package com.nadavbu.PassApp.newarchitecture.components;
+package com.nadavbu.passapp.newarchitecture.components;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
