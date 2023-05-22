@@ -204,7 +204,7 @@ const LoginScreen = ({ navigation }) => {
 
         <Button
           title='התחברות עם גוגל'
-          disabled={!request}
+          disabled={!request || !clientId}
           onPress={() => {
             setIsLoading(true);
             setModalVisible(true);
