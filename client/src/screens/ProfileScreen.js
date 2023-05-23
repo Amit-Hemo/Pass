@@ -98,6 +98,7 @@ const ProfileScreen = ({ navigation }) => {
                 clientToken={clientToken}
                 show={show}
                 setShow={setShow}
+                setIsLoading={setIsLoading}
               />
               <Popup
                 visible={modalVisible}

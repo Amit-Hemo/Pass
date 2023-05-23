@@ -11,6 +11,8 @@ export const isBraintreeCustomer = (uuid) =>
 export const getBraintreeUI = () => clientPrivate.get('/');
 export const getPaymentMethod = (uuid) =>
   clientPrivate.get(`/payment/customers/${uuid}`);
+export const changePaymentMethod = (uuid, paymentMethodNonce) =>
+  clientPrivate.put(`payment/customers/${uuid}`, { paymentMethodNonce });
 export const updateCustomer = (uuid, userDetails) =>
   clientPrivate.put(`/payment/customers/${uuid}`, userDetails);
 export const createFastTransaction = (uuid, tagUuid) =>

@@ -8,6 +8,7 @@ const uuidSchema = require('../schemas/uuidSchema');
 const userSchema = require('../schemas/userSchema');
 const tagUuidSchema = require('../schemas/tagUuidSchema');
 const transactionSchema = require('../schemas/transactionSchema');
+const paymentMethodSchema = require('../schemas/paymentMethodSchema');
 
 const router = express.Router();
 
@@ -31,6 +32,14 @@ router.get(
   '/customers/:uuid',
   [validateResource({ params: uuidSchema }), validateAuthUUID],
   paymentController.getPaymentMethod
+);
+router.put(
+  '/customers/:uuid',
+  [
+    validateResource({ params: uuidSchema, body: paymentMethodSchema }),
+    validateAuthUUID,
+  ],
+  paymentController.changePaymentMethod
 );
 router.get(
   '/customers/:uuid/generateToken',

@@ -49,7 +49,6 @@ const LoginScreen = ({ navigation }) => {
       try {
         const { data } = await getGoogleClient(Platform.OS);
         setClientId(data.clientId);
-        console.log(data.clientId);
       } catch (error) {
         console.log('failed to get provider clientId');
       }
@@ -62,8 +61,8 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     if (response?.type === 'success') {
       onGoogleLogin(response.authentication.accessToken);
-    } else {
-      console.log('no google whyyyyyyyy');
+    } else if (response?.type === 'error') {
+      console.log(response?.error.message);
     }
   }, [response]);
 
@@ -105,7 +104,7 @@ const LoginScreen = ({ navigation }) => {
       setFirstName(firstName);
       setLastName(lastName);
       setEmail(email);
-      setModalVisible(false)
+      setModalVisible(false);
       setIsLoading(false);
       setIsLoggedIn(true);
     } catch (error) {

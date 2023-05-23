@@ -45,7 +45,6 @@ const createCustomer = async (req, res) => {
   }
 };
 
-//TODO: will be replaced as change payment method
 const getPaymentMethod = async (req, res) => {
   const { uuid } = req.params;
 
@@ -63,8 +62,39 @@ const getPaymentMethod = async (req, res) => {
     }
 
     const customer = await gateway.customer.find(customerId);
-    const firstMethod = customer.paymentMethods[0];
-    res.json({ firstMethod });
+    const defaultPaymentMethod = customer.paymentMethods.find(
+      (paymentMethod) => paymentMethod.default
+    );
+    res.json({ defaultPaymentMethod });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const changePaymentMethod = async (req, res) => {
+  const { uuid } = req.params;
+  const { paymentMethodNonce } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ uuid }).lean();
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { braintreeCustomerId: customerId } = user;
+    if (!customerId) {
+      return res.status(404).json({
+        error: `User ${uuid} does not have customer in the vault, create one with a POST request to /payment/customers`,
+      });
+    }
+
+    await gateway.paymentMethod.create({
+      customerId,
+      paymentMethodNonce,
+      options: { makeDefault: true },
+    });
+
+    res.json({ message: 'payment method has been changed successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -332,6 +362,7 @@ module.exports = {
   getBraintreeUI,
   createCustomer,
   getPaymentMethod,
+  changePaymentMethod,
   getClientToken,
   createTransaction,
   updateCustomer,

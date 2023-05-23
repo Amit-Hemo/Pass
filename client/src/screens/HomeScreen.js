@@ -16,6 +16,7 @@ import VideoBox from '../components/VideoBox';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
 import { setClearAuth } from '../stores/auth';
+import useProductStore, { setScanned } from '../stores/product';
 import useUserStore, {
   clearUser,
   setCardLastDigits,
@@ -23,11 +24,10 @@ import useUserStore, {
   setIsCustomer,
 } from '../stores/user';
 import forcedLogout from '../utils/forcedLogout';
-import useProductStore, { setScanned } from '../stores/product';
 
 const HomeScreen = ({ navigation }) => {
   useAuth();
-  
+
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const [show, setShow] = useState(false);
   const [clientToken, setClientToken] = useState(null);
@@ -42,7 +42,6 @@ const HomeScreen = ({ navigation }) => {
 
   const scannedProduct = useProductStore((state) => state.scanned);
 
-
   useEffect(() => {
     const checkValidCustomer = async () => {
       try {
@@ -53,10 +52,10 @@ const HomeScreen = ({ navigation }) => {
 
         if (braintreeCustomerExist) {
           const { data } = await getPaymentMethod(uuid);
-          const { firstMethod } = data;
+          const { defaultPaymentMethod } = data;
 
-          if (firstMethod) {
-            const { last4 } = firstMethod;
+          if (defaultPaymentMethod) {
+            const { last4 } = defaultPaymentMethod;
             setCardLastDigits(last4);
             setHasCreditCard(true);
           }
@@ -107,7 +106,7 @@ const HomeScreen = ({ navigation }) => {
       await SecureStore.deleteItemAsync('accessToken');
       await SecureStore.deleteItemAsync('refreshToken');
       setClearAuth();
-      if(scannedProduct) setScanned(false)
+      if (scannedProduct) setScanned(false);
       clearUser();
     } catch (error) {
       console.log(error);
@@ -151,7 +150,9 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
 
-          <Text className='text-xl mb-4 text-red-500'>יש להוסיף אמצעי תשלום כדי להתחיל בקנייה</Text>
+          <Text className='text-xl mb-4 text-red-500'>
+            יש להוסיף אמצעי תשלום כדי להתחיל בקנייה
+          </Text>
 
           <TouchableOpacity
             className='items-center content-center my-1 rounded-2xl border-t-2 border-b-4 px-4'
@@ -172,13 +173,15 @@ const HomeScreen = ({ navigation }) => {
         message={modalInfo.message}
       />
 
-      <OpenPaymentMethods
-        clientToken={clientToken}
-        show={show}
-        setShow={setShow}
-      />
+      {show && (
+        <OpenPaymentMethods
+          clientToken={clientToken}
+          show={show}
+          setShow={setShow}
+        />
+      )}
 
-      <View>
+      <View className='mt-4'>
         <ActionButton
           title='התנתקות'
           handler={handleLogout}
