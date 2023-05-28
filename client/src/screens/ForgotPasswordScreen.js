@@ -1,8 +1,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+} from 'react-native-reanimated';
 import { forgotPassword, requestOTP } from '../api/user';
-import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import Popup from '../components/Popup';
@@ -45,7 +49,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='items-center flex-1'>
+      <View className='items-center flex-1 bg-[#3BABFE] justify-between'>
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -53,23 +57,51 @@ const ForgotPasswordScreen = ({ navigation }) => {
           onClose={modalInfo.onClose}
           message={modalInfo.message}
         />
-
-        <Text className=' mt-10 mb-8 text-3xl'>שחזור סיסמא</Text>
-
-        <Text className='text-lg font-semibold'>אימייל</Text>
-        <InputBar
-          input='email'
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
-          }}
-        />
-
-        <ActionButton
-          title='המשך'
-          handler={handleSubmit(onForgotPassword)}
-        />
+        <Animated.View
+          className='mb-56 mt-20 justify-center items-center'
+          entering={FadeInUp.duration(100)}
+        >
+          <Image
+            source={{
+              uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685267329/Pass/forgotPasswordIcon_mevwyp.png',
+              width: 200,
+              height: 200,
+            }}
+            className='mr-5'
+          />
+          <Text className='text-white text-base font-bold mt-10'>
+            יש להזין את כתובת המייל בכדי לקבל קוד אימות
+          </Text>
+        </Animated.View>
+        <View className='justify-center w-full'>
+          <Animated.View
+            className='justify-center items-center bg-white py-10 px-7'
+            entering={FadeInDown.duration(100)}
+            exiting={FadeOutDown.duration(100)}
+            style={{ borderTopEndRadius: 40, borderTopStartRadius: 40 }}
+          >
+            <Text className='font-semibold self-start text-slate-600 mb-1'>
+              אימייל
+            </Text>
+            <InputBar
+              input='email'
+              control={control}
+              rules={{
+                required: 'שדה זה חובה',
+                pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
+              }}
+            />
+            <View className='w-full'>
+              <TouchableOpacity
+                className='bg-yellow-500 py-2 items-center justify-center mt-[20px]'
+                onPress={handleSubmit(onForgotPassword)}
+                style={{ borderRadius: 40 }}
+              >
+                <Text className='text-lg font-bold'>המשך</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
       </View>
     </KeyboardDismiss>
   );

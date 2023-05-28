@@ -124,7 +124,7 @@ const HomeScreen = ({ navigation }) => {
     );
   }
   return (
-    <View className='items-center px-7'>
+    <View className='items-center px-7 flex-1'>
       {isCustomer && hasCreditCard ? (
         <View className='items-center mt-16'>
           <ActionButton

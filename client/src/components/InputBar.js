@@ -1,20 +1,12 @@
+import { Feather } from '@expo/vector-icons';
+import React, { forwardRef, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import { Text, TextInput, View } from 'react-native';
-import React, { forwardRef } from 'react';
 
 const InputBar = forwardRef(
-  (
-    {
-      input,
-      visible = true,
-      placeHolder,
-      style,
-      keyboardType,
-      control,
-      rules = {},
-    },
-    ref
-  ) => {
+  ({ input, placeHolder, keyboardType, control, rules = {} }, ref) => {
+    const [visible, setVisible] = useState(false);
+
     return (
       <Controller
         control={control}
@@ -25,23 +17,60 @@ const InputBar = forwardRef(
           fieldState: { error },
         }) => (
           <>
-            <View className="w-60 px-4 py-2 mb-4 bg-white rounded-lg border border-gray-300">
-              {/* Check if the input should be visible or invisible */}
+            <View
+              className={`w-full px-5 py-2 ${
+                !error && 'mb-2'
+              } bg-slate-100 focus:border-blue-500 focus:border-2 ${
+                (input.toLowerCase().includes('password') ||
+                  input === 'email') &&
+                'flex-row justify-between items-center'
+              }`}
+              style={{ borderRadius: 40 }}
+            >
+              {input.toLowerCase().includes('password') &&
+                (visible ? (
+                  <Feather
+                    name='eye-off'
+                    size={20}
+                    color='gray'
+                    onPress={() => setVisible(false)}
+                  />
+                ) : (
+                  <Feather
+                    name='eye'
+                    size={20}
+                    color='gray'
+                    onPress={() => setVisible(true)}
+                  />
+                ))}
+              {input === 'email' && (
+                <Feather
+                  name='mail'
+                  size={20}
+                  color='gray'
+                />
+              )}
               <TextInput
-                className={style}
+                className={`${
+                  (input === 'email' ||
+                    input.toLowerCase().includes('password')) &&
+                  'flex-1 ml-2'
+                }`}
                 onChangeText={onChange}
-                autoCapitalize="none"
+                autoCapitalize='none'
                 autoCorrect={false}
                 value={value}
                 onBlur={onBlur}
                 placeholder={placeHolder}
                 keyboardType={keyboardType}
-                secureTextEntry={!visible}
+                secureTextEntry={
+                  input.toLowerCase().includes('password') && !visible
+                }
                 ref={ref}
               />
             </View>
             {error && (
-              <Text className="text-red-500 mb-3">
+              <Text className='text-red-500 mb-3'>
                 {error.message || 'קרתה שגיאה לא צפויה, אנא נסו להיכנס מחדש'}
               </Text>
             )}

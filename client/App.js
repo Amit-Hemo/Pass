@@ -13,7 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppState, I18nManager, View } from 'react-native';
+import { AppState, I18nManager, Text, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { getUser, watchCart } from './src/api/user';
 import HeaderLogo from './src/components/HeaderLogo';
@@ -37,6 +37,7 @@ import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import ScanProductScreen from './src/screens/ScanProductScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import UpdatePasswordScreen from './src/screens/UpdatePasswordScreen';
+import WelcomeScreen from './src/screens/WelcomeScreen';
 import useAuthStore, {
   setAccessToken,
   setClearAuth,
@@ -122,7 +123,7 @@ function HomeTabs() {
   }, []);
 
   return (
-    <View className='flex-1'>
+    <View className='flex-1 bg-slate-400'>
       <Popup
         visible={modalVisible}
         setVisible={setModalVisible}
@@ -188,7 +189,7 @@ function HomeStackScreen() {
     <HomeStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#00B8D4',
+          backgroundColor: '#3BABFE',
         },
         title: '',
         cardStyle: {
@@ -227,7 +228,7 @@ function ProfileStackScreen() {
     <ProfileStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#00B8D4',
+          backgroundColor: '#3BABFE',
         },
         title: '',
         cardStyle: {
@@ -271,7 +272,7 @@ function CartStackScreen() {
     <CartStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#00B8D4',
+          backgroundColor: '#3BABFE',
         },
         title: '',
         cardStyle: {
@@ -334,7 +335,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar />
+      <StatusBar backgroundColor='#3BABFE'/>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -351,15 +352,16 @@ export default function App() {
           ) : (
             <Stack.Group
               screenOptions={{
-                headerStyle: {
-                  backgroundColor: '#00B8D4',
-                },
                 headerShown: true,
-                headerTitle: () => <HeaderLogo />,
+                headerStyle: { backgroundColor: '#3BABFE' },
+                headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
                 headerTitleAlign: 'center',
+                headerTintColor: 'white',
+                headerShadowVisible: false,
                 cardStyle: {
                   backgroundColor: '#fff',
                 },
+                animationEnabled: false,
               }}
             >
               <Stack.Screen
@@ -368,26 +370,36 @@ export default function App() {
                 options={{ headerTitle: () => '' }}
               />
               <Stack.Screen
+                name='Welcome'
+                component={WelcomeScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
                 name='Login'
                 component={LoginScreen}
-                options={{ headerLeft: () => {} }}
+                options={{
+                  title: 'התחברות',
+                }}
               />
               <Stack.Screen
                 name='CreateAccount'
                 component={CreateAccountScreen}
+                options={{title: 'יצירת משתמש'}}
               />
               <Stack.Screen
                 name='OTP'
                 component={OTPScreen}
+                options={{title: 'אימות'}}
               />
               <Stack.Screen
                 name='ForgotPassword'
                 component={ForgotPasswordScreen}
+                options={{title: 'שחזור סיסמא'}}
               />
               <Stack.Screen
                 name='ResetPassword'
                 component={ResetPasswordScreen}
-                options={{ headerLeft: () => {} }}
+                options={{ title: 'יצירת סיסמא חדשה' }}
               />
             </Stack.Group>
           )}

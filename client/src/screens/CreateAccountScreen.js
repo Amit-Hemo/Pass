@@ -1,8 +1,13 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Animated, {
+  FadeInDown,
+  FadeInUp,
+  FadeOutDown,
+} from 'react-native-reanimated';
 import { createUser, requestOTP } from '../api/user';
-import ActionButton from '../components/ActionButton';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import Popup from '../components/Popup';
@@ -18,9 +23,8 @@ import handleApiError from '../utils/handleApiError';
 
 const CreateAccountScreen = ({ navigation }) => {
   const { handleSubmit, watch, control } = useForm();
-  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-
   const pwd = watch('password');
+  const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
 
   async function onRegister(data) {
     try {
@@ -39,18 +43,18 @@ const CreateAccountScreen = ({ navigation }) => {
       });
     } catch (error) {
       const errorMessage = handleApiError(error);
-      setModalVisible(true);
       setModalInfo({
         isError: true,
         message: errorMessage,
         onClose: () => {},
       });
+      setModalVisible(true);
     }
   }
 
   return (
     <KeyboardDismiss>
-      <View className="flex-1 items-center">
+      <View className='items-center flex-1 bg-[#3BABFE] justify-between'>
         <Popup
           visible={modalVisible}
           setVisible={setModalVisible}
@@ -58,91 +62,128 @@ const CreateAccountScreen = ({ navigation }) => {
           onClose={modalInfo.onClose}
           message={modalInfo.message}
         />
-
-        <Text className="mt-10 mb-8 text-3xl">יצירת משתמש</Text>
-        <Text className="text-lg font-semibold">שם פרטי</Text>
-        <InputBar
-          input="firstName"
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 2,
-              message: 'שדה זה מכיל לפחות 2 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-          }}
-        />
-        <Text className="text-lg font-semibold">שם משפחה</Text>
-        <InputBar
-          input="lastName"
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 2,
-              message: 'שדה זה מכיל לפחות 2 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-          }}
-        />
-        <Text className="text-lg font-semibold">אימייל</Text>
-        <InputBar
-          input="email"
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
-          }}
-        />
-        <Text className="text-lg font-semibold">סיסמא</Text>
-        <InputBar
-          input="password"
-          visible={false}
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 8,
-              message: 'שדה זה מכיל לפחות 8 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-            validate: (value) =>
-              (UPPERCASE_REGEX.test(value) &&
-                LOWERCASE_REGEX.test(value) &&
-                DIGIT_REGEX.test(value) &&
-                SPECIAL_CHAR_REGEX.test(value)) ||
-              'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
-          }}
-        />
-        <Text className="text-lg font-semibold">אימות סיסמא</Text>
-        <InputBar
-          input="confirmPassword"
-          visible={false}
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 8,
-              message: 'שדה זה מכיל לפחות 8 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-            validate: (value) => value === pwd || 'הסיסמאות אינן תואמות',
-          }}
-        />
-        <ActionButton title="צור משתמש" handler={handleSubmit(onRegister)} />
+        <Animated.View
+          className='my-8'
+          entering={FadeInUp.duration(100)}
+        >
+          <Image
+            source={{
+              uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685271570/Pass/registerIcon_hvaubt.png',
+              width: 200,
+              height: 200,
+            }}
+          />
+        </Animated.View>
+        <View className='justify-center w-full'>
+          <Animated.View
+            className='justify-center items-center bg-white px-7 py-10'
+            entering={FadeInDown.duration(100)}
+            exiting={FadeOutDown.duration(100)}
+            style={{ borderTopEndRadius: 40, borderTopStartRadius: 40 }}
+          >
+              <Text className='font-semibold self-start text-slate-600 mb-1'>
+                שם פרטי
+              </Text>
+              <InputBar
+                input='firstName'
+                control={control}
+                rules={{
+                  required: 'שדה זה חובה',
+                  minLength: {
+                    value: 2,
+                    message: 'שדה זה מכיל לפחות 2 אותיות',
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: 'שדה זה מכיל לכל היותר 100 אותיות',
+                  },
+                }}
+              />
+              <Text className='font-semibold self-start text-slate-600 mb-1'>
+                שם משפחה
+              </Text>
+              <InputBar
+                input='lastName'
+                control={control}
+                rules={{
+                  required: 'שדה זה חובה',
+                  minLength: {
+                    value: 2,
+                    message: 'שדה זה מכיל לפחות 2 אותיות',
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: 'שדה זה מכיל לכל היותר 100 אותיות',
+                  },
+                }}
+              />
+              <Text className='font-semibold self-start text-slate-600 mb-1'>
+                אימייל
+              </Text>
+              <InputBar
+                input='email'
+                control={control}
+                rules={{
+                  required: 'שדה זה חובה',
+                  pattern: { value: EMAIL_REGEX, message: 'פורמט אימייל שגוי' },
+                }}
+              />
+              <Text className='font-semibold self-start text-slate-600 mb-1'>
+                סיסמא
+              </Text>
+              <InputBar
+                input='password'
+                visible={false}
+                control={control}
+                rules={{
+                  required: 'שדה זה חובה',
+                  minLength: {
+                    value: 8,
+                    message: 'שדה זה מכיל לפחות 8 אותיות',
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: 'שדה זה מכיל לכל היותר 100 אותיות',
+                  },
+                  validate: (value) =>
+                    (UPPERCASE_REGEX.test(value) &&
+                      LOWERCASE_REGEX.test(value) &&
+                      DIGIT_REGEX.test(value) &&
+                      SPECIAL_CHAR_REGEX.test(value)) ||
+                    'הסיסמא חייבת להכיל: אות גדולה, אות קטנה, ספרה אחת וסימן מיוחד',
+                }}
+              />
+              <Text className='font-semibold self-start text-slate-600 mb-1'>
+                אימות סיסמא
+              </Text>
+              <InputBar
+                input='confirmPassword'
+                visible={false}
+                control={control}
+                rules={{
+                  required: 'שדה זה חובה',
+                  minLength: {
+                    value: 8,
+                    message: 'שדה זה מכיל לפחות 8 אותיות',
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: 'שדה זה מכיל לכל היותר 100 אותיות',
+                  },
+                  validate: (value) => value === pwd || 'הסיסמאות אינן תואמות',
+                }}
+              />
+              <View className='w-full'>
+                <TouchableOpacity
+                  className='bg-yellow-500 py-2 items-center justify-center mt-[20px]'
+                  onPress={handleSubmit(onRegister)}
+                  style={{ borderRadius: 40 }}
+                >
+                  <Text className='text-lg font-bold'>הרשם</Text>
+                </TouchableOpacity>
+              </View>
+          </Animated.View>
+        </View>
       </View>
     </KeyboardDismiss>
   );
