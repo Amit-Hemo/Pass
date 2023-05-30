@@ -65,7 +65,12 @@ const getPaymentMethod = async (req, res) => {
     const defaultPaymentMethod = customer.paymentMethods.find(
       (paymentMethod) => paymentMethod.default
     );
-    res.json({ defaultPaymentMethod });
+    res.json({
+      defaultPaymentMethod: {
+        last4: defaultPaymentMethod.last4,
+        cardType: defaultPaymentMethod.cardType,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -7,7 +7,7 @@ const validateAuthUUID = require('../middlewares/validateAuthUUID');
 const { readyUserDetails } = require('./testUsers');
 
 //mocking middleware params
-let req={};
+let req = {};
 const res = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn(),
