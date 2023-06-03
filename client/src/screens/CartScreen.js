@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
 import ProductsBillList from '.././components/ProductsBillList';
 import { deleteCart, watchCart } from '../api/user';
 import ActionButton from '../components/ActionButton';
@@ -10,7 +10,6 @@ import HorizonalLine from '../components/HorizonalLine';
 import Popup from '../components/Popup';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
-import useRefreshOnFocus from '../hooks/useRefreshOnFocus';
 import useUserStore from '../stores/user';
 import calculateCartPrice from '../utils/calculateCartPrice';
 import filterUnavailableTags from '../utils/filterUnavailableTags';
@@ -27,7 +26,7 @@ const CartScreen = ({ navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
 
   const queryClient = useQueryClient();
-  const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
+  const { data: cart, isLoading } = useQuery(['cart', uuid], () => watchCart(uuid), {
     select: (data) => {
       const filteredCart = filterUnavailableTags([...data.cart]);
       return filteredCart.reverse();
@@ -59,6 +58,17 @@ const CartScreen = ({ navigation }) => {
     clearCartMutation.mutate(uuid);
   };
 
+  if (isLoading) {
+    return (
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-xl text-center font-bold mb-8'>
+          יש להמתין...
+        </Text>
+        <ActivityIndicator size='large' />
+      </View>
+    );
+  }
+  
   return (
     <View className='flex-1 px-7'>
       {isCustomer && hasCreditCard ? (

@@ -71,6 +71,7 @@ const ProfileScreen = ({ navigation }) => {
       await logoutUser(refreshToken);
       await SecureStore.deleteItemAsync('accessToken');
       await SecureStore.deleteItemAsync('refreshToken');
+      await SecureStore.deleteItemAsync('signedWithProvider');
       setClearAuth();
       if (scannedProduct) setScanned(false);
       clearUser();

@@ -46,6 +46,7 @@ import useAuthStore, {
   setClearAuth,
   setIsForcedLogout,
   setIsLoggedIn,
+  setIsSignedWithProvider,
 } from './src/stores/auth';
 import useUserStore, {
   clearUser,
@@ -346,13 +347,23 @@ export default function App() {
           setLastName(lastName);
           setEmail(email);
           setIsLoggedIn(true);
+
+          const isSignedWithProvider = await SecureStore.getItemAsync(
+            'signedWithProvider'
+          );
+          console.log({isSignedWithProvider});
+          if (isSignedWithProvider) {
+            setIsSignedWithProvider(true);
+          }
         } else {
           await SecureStore.deleteItemAsync('accessToken');
           await SecureStore.deleteItemAsync('refreshToken');
+          await SecureStore.deleteItemAsync('signedWithProvider');
         }
       } catch (error) {
         await SecureStore.deleteItemAsync('accessToken');
         await SecureStore.deleteItemAsync('refreshToken');
+        await SecureStore.deleteItemAsync('signedWithProvider');
         console.log(error?.response?.data?.error);
       }
     }
@@ -361,7 +372,10 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style='dark' backgroundColor='white' />
+      <StatusBar
+        style='dark'
+        backgroundColor='white'
+      />
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{

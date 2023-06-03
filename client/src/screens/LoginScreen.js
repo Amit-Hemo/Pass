@@ -83,8 +83,9 @@ const LoginScreen = ({ navigation }) => {
       const { given_name: firstName, family_name: lastName, email } = user;
       await onLogin({ firstName, lastName, email });
       setIsSignedWithProvider(true);
+      await SecureStore.setItemAsync('signedWithProvider', 'true');
     } catch (error) {
-      console.error('Sign in with google failed');
+      console.error(error);
     }
   };
 

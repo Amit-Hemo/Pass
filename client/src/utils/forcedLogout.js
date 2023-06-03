@@ -1,7 +1,7 @@
-import { setIsForcedLogout } from '../stores/auth';
+import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { BASE_URL } from '../constants/baseURL';
-import axios from 'axios';
+import { setIsForcedLogout } from '../stores/auth';
 
 async function forcedLogout() {
   try {
@@ -13,14 +13,14 @@ async function forcedLogout() {
     //delete secure storage
     await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('refreshToken');
-
+    await SecureStore.deleteItemAsync('signedWithProvider');
     setIsForcedLogout(true);
   } catch (error) {
     console.log(error);
 
     await SecureStore.deleteItemAsync('accessToken');
     await SecureStore.deleteItemAsync('refreshToken');
-
+    await SecureStore.deleteItemAsync('signedWithProvider');
     setIsForcedLogout(true);
   }
 }

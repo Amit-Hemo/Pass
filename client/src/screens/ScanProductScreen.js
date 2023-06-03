@@ -77,7 +77,6 @@ const ScanProductScreen = ({ navigation }) => {
             height: 320,
             width: 350,
             borderRadius: 20,
-            elevation: isVideoLoading ? 0 : 5,
           }}
           source={{
             uri: 'https://res.cloudinary.com/dawvcozos/video/upload/v1685627960/Pass/scan_video_w9izub_rq6jgf.mp4',
