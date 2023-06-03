@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import {
@@ -7,7 +7,6 @@ import {
   getPaymentMethod,
   isBraintreeCustomer,
 } from '../api/payment';
-import { logoutUser } from '../api/user';
 import ActionButton from '../components/ActionButton';
 import OpenPaymentMethods from '../components/OpenPaymentMethods';
 import Popup from '../components/Popup';
@@ -15,11 +14,9 @@ import ScannedProductDetails from '../components/ScannedProductDetails';
 import VideoBox from '../components/VideoBox';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
-import { setClearAuth } from '../stores/auth';
-import useProductStore, { setScanned } from '../stores/product';
 import useUserStore, {
-  clearUser,
   setCardLastDigits,
+  setCardType,
   setHasCreditCard,
   setIsCustomer,
 } from '../stores/user';
@@ -40,8 +37,6 @@ const HomeScreen = ({ navigation }) => {
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
 
-  const scannedProduct = useProductStore((state) => state.scanned);
-
   useEffect(() => {
     const checkValidCustomer = async () => {
       try {
@@ -55,14 +50,18 @@ const HomeScreen = ({ navigation }) => {
           const { defaultPaymentMethod } = data;
 
           if (defaultPaymentMethod) {
-            const { last4 } = defaultPaymentMethod;
+            const { last4, cardType } = defaultPaymentMethod;
             setCardLastDigits(last4);
+            setCardType(cardType);
             setHasCreditCard(true);
           }
         }
       } catch (error) {
-        await forcedLogout();
-        console.log(error);
+        if (
+          error?.response?.data?.error !== 'default payment method not found'
+        ) {
+          await forcedLogout();
+        }
       }
       setIsLoading(false);
     };
@@ -99,20 +98,6 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const refreshToken = await SecureStore.getItemAsync('refreshToken');
-      await logoutUser(refreshToken);
-      await SecureStore.deleteItemAsync('accessToken');
-      await SecureStore.deleteItemAsync('refreshToken');
-      setClearAuth();
-      if (scannedProduct) setScanned(false);
-      clearUser();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   if (isLoading) {
     return (
       <View className='flex-1 items-center justify-center'>
@@ -124,46 +109,49 @@ const HomeScreen = ({ navigation }) => {
     );
   }
   return (
-    <View className='items-center px-7 flex-1'>
-      {isCustomer && hasCreditCard ? (
-        <View className='items-center mt-16'>
-          <ActionButton
-            title='לחץ לסריקת מוצר'
-            handler={() => {
-              navigation.navigate('ScanProduct');
-            }}
-          />
+    <View className='flex-1'>
+      <StatusBar backgroundColor='#3BABFE' />
 
-          <ScannedProductDetails navigation={navigation} />
-        </View>
-      ) : (
-        <View className='items-center mt-10'>
-          <Text className='text-2xl mb-4'>
-            פעם ראשונה אצלנו ? הכנו סרטון הסבר
-          </Text>
-
-          <View className='mb-8 border-2 rounded-md'>
-            <VideoBox
-              uri={
-                'https://res.cloudinary.com/dawvcozos/video/upload/v1682934904/Pass/instructions_gwz40s.mp4'
-              }
+      <View className='flex-1 items-center px-7'>
+        {isCustomer && hasCreditCard ? (
+          <View className='items-center mt-10 w-full'>
+            <ScannedProductDetails navigation={navigation} />
+            <View className='w-full'>
+              <TouchableOpacity
+                className='bg-yellow-400 py-3 px-6 items-center justify-center shadow-black mt-5'
+                onPress={() => navigation.navigate('ScanProduct')}
+                style={{ borderRadius: 10, elevation: 5 }}
+              >
+                <Text className='text-lg font-semibold text-white'>
+                  לחץ לסריקת מוצר
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View className='items-center mt-10 w-full'>
+            <Text className='text-2xl mb-4 font-bold'>שלום {firstName},</Text>
+            <Text className='text-lg'>הכנו עבורך סרטון הסבר לשימוש ב-PASS</Text>
+            <View className='mb-8 rounded-md'>
+              <VideoBox
+                uri={
+                  'https://res.cloudinary.com/dawvcozos/video/upload/v1685628347/Pass/instructions_gwz40s_bdybjn.mp4'
+                }
+              />
+            </View>
+            <Text className='text-base font-bold mb-4 text-yellow-500'>
+              יש להוסיף אמצעי תשלום כדי להתחיל בקנייה
+            </Text>
+            <ActionButton
+              handler={() => {
+                handleAddPaymentButton();
+              }}
+              title='בחירת אמצעי תשלום'
+              style={{ alignSelf: 'stretch' }}
             />
           </View>
-
-          <Text className='text-xl mb-4 text-red-500'>
-            יש להוסיף אמצעי תשלום כדי להתחיל בקנייה
-          </Text>
-
-          <TouchableOpacity
-            className='items-center content-center my-1 rounded-2xl border-t-2 border-b-4 px-4'
-            onPress={() => {
-              handleAddPaymentButton();
-            }}
-          >
-            <Text className='text-lg '>בחירת אמצעי תשלום</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        )}
+      </View>
 
       <Popup
         visible={modalVisible}
@@ -178,15 +166,9 @@ const HomeScreen = ({ navigation }) => {
           clientToken={clientToken}
           show={show}
           setShow={setShow}
+          setIsLoading={setIsLoading}
         />
       )}
-
-      <View className='mt-4'>
-        <ActionButton
-          title='התנתקות'
-          handler={handleLogout}
-        />
-      </View>
     </View>
   );
 };

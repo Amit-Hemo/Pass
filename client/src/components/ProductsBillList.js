@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, Text, View } from 'react-native';
+import { Dimensions, RefreshControl } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import useUserStore from '../stores/user';
 import CartProduct from './CartProduct';
 
@@ -8,17 +9,16 @@ const ProductsBillList = ({ cart }) => {
   const [refreshing, setRefreshing] = useState(false);
   const uuid = useUserStore((state) => state.uuid);
   const queryClient = useQueryClient();
+  const { height } = Dimensions.get('window');
 
   const handleListRefresh = useCallback(() => {
     setRefreshing(true);
     queryClient.invalidateQueries(['cart', uuid]);
-    setRefreshing(false)
+    setRefreshing(false);
   }, []);
 
   return (
-    <FlatList
-      className='rounded-lg border-2 p-2 max-h-80'
-      data={cart}
+    <ScrollView
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -30,26 +30,19 @@ const ProductsBillList = ({ cart }) => {
           progressViewOffset={-40}
         />
       }
-      renderItem={({ item }) => (
+      style={{ height: height / 3 + 30 }}
+    >
+      {cart?.map(({ product, quantity, tags }) => (
         <CartProduct
-          price={item.product.price}
-          name={item.product.name}
-          size={item.product.size}
-          quantity={item.quantity}
-          tags={item.tags}
+          price={product.price}
+          name={product.name}
+          size={product.size}
+          quantity={quantity}
+          tags={tags}
+          key={product.sku}
         />
-      )}
-      ListHeaderComponent={
-        <View className='flex-row my-4'>
-          <Text className='text-2xl font-bold w-5/12 text-center'>שם מוצר</Text>
-          <Text className='text-2xl font-bold w-2/12 text-center'>כמות </Text>
-          <Text className='text-2xl font-bold w-4/12 text-center'>מחיר</Text>
-          <Text className='text-2xl font-bold w-1/12 text-center'></Text>
-        </View>
-      }
-      stickyHeaderIndices={[0]}
-      keyExtractor={(item) => item.product.sku}
-    />
+      ))}
+    </ScrollView>
   );
 };
 

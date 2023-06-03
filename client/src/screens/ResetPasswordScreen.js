@@ -68,14 +68,14 @@ const ResetPasswordScreen = ({ navigation, route }) => {
           message={modalInfo.message}
         />
         <Animated.View
-          className='mb-52 mt-20 justify-center items-center'
+          className='my-10 justify-center items-center'
           entering={FadeInUp.duration(100)}
         >
           <Image
             source={{
               uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685267354/Pass/createNewPasswordIcon_p8verp.png',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
             }}
             className='mr-5'
           />

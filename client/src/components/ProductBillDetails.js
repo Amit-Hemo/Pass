@@ -46,25 +46,32 @@ const ProductBillDetails = ({ navigation }) => {
 
   return (
     <View className='items-center'>
-      <View className='flex-row my-4 items-center'>
-        <Text className=' text-xl flex-1'>{`${name} - ${size}`}</Text>
-        <Text className='text-xl '>{`${price} ש"ח`}</Text>
+      <Image
+        className='rounded-xl mb-2'
+        source={{ uri: image, width: 200, height: 200 }}
+      />
+      <View className='my-3 self-start'>
+        <Text className='text-xl mb-3 font-[900]'>{name}</Text>
+        <Text className='text-lg font-bold'>
+          מידה:
+          <Text className='text-slate-600 font-normal'> {size}</Text>
+        </Text>
+        <Text className='text-lg font-bold'>
+          מחיר:
+          <Text className='text-slate-600 font-normal'> {price} ש"ח</Text>
+        </Text>
       </View>
 
-      <Image
-        className='rounded-xl w-60 h-60 mb-6'
-        source={{ uri: image }}
-      />
-
-      <View className='flex-row space-x-2'>
+      <View className='flex-row w-full justify-evenly'>
         <ActionButton
           title='רכישה מהירה'
           handler={handleFastPurchase}
+          style={{flex: 1, marginRight: 20}}
         />
-        <View className='' />
         <ActionButton
           title='הוספה לסל'
           handler={handleAddToCart}
+          style={{flex: 1}}
         />
       </View>
 

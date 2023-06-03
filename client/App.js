@@ -1,7 +1,11 @@
 import { AntDesign } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  CardStyleInterpolators,
+  TransitionSpecs,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import {
   QueryClient,
   QueryClientProvider,
@@ -21,7 +25,6 @@ import Popup from './src/components/Popup';
 import useHandleAuth from './src/hooks/useHandleAuth';
 import usePopup from './src/hooks/usePopup';
 import useRefreshOnFocus from './src/hooks/useRefreshOnFocus';
-import BillScreen from './src/screens/BillScreen';
 import CartScreen from './src/screens/CartScreen';
 import CreateAccountScreen from './src/screens/CreateAccountScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
@@ -123,7 +126,7 @@ function HomeTabs() {
   }, []);
 
   return (
-    <View className='flex-1 bg-slate-400'>
+    <View className='flex-1'>
       <Popup
         visible={modalVisible}
         setVisible={setModalVisible}
@@ -131,18 +134,24 @@ function HomeTabs() {
         onClose={modalInfo.onClose}
         message={modalInfo.message}
       />
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarItemStyle: { marginBottom: 2 },
+          tabBarLabelStyle: { fontWeight: '600', fontSize: 11 },
+          tabBarHideOnKeyboard: true,
+        }}
+      >
         <Tab.Screen
           name='Home'
           component={HomeStackScreen}
           options={{
             headerShown: false,
             title: 'ראשי',
-            tabBarIcon: () => (
+            tabBarIcon: ({ focused, color }) => (
               <AntDesign
                 name='home'
                 size={24}
-                color='black'
+                color={`${focused ? color : 'black'}`}
               />
             ),
           }}
@@ -153,11 +162,11 @@ function HomeTabs() {
           options={{
             headerShown: false,
             title: 'פרופיל',
-            tabBarIcon: () => (
+            tabBarIcon: ({ focused, color }) => (
               <AntDesign
                 name='profile'
                 size={24}
-                color='black'
+                color={`${focused ? color : 'black'}`}
               />
             ),
           }}
@@ -168,11 +177,11 @@ function HomeTabs() {
           options={{
             headerShown: false,
             title: 'עגלה',
-            tabBarIcon: () => (
+            tabBarIcon: ({ focused, color }) => (
               <AntDesign
                 name='shoppingcart'
                 size={24}
-                color='black'
+                color={`${focused ? color : 'black'}`}
               />
             ),
             tabBarBadge: cartAmount,
@@ -191,27 +200,29 @@ function HomeStackScreen() {
         headerStyle: {
           backgroundColor: '#3BABFE',
         },
-        title: '',
-        cardStyle: {
-          backgroundColor: '#fff',
-        },
-        headerTitle: () => <HeaderLogo />,
+        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
         headerTitleAlign: 'center',
+        headerTintColor: 'white',
       }}
     >
       <HomeStack.Screen
         name='HomeScreen'
         component={HomeScreen}
+        options={{
+          headerTitle: () => <HeaderLogo />,
+        }}
       />
 
       <HomeStack.Screen
         name='ScanProduct'
         component={ScanProductScreen}
-      />
-
-      <HomeStack.Screen
-        name='Bill'
-        component={BillScreen}
+        options={{
+          title: 'סריקת מוצר',
+          presentation: 'modal',
+          gestureEnabled: true,
+          gestureDirection: 'vertical',
+          gestureResponseDistance: 1000,
+        }}
       />
 
       <HomeStack.Screen
@@ -230,37 +241,57 @@ function ProfileStackScreen() {
         headerStyle: {
           backgroundColor: '#3BABFE',
         },
-        title: '',
-        cardStyle: {
-          backgroundColor: '#fff',
-        },
-        headerTitle: () => <HeaderLogo />,
+        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
         headerTitleAlign: 'center',
+        headerTintColor: 'white',
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        transitionSpec: {
+          open: TransitionSpecs.TransitionIOSSpec,
+          close: TransitionSpecs.TransitionIOSSpec,
+        },
+        gestureEnabled: true,
+        gestureDirection: 'horizontal',
+        gestureResponseDistance: 60,
       }}
     >
       <ProfileStack.Screen
         name='ProfileScreen'
         component={ProfileScreen}
+        options={{
+          title: 'פרופיל משתמש',
+        }}
       />
 
       <ProfileStack.Screen
         name='EditProfile'
         component={EditProfileScreen}
+        options={{
+          title: 'עריכת פרופיל',
+        }}
       />
 
       <ProfileStack.Screen
         name='UpdatePassword'
         component={UpdatePasswordScreen}
+        options={{
+          title: 'יצירת סיסמא חדשה',
+        }}
       />
 
       <ProfileStack.Screen
         name='PurchasesHistory'
         component={PurchasesHistoryScreen}
+        options={{
+          title: 'היסטורית רכישות',
+        }}
       />
 
       <ProfileStack.Screen
         name='PurchaseDetails'
         component={PurchaseDetailsScreen}
+        options={{
+          title: 'פרטי רכישה',
+        }}
       />
     </ProfileStack.Navigator>
   );
@@ -274,22 +305,17 @@ function CartStackScreen() {
         headerStyle: {
           backgroundColor: '#3BABFE',
         },
-        title: '',
-        cardStyle: {
-          backgroundColor: '#fff',
-        },
-        headerTitle: () => <HeaderLogo />,
+        headerTitleStyle: { fontSize: 20, fontWeight: 'bold' },
         headerTitleAlign: 'center',
+        headerTintColor: 'white',
       }}
     >
       <CartStack.Screen
         name='CartScreen'
         component={CartScreen}
-      />
-
-      <CartStack.Screen
-        name='Bill'
-        component={BillScreen}
+        options={{
+          title: 'עגלת קניות',
+        }}
       />
 
       <CartStack.Screen
@@ -335,7 +361,7 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar backgroundColor='#3BABFE'/>
+      <StatusBar style='dark' backgroundColor='white' />
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -367,7 +393,7 @@ export default function App() {
               <Stack.Screen
                 name='Splash'
                 component={SplashScreen}
-                options={{ headerTitle: () => '' }}
+                options={{ headerShown: false }}
               />
               <Stack.Screen
                 name='Welcome'
@@ -384,17 +410,17 @@ export default function App() {
               <Stack.Screen
                 name='CreateAccount'
                 component={CreateAccountScreen}
-                options={{title: 'יצירת משתמש'}}
+                options={{ title: 'יצירת משתמש' }}
               />
               <Stack.Screen
                 name='OTP'
                 component={OTPScreen}
-                options={{title: 'אימות'}}
+                options={{ title: 'אימות' }}
               />
               <Stack.Screen
                 name='ForgotPassword'
                 component={ForgotPasswordScreen}
-                options={{title: 'שחזור סיסמא'}}
+                options={{ title: 'שחזור סיסמא' }}
               />
               <Stack.Screen
                 name='ResetPassword'

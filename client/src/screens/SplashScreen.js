@@ -1,6 +1,6 @@
 import { Video } from 'expo-av';
-import { View } from 'react-native';
 import React, { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 const SplashScreen = ({ navigation }) => {
   // Auto navigate to home screen after x seconds
@@ -15,14 +15,13 @@ const SplashScreen = ({ navigation }) => {
   }, []);
 
   return (
-    <View className="h-full flex-col items-center justify-center bottom-20">
+    <View className='flex-1 items-center justify-center'>
       <Video
-        style={{ height: 300, width: 320 }}
-        source={{
-          uri: 'https://res.cloudinary.com/dawvcozos/video/upload/v1682935510/Pass/splash_video_ymfvkq.mp4',
-        }}
+        style={{ height: 300, width: 300}}
+        source={require('../../assets/splash.mp4')}
         shouldPlay
         isLooping
+        resizeMode='contain'
       />
     </View>
   );

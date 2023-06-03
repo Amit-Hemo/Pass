@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { changePaymentMethod } from '../api/payment';
 import { BASE_URL } from '../constants/baseURL';
 import useUserStore, {
   setCardLastDigits,
+  setCardType,
   setHasCreditCard,
 } from '../stores/user';
 import KeyboardDismiss from './KeyboardDismiss';
@@ -30,20 +30,24 @@ const OpenPaymentMethods = ({ clientToken, show, setShow, setIsLoading }) => {
           button.textContent="אמצעי תשלום נבחר בהצלחה";
           instance.requestPaymentMethod((requestPaymentMethodErr, payload) => {
             // Send payload to React Native to send to the server
-            window.ReactNativeWebView.postMessage(JSON.stringify({lastFour: payload.details.lastFour, paymentMethodNonce: payload.nonce}));
+            window.ReactNativeWebView.postMessage(JSON.stringify({lastFour: payload.details.lastFour, cardType: payload.details.cardType ,paymentMethodNonce: payload.nonce}));
           });
         });
       });
     `;
 
-  const handleChangePaymentMethod = async (paymentMethodNonce, lastFour) => {
+  const handleChangePaymentMethod = async (
+    paymentMethodNonce,
+    lastFour,
+    cardType
+  ) => {
     try {
       setIsLoading(true);
       setShow(false);
       await changePaymentMethod(uuid, paymentMethodNonce);
-      console.log('changed payment method');
       setHasCreditCard(true);
       setCardLastDigits(lastFour);
+      setCardType(cardType);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -64,11 +68,14 @@ const OpenPaymentMethods = ({ clientToken, show, setShow, setIsLoading }) => {
             <WebView
               source={{ uri: `${HOST}/payment` }}
               onMessage={(event) => {
-                const { lastFour, paymentMethodNonce } = JSON.parse(
+                const { lastFour, cardType, paymentMethodNonce } = JSON.parse(
                   event.nativeEvent.data
                 );
-                console.log({ paymentMethodNonce, lastFour });
-                handleChangePaymentMethod(paymentMethodNonce, lastFour);
+                handleChangePaymentMethod(
+                  paymentMethodNonce,
+                  lastFour,
+                  cardType
+                );
               }}
               injectedJavaScript={loadPaymentsScript}
               allowsBackForwardNavigationGestures

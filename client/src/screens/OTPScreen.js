@@ -109,14 +109,14 @@ const OTPScreen = ({ navigation, route }) => {
         />
 
         <Animated.View
-          className='mb-32 mt-20 justify-center items-center'
+          className='my-10 justify-center items-center'
           entering={FadeInUp.duration(100)}
         >
           <Image
             source={{
               uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685267389/Pass/otpMailIcon_atlnw6.png',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
             }}
           />
           <Text className='text-white text-base font-bold mt-10'>

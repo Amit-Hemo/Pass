@@ -6,8 +6,9 @@ const useUserStore = create(() => ({
   lastName: '',
   email: '',
   isCustomer: false,
-  cardLastDigits: '',
   hasCreditCard: false,
+  cardLastDigits: '',
+  cardType: '',
 }));
 
 export const setUuid = (uuid) => useUserStore.setState(() => ({ uuid }));
@@ -23,6 +24,9 @@ export const setEmail = (email) => useUserStore.setState(() => ({ email }));
 export const setIsCustomer = (status) =>
   useUserStore.setState(() => ({ isCustomer: status }));
 
+export const setCardType = (cardType) =>
+  useUserStore.setState(() => ({ cardType }));
+
 export const setCardLastDigits = (lastDigits) =>
   useUserStore.setState(() => ({ cardLastDigits: lastDigits }));
 
@@ -36,6 +40,9 @@ export const clearUser = () =>
     lastName: '',
     email: '',
     isCustomer: false,
+    hasCreditCard: false,
+    cardLastDigits: '',
+    cardType: '',
   }));
 
 export default useUserStore;

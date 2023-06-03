@@ -1,19 +1,28 @@
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
+import { useState } from 'react';
 import {
   ActivityIndicator,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { generateClientToken } from '../api/payment';
+import { logoutUser } from '../api/user';
 import ActionButton from '../components/ActionButton';
-import KeyboardDismiss from '../components/KeyboardDismiss';
-import useAuth from '../hooks/useAuth';
-import useUserStore from '../stores/user';
+import Box from '../components/Box';
+import CreditCard from '../components/CreditCard';
+import HorizonalLine from '../components/HorizonalLine';
 import OpenPaymentMethods from '../components/OpenPaymentMethods';
 import Popup from '../components/Popup';
+import ProfileLink from '../components/ProfileLink';
+import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
-import { generateClientToken } from '../api/payment';
-import { useState } from 'react';
+import useAuthStore, { setClearAuth } from '../stores/auth';
+import useProductStore, { setScanned } from '../stores/product';
+import useUserStore, { clearUser } from '../stores/user';
 
 const ProfileScreen = ({ navigation }) => {
   useAuth();
@@ -30,7 +39,12 @@ const ProfileScreen = ({ navigation }) => {
   const email = useUserStore((state) => state.email);
   const isCustomer = useUserStore((state) => state.isCustomer);
   const hasCreditCard = useUserStore((state) => state.hasCreditCard);
-  const lastDigits = useUserStore((state) => state.cardLastDigits);
+
+  const isSignedWithProvider = useAuthStore(
+    (state) => state.isSignedWithProvider
+  );
+
+  const scannedProduct = useProductStore((state) => state.scanned);
 
   const handleAddPaymentButton = async () => {
     setIsLoading(true);
@@ -51,83 +65,141 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
+      await logoutUser(refreshToken);
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
+      setClearAuth();
+      if (scannedProduct) setScanned(false);
+      clearUser();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text className="text-xl text-center font-bold mb-8 ">
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-xl text-center font-bold mb-8 '>
           יש להמתין...
         </Text>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size='large' />
       </View>
     );
   }
 
   return (
-    <KeyboardDismiss>
-      <ScrollView>
-        <View className="items-center mt-10 px-7">
-          <Text className="mb-6 text-3xl">פרופיל משתמש</Text>
-          <Text className="mb-2 text-xl font-bold">{firstName}</Text>
-          <Text className="mb-2 text-xl font-bold">{lastName}</Text>
-          <Text className="mb-6 text-xl font-bold">{email}</Text>
-          <ActionButton
-            title="ערוך פרטים"
-            handler={() => {
-              navigation.navigate('EditProfile');
-            }}
-          />
-          <Text className=" mt-10 mb-6 text-2xl">פרטי אשראי</Text>
-          {isCustomer && hasCreditCard ? (
-            <View className="items-center ">
-              <Text className=" mb-2 text-lg font-semibold"> כרטיס ראשי</Text>
-              <Text className="text-xl bg-gray-100 rounded-lg px-5 py-2 mb-5">
-                {`XXXX-XXXX-XXXX-${lastDigits}`}
+    <ScrollView>
+      <View className='items-center mt-5 px-7'>
+        <Box>
+          <Pressable
+            className='flex-row justify-between items-center w-full'
+            onPress={() => navigation.navigate('EditProfile')}
+          >
+            <View>
+              <Text className='text-xl font-bold'>
+                {firstName} {lastName}
               </Text>
-              <TouchableOpacity
-                className="py-3 px-6 mb-6 bg-blue-400 rounded-lg items-center justify-center shadow-black"
-                style={{ elevation: 5 }}
-                onPress={() => {
+              <Text className='text-lg font-bold text-gray-500'>{email}</Text>
+            </View>
+
+            <AntDesign
+              name='left'
+              size={20}
+              color='gray'
+            />
+          </Pressable>
+        </Box>
+
+        <Box style={{ justifyContent: 'center' }}>
+          {isCustomer && hasCreditCard ? (
+            <>
+              <CreditCard />
+              <ActionButton
+                title='בחירת אמצעי תשלום'
+                handler={() => {
                   handleAddPaymentButton();
                 }}
-              >
-                <Text className="text-white font-semibold">
-                  בחירת אמצעי תשלום
-                </Text>
-              </TouchableOpacity>
-              <OpenPaymentMethods
-                clientToken={clientToken}
-                show={show}
-                setShow={setShow}
-                setIsLoading={setIsLoading}
+                style={{ marginTop: 20 }}
               />
-              <Popup
-                visible={modalVisible}
-                isError={modalInfo.isError}
-                setVisible={setModalVisible}
-                onClose={modalInfo.onClose}
-                message={modalInfo.message}
-              />
-              <View className="mt-4">
-                <ActionButton
-                  title="היסטורית רכישות"
-                  handler={() => {
-                    navigation.navigate('PurchasesHistory');
-                  }}
-                />
-              </View>
-            </View>
+            </>
           ) : (
-            <View className="items-center border-2 rounded-xl mx-2">
-              <Text className="text-xl text-center font-bold mb-2 text-red-500 p-10">
-                {' '}
-                קיימות אופציות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני בעמוד
-                הראשי{' '}
-              </Text>
-            </View>
+            <Text className='text-lg text-center font-bold mb-2 text-red-500'>
+              קיימות אפשרויות נוספות בעמוד זה לאחר הוספת אמצעי תשלום ראשוני
+              בעמוד הראשי
+            </Text>
           )}
-        </View>
-      </ScrollView>
-    </KeyboardDismiss>
+        </Box>
+
+        <Box style={{ justifyContent: 'center' }}>
+          {!isSignedWithProvider && (
+            <>
+              <ProfileLink
+                title='סיסמא'
+                icon={
+                  <AntDesign
+                    name='lock'
+                    size={28}
+                    color='black'
+                  />
+                }
+                to='UpdatePassword'
+              />
+              <HorizonalLine />
+            </>
+          )}
+
+          {isCustomer && hasCreditCard && (
+            <>
+              <ProfileLink
+                title='היסטורית רכישות'
+                icon={
+                  <MaterialIcons
+                    name='history'
+                    size={28}
+                    color='black'
+                  />
+                }
+                to='PurchasesHistory'
+              />
+              <HorizonalLine />
+            </>
+          )}
+          <View className='self-stretch mt-4'>
+            <TouchableOpacity
+              className='bg-yellow-400 py-2 px-6 flex-row items-center justify-center space-x-3 shadow-md shadow-gray-600'
+              onPress={handleLogout}
+              style={{ borderRadius: 10 }}
+            >
+              <MaterialIcons
+                name='logout'
+                size={24}
+                color='white'
+              />
+              <Text className='text-base font-semibold text-white'>
+                התנתקות
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Box>
+
+        <OpenPaymentMethods
+          clientToken={clientToken}
+          show={show}
+          setShow={setShow}
+          setIsLoading={setIsLoading}
+        />
+        <Popup
+          visible={modalVisible}
+          isError={modalInfo.isError}
+          setVisible={setModalVisible}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+        />
+      </View>
+    </ScrollView>
   );
 };
 

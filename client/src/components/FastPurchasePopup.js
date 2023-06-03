@@ -61,42 +61,41 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
         animationOut={'bounceOutDown'}
         className='w-2/3 self-center'
       >
-        <View className='bg-white py-16 px-5 rounded-3xl border border-gray-300 shadow-md justify-center items-center'>
-          <>
-            <Image
-              className='w-28 h-28 mb-8'
-              source={{
-                uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1683056863/Pass/payment_gnz7bw.png',
-              }}
-            />
-            <Text className='text-xl text-center font-bold mb-4'>
-              {` סכום סופי לתשלום: ${price} ש"ח`}
-            </Text>
+        <View className='bg-white py-10 px-7 rounded-3xl justify-center items-center'>
+          <Image
+            className='w-28 h-28 mb-8'
+            source={{
+              uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1683056863/Pass/payment_gnz7bw.png',
+            }}
+          />
+          <Text className='text-xl text-center font-bold mb-4'>
+            סכום סופי לתשלום:
+          </Text>
+          <Text className='text-xl text-center mb-4'>{price} ש"ח</Text>
 
-            <View className='flex-row p-2 justify-evenly '>
-              <TouchableOpacity
-                className={`border-2 border-green-600 rounded-full px-6 pt-2 mx-4 ${
-                  Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
-                } items-center justify-center`}
-                onPress={() => {
-                  handleFastPurchase();
-                  setVisible(false);
-                }}
-              >
-                <Text className=' text-green-600 font-bold text-lg'>שלם</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={` border-2 border-red-700 rounded-full px-6 pt-2 mx-4 ${
-                  Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
-                } items-center justify-center`}
-                onPress={() => {
-                  setVisible(false);
-                }}
-              >
-                <Text className='text-red-600 font-bold text-lg'>בטל</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+          <View className='flex-row p-2 justify-evenly '>
+            <TouchableOpacity
+              className={`border-2 border-green-600 rounded-full px-6 pt-2 mx-4 ${
+                Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
+              } items-center justify-center`}
+              onPress={() => {
+                handleFastPurchase();
+                setVisible(false);
+              }}
+            >
+              <Text className=' text-green-600 font-bold text-lg'>שלם</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className={` border-2 border-red-700 rounded-full px-6 pt-2 mx-4 ${
+                Platform.OS === 'ios' ? 'pb-1' : 'pb-2'
+              } items-center justify-center`}
+              onPress={() => {
+                setVisible(false);
+              }}
+            >
+              <Text className='text-red-600 font-bold text-lg'>בטל</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
 

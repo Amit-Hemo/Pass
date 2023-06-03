@@ -6,6 +6,7 @@ import { deleteProductFromCart } from '../api/user';
 import usePopup from '../hooks/usePopup';
 import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
+import Box from './Box';
 import Popup from './Popup';
 
 const CartProduct = ({ name, size, price, quantity, tags }) => {
@@ -33,27 +34,35 @@ const CartProduct = ({ name, size, price, quantity, tags }) => {
   };
 
   return (
-    <View className='flex-row items-center'>
-      <Text className='text-xl text-center w-5/12 mb-2'>
-        {name} - {size}
-      </Text>
-      <Text className='text-xl text-center w-2/12 mb-2'>{quantity}</Text>
-      <Text className='text-xl text-center w-4/12 mb-2'>{price} ש"ח</Text>
-      <MaterialIcons
-        name='cancel'
-        size={30}
-        color='#FF6969'
-        onPress={handleDelete}
-        style={{ marginBottom: 8 }}
-      />
-      <Popup
-        visible={modalVisible}
-        isError={modalInfo.isError}
-        setVisible={setModalVisible}
-        onClose={modalInfo.onClose}
-        message={modalInfo.message}
-      />
-    </View>
+    <Box style={{paddingVertical: 12}}>
+      <View className='flex-row items-center justify-between w-full'>
+        <View className='items-start'>
+          <Text className='text-base space-x-3 font-bold'>
+            {name} - {size}
+          </Text>
+          <Text className='text-lg text-center text-gray-500 font-medium'>
+            {price} ש"ח
+          </Text>
+        </View>
+        <View className='flex-row space-x-3'>
+          <Text className='text-lg text-center font-semibold'>{quantity}</Text>
+          <MaterialIcons
+            name='cancel'
+            size={30}
+            color='#FF6969'
+            onPress={handleDelete}
+            style={{ marginBottom: 8 }}
+          />
+        </View>
+        <Popup
+          visible={modalVisible}
+          isError={modalInfo.isError}
+          setVisible={setModalVisible}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+        />
+      </View>
+    </Box>
   );
 };
 

@@ -63,14 +63,14 @@ const CreateAccountScreen = ({ navigation }) => {
           message={modalInfo.message}
         />
         <Animated.View
-          className='my-8'
+          className='my-6'
           entering={FadeInUp.duration(100)}
         >
           <Image
             source={{
               uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685271570/Pass/registerIcon_hvaubt.png',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
             }}
           />
         </Animated.View>

@@ -6,8 +6,8 @@ const PurchasesList = ({ purchases, navigation }) => {
   return (
     <FlatList
       data={purchases}
-      renderItem={({ item }) => (
-        <PurchaseItem {...item} navigation={navigation} />
+      renderItem={({ item, index }) => (
+        <PurchaseItem {...item} index={index} navigation={navigation} />
       )}
       keyExtractor={(item) => item.transactionId}
     />

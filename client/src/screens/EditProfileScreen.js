@@ -4,13 +4,13 @@ import { Text, View } from 'react-native';
 import { updateCustomer } from '../api/payment';
 import { updateUser } from '../api/user';
 import ActionButton from '../components/ActionButton';
+import Box from '../components/Box';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import Popup from '../components/Popup';
 import { EMAIL_REGEX } from '../constants/regexes';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
-import useAuthStore from '../stores/auth';
 import useUserStore, {
   setEmail,
   setFirstName,
@@ -22,10 +22,6 @@ const EditProfileScreen = ({ navigation }) => {
   useAuth();
 
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-
-  const isSignedWithProvider = useAuthStore(
-    (state) => state.isSignedWithProvider
-  );
 
   const uuid = useUserStore((state) => state.uuid);
   const firstName = useUserStore((state) => state.firstName);
@@ -74,11 +70,11 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='items-center flex-1 px-7'>
-        <Text className='mt-10 mb-5 text-3xl '>עריכת פרופיל</Text>
-
-        <View className='items-center mb-16'>
-          <Text className='text-lg font-semibold'>שם פרטי</Text>
+      <View className='items-center px-7 mt-5'>
+        <Box>
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            שם פרטי
+          </Text>
           <InputBar
             input='firstName'
             control={control}
@@ -95,7 +91,9 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className='text-lg font-semibold'>שם משפחה</Text>
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            שם משפחה
+          </Text>
           <InputBar
             input='lastName'
             control={control}
@@ -112,7 +110,9 @@ const EditProfileScreen = ({ navigation }) => {
             }}
           />
 
-          <Text className='text-lg font-semibold'>אימייל</Text>
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            אימייל
+          </Text>
           <InputBar
             input='email'
             control={control}
@@ -123,15 +123,9 @@ const EditProfileScreen = ({ navigation }) => {
           />
 
           <ActionButton
-            title='ערוך'
+            title='סיום'
             handler={handleSubmit(onEditProfile)}
           />
-          {!isSignedWithProvider && (
-            <ActionButton
-              title='ערוך סיסמא'
-              handler={() => navigation.navigate('UpdatePassword')}
-            />
-          )}
 
           <Popup
             visible={modalVisible}
@@ -140,7 +134,7 @@ const EditProfileScreen = ({ navigation }) => {
             onClose={modalInfo.onClose}
             message={modalInfo.message}
           />
-        </View>
+        </Box>
       </View>
     </KeyboardDismiss>
   );

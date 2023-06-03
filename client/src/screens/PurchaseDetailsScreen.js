@@ -1,9 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { sendReceipt } from '../api/payment';
 import { watchPurchaseById } from '../api/user';
-import ActionButton from '../components/ActionButton';
+import Box from '../components/Box';
+import HorizonalLine from '../components/HorizonalLine';
 import Popup from '../components/Popup';
 import useAuth from '../hooks/useAuth';
 import usePopup from '../hooks/usePopup';
@@ -21,6 +29,15 @@ const PurchaseDetailsScreen = ({ route }) => {
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const [popUpLoading, setPopUpLoading] = useState(false);
 
+  const cardTypeToImageUrl = {
+    visa: { uri: require('../../assets/visa.png'), width: 40, height: 30 },
+    mastercard: {
+      uri: require('../../assets/mastercard.png'),
+      width: 35,
+      height: 30,
+    },
+  };
+
   const handleSendReceipt = async () => {
     try {
       setPopUpLoading(true);
@@ -31,7 +48,7 @@ const PurchaseDetailsScreen = ({ route }) => {
 
       setModalInfo({
         isError: false,
-        message: '!הקבלה נשלחה בהצלחה',
+        message: 'הקבלה נשלחה בהצלחה!',
       });
       setModalVisible(true);
     } catch (error) {
@@ -57,10 +74,111 @@ const PurchaseDetailsScreen = ({ route }) => {
   }
 
   return (
-    <View className='items-center mt-10 px-7'>
-      <Text className='mb-5 text-3xl'>פרטי רכישה</Text>
-      <View className='self-start mb-5'>
-        <Text className='mb-2 text-xl'>
+    <ScrollView>
+      <View className='items-center mt-10 px-7'>
+        <Box>
+          <Text className='font-bold text-xl mb-3'>
+            {foundPurchase?.merchantID}
+          </Text>
+          <Text className='font-extrabold text-2xl text-blue-600'>
+            {foundPurchase?.totalAmount} ש"ח
+          </Text>
+        </Box>
+
+        <Box>
+          <Text className='font-semibold text-[19px] mb-3 self-start'>
+            פרטי תשלום
+          </Text>
+          <View className='flex-row justify-between w-full'>
+            <Text className='text-gray-400 font-semibold text-base'>תאריך</Text>
+            <Text className='font-semibold text-base'>
+              {foundPurchase?.transactionTimeStamp.transactionDate} -{' '}
+              {foundPurchase?.transactionTimeStamp.transactionTime}
+            </Text>
+          </View>
+          <HorizonalLine />
+          <View className='flex-row justify-between w-full'>
+            <Text className='text-gray-400 font-semibold text-base'>
+              מספר עסקה
+            </Text>
+            <Text className='font-semibold text-base'>
+              {foundPurchase?.transactionId}
+            </Text>
+          </View>
+          <HorizonalLine />
+
+          <View className='flex-row justify-between items-center w-full space-x-3'>
+            <View className='flex-row items-center space-x-3 justify-between'>
+              <Image
+                source={
+                  cardTypeToImageUrl[foundPurchase?.cardType.toLowerCase()]?.uri
+                }
+                style={{
+                  width:
+                    cardTypeToImageUrl[foundPurchase?.cardType.toLowerCase()]
+                      ?.width,
+                  height:
+                    cardTypeToImageUrl[foundPurchase?.cardType.toLowerCase()]
+                      ?.height,
+                  marginTop: 2,
+                }}
+              />
+
+              <Text className='font-semibold text-base'>
+                {foundPurchase?.cardType}
+              </Text>
+            </View>
+            <Text className='font-semibold text-base'>
+              xxxx-{foundPurchase?.last4}
+            </Text>
+          </View>
+          <HorizonalLine />
+          <View className='w-full mt-3'>
+            <TouchableOpacity
+              className='bg-yellow-400 py-2 px-6 items-center justify-center shadow-black'
+              onPress={handleSendReceipt}
+              style={{ borderRadius: 10, elevation: 5 }}
+            >
+              <Text className='text-lg font-semibold text-white'>שלח קבלה</Text>
+            </TouchableOpacity>
+          </View>
+        </Box>
+
+        <Box>
+          <Text className='font-semibold text-[18px] mb-3 self-start'>
+            מוצרים שנרכשו
+          </Text>
+          {foundPurchase?.products.map(({ product, quantity }) => (
+            <View key={product.sku} className='w-full'>
+              <View className='flex-row justify-between items-center'>
+                <View className='items-start'>
+                  <Text className='text-base font-medium'>
+                    {product.name} - {product.size}
+                  </Text>
+                  <Text className='text-sm text-gray-500 font-semibold'>כמות: {quantity}</Text>
+                </View>
+                <Text className='font-bold'>{quantity * product.price} ש"ח</Text>
+              </View>
+              <HorizonalLine />
+            </View>
+          ))}
+        </Box>
+
+        <Popup
+          visible={modalVisible}
+          isError={modalInfo.isError}
+          setVisible={setModalVisible}
+          onClose={modalInfo.onClose}
+          message={modalInfo.message}
+          isLoading={popUpLoading}
+        />
+      </View>
+    </ScrollView>
+  );
+};
+
+{
+  /* <Text className='mb-2 text-xl'>
           שם החנות: {foundPurchase?.merchantID}
         </Text>
         <Text className='mb-2 text-xl'>
@@ -107,21 +225,7 @@ const PurchaseDetailsScreen = ({ route }) => {
       </View>
       <Text className='text-xl mb-4'>
         סך הכל {foundPurchase?.totalAmount} ש"ח
-      </Text>
-      <ActionButton
-        title='שלח קבלה'
-        handler={handleSendReceipt}
-      />
-      <Popup
-        visible={modalVisible}
-        isError={modalInfo.isError}
-        setVisible={setModalVisible}
-        onClose={modalInfo.onClose}
-        message={modalInfo.message}
-        isLoading={popUpLoading}
-      />
-    </View>
-  );
-};
+      </Text> */
+}
 
 export default PurchaseDetailsScreen;

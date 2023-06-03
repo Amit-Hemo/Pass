@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 import { updatePassword } from '../api/user';
 import ActionButton from '../components/ActionButton';
+import Box from '../components/Box';
 import InputBar from '../components/InputBar';
 import KeyboardDismiss from '../components/KeyboardDismiss';
 import Popup from '../components/Popup';
@@ -67,68 +68,73 @@ const UpdatePasswordScreen = ({ navigation }) => {
 
   return (
     <KeyboardDismiss>
-      <View className='items-center px-7'>
-        <Text className='mt-10 mb-8 text-3xl'>יצירת סיסמא חדשה</Text>
-
-        <Text className='text-lg font-semibold'>סיסמא</Text>
-        <InputBar
-          input='password'
-          visible={false}
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 8,
-              message: 'שדה זה מכיל לפחות 8 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-          }}
-        />
-        <Text className='text-lg font-semibold'>סיסמא חדשה</Text>
-        <InputBar
-          input='newPassword'
-          visible={false}
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 8,
-              message: 'שדה זה מכיל לפחות 8 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-            validate: validateNewPassword,
-          }}
-        />
-
-        <Text className='text-lg font-semibold'>אימות סיסמא</Text>
-        <InputBar
-          input='confirmNewPassword'
-          visible={false}
-          control={control}
-          rules={{
-            required: 'שדה זה חובה',
-            minLength: {
-              value: 8,
-              message: 'שדה זה מכיל לפחות 8 אותיות',
-            },
-            maxLength: {
-              value: 100,
-              message: 'שדה זה מכיל לכל היותר 100 אותיות',
-            },
-            validate: (value) => value === newPwd || 'הסיסמאות אינן תואמות',
-          }}
-        />
-
-        <ActionButton
-          title='אישור'
-          handler={handleSubmit(onUpdatePassword)}
-        />
+      <View className='items-center px-7 mt-5'>
+        <Box>
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            סיסמא
+          </Text>
+          <InputBar
+            input='password'
+            visible={false}
+            control={control}
+            rules={{
+              required: 'שדה זה חובה',
+              minLength: {
+                value: 8,
+                message: 'שדה זה מכיל לפחות 8 אותיות',
+              },
+              maxLength: {
+                value: 100,
+                message: 'שדה זה מכיל לכל היותר 100 אותיות',
+              },
+            }}
+          />
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            סיסמא חדשה
+          </Text>
+          <InputBar
+            input='newPassword'
+            visible={false}
+            control={control}
+            rules={{
+              required: 'שדה זה חובה',
+              minLength: {
+                value: 8,
+                message: 'שדה זה מכיל לפחות 8 אותיות',
+              },
+              maxLength: {
+                value: 100,
+                message: 'שדה זה מכיל לכל היותר 100 אותיות',
+              },
+              validate: validateNewPassword,
+            }}
+          />
+          <Text className='font-semibold self-start text-slate-600 mb-1'>
+            אימות סיסמא
+          </Text>
+          <InputBar
+            input='confirmNewPassword'
+            visible={false}
+            control={control}
+            rules={{
+              required: 'שדה זה חובה',
+              minLength: {
+                value: 8,
+                message: 'שדה זה מכיל לפחות 8 אותיות',
+              },
+              maxLength: {
+                value: 100,
+                message: 'שדה זה מכיל לכל היותר 100 אותיות',
+              },
+              validate: (value) => value === newPwd || 'הסיסמאות אינן תואמות',
+            }}
+          />
+          <ActionButton
+            title='אישור'
+            handler={handleSubmit(onUpdatePassword)}
+            style={{width: '100%'}}
+          />
+        </Box>
 
         <Popup
           visible={modalVisible}

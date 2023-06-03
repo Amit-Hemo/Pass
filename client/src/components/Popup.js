@@ -27,7 +27,7 @@ const Popup = ({
       <View className="bg-white py-16 px-5 rounded-3xl border border-gray-300 shadow-md justify-center items-center">
         {isLoading ? (
           <View>
-            <Text className="text-xl text-center font-bold mb-8">
+            <Text className="text-lg text-center font-bold mb-8">
               יש להמתין...
             </Text>
             <ActivityIndicator size="large" />
@@ -46,7 +46,7 @@ const Popup = ({
               }
               className="w-28 h-28 mb-8"
             />
-            <Text className="text-xl text-center font-bold mb-4">
+            <Text className="text-lg text-center font-bold mb-4">
               {message}
             </Text>
             <TouchableOpacity

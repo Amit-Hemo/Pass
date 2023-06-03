@@ -44,7 +44,6 @@ const LoginScreen = ({ navigation }) => {
   const [clientId, setClientId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-  const [isRegistering, setIsRegistering] = useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: clientId,
@@ -154,20 +153,20 @@ const LoginScreen = ({ navigation }) => {
           isLoading={isLoading}
         />
         <Animated.View
-          className='my-20'
+          className='my-10'
           entering={FadeInUp.duration(100)}
         >
           <Image
             source={{
               uri: 'https://res.cloudinary.com/dawvcozos/image/upload/v1685267286/Pass/loginIcon_plpauq.png',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
             }}
           />
         </Animated.View>
         <View className='justify-center w-full'>
           <Animated.View
-            className='justify-center items-center bg-white py-10 px-7 '
+            className='justify-center items-center bg-white py-10 px-7'
             entering={FadeInDown.duration(100)}
             exiting={FadeOutDown.duration(100)}
             style={{ borderTopEndRadius: 40, borderTopStartRadius: 40 }}

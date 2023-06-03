@@ -1,4 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
 import React, { useCallback } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
@@ -38,6 +39,7 @@ const WelcomeScreen = ({ navigation }) => {
 
   return (
     <View className='flex-1 items-center bg-[#3BABFE] justify-between'>
+      <StatusBar />
       <View>
         <Image
           source={require('../../assets/header_logo2.png')}
