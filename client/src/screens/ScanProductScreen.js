@@ -26,7 +26,6 @@ import readNFC from '../utils/readNFC';
 const ScanProductScreen = ({ navigation }) => {
   useAuth();
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
-  const [isVideoLoading, setIsVideoLoading] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
@@ -83,7 +82,6 @@ const ScanProductScreen = ({ navigation }) => {
           }}
           shouldPlay
           isLooping
-          onReadyForDisplay={() => setIsVideoLoading(false)}
         />
       </View>
       <Popup
