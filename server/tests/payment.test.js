@@ -76,7 +76,7 @@ describe('GET /payment/customers/:uuid/generateToken', () => {
     uuid = response.body.user.uuid;
   });
 
-  it('should respond with braintree client token if user is braintree customer', async () => {
+  it('should respond with brainנtree client token if user is braintree customer', async () => {
     const response = await request(app)
       .get(`/payment/customers/${uuid}/generateToken`)
       .set('Accept', 'application/json')

@@ -12,8 +12,11 @@ const changePasswordSchema = require('../schemas/changePasswordSchema');
 const tagUuidSchema = require('../schemas/tagUuidSchema');
 const transactionSchema = require('../schemas/transactionSchema');
 const platformOsSchema = require('../schemas/platformOsSchema');
+const httpLogger = require('../middlewares/httpLogger');
 
 const router = express.Router();
+
+router.use(httpLogger('users'));
 
 router.put(
   '/:uuid',

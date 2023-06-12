@@ -9,8 +9,11 @@ const userSchema = require('../schemas/userSchema');
 const tagUuidSchema = require('../schemas/tagUuidSchema');
 const transactionSchema = require('../schemas/transactionSchema');
 const paymentMethodSchema = require('../schemas/paymentMethodSchema');
+const httpLogger = require('../middlewares/httpLogger');
 
 const router = express.Router();
+
+router.use(httpLogger('payment'));
 
 router.get('/', paymentController.getBraintreeUI);
 

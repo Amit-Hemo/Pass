@@ -1,11 +1,16 @@
 const jwt = require('jsonwebtoken');
+
 const UserModel = require('../models/userModel');
 const OtpModel = require('../models/otpModel');
 const TagModel = require('../models/tagModel');
 const PurchaseModel = require('../models/purchaseModel');
+
 const generateOTP = require('../utils/generateOTP');
 const sendOTPEmail = require('../utils/sendOTPEmail');
 const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
+const createLoggerInstance = require('../utils/createLoggerInstance');
+
+const logger = createLoggerInstance('users');
 
 async function getUser(req, res) {
   const { uuid } = req.params;
@@ -243,13 +248,11 @@ async function forgotPassword(req, res) {
         client: 'כתובת האימייל לא נמצאה במערכת',
       });
     if (!user.password) {
-      return res
-        .status(400)
-        .json({
-          error: 'No password found',
-          client:
-            'עבור אימייל זה לא קיימת סיסמא, התחבר באמצעות נותן השירות שבחרת',
-        });
+      return res.status(400).json({
+        error: 'No password found',
+        client:
+          'עבור אימייל זה לא קיימת סיסמא, התחבר באמצעות נותן השירות שבחרת',
+      });
     }
     return res.json({ message: 'Forgot password request has been approved' });
   } catch (error) {

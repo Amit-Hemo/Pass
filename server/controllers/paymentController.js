@@ -5,9 +5,12 @@ const UserModel = require('../models/userModel');
 const TagModel = require('../models/tagModel');
 const PurchaseModel = require('../models/purchaseModel');
 
-const sendReceiptEmail = require('../../server/utils/sendReceipt');
-const calculateCart = require('../../server/utils/calculateCart');
+const sendReceiptEmail = require('../utils/sendReceipt');
+const calculateCart = require('../utils/calculateCart');
 const filterUnavailableTags = require('../utils/filterUnavailableTags');
+const createLoggerInstance = require('../utils/createLoggerInstance');
+
+const logger = createLoggerInstance('payment');
 
 const getBraintreeUI = async (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'views', 'braintree.html'));
@@ -66,8 +69,10 @@ const getPaymentMethod = async (req, res) => {
       (paymentMethod) => paymentMethod.default
     );
 
-    if(!defaultPaymentMethod) {
-      return res.status(404).json({error: 'default payment method not found'})
+    if (!defaultPaymentMethod) {
+      return res
+        .status(404)
+        .json({ error: 'default payment method not found' });
     }
 
     res.json({
@@ -112,7 +117,6 @@ const changePaymentMethod = async (req, res) => {
 
 const getClientToken = async (req, res) => {
   const { uuid } = req.params;
-
   try {
     const user = await UserModel.findOne({ uuid }).lean();
     if (!user) {
