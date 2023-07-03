@@ -1,9 +1,9 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { createCartTransaction, sendReceipt } from '../api/payment';
-import { watchCart } from '../api/user';
+import { deleteCart, watchCart } from '../api/user';
 import usePopup from '../hooks/usePopup';
 import { setClearProduct } from '../stores/product';
 import useUserStore from '../stores/user';
@@ -16,13 +16,27 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
+  const queryClient = useQueryClient();
   const { data: cart } = useQuery(['cart', uuid], () => watchCart(uuid), {
     select: (data) => {
       const filteredCart = filterUnavailableTags([...data.cart]);
       return filteredCart.reverse();
     },
   });
-  const queryClient = useQueryClient();
+  const clearCartMutation = useMutation(deleteCart, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['cart', uuid]);
+    },
+    onError: (err) => {
+      console.log('Cart error:', err);
+      const errorMessage = handleApiError(err);
+      setModalInfo({
+        isError: true,
+        message: errorMessage,
+      });
+      setModalVisible(true);
+    },
+  });
 
   let totalPrice = 0;
   if (cart) totalPrice = calculateCartPrice(cart);
@@ -42,9 +56,10 @@ const CartPurchasePopup = ({ visible, setVisible, navigation }) => {
         isError: false,
         message: 'הרכישה התבצעה בהצלחה, תתחדשו!',
         onClose: async () => {
-          setClearProduct();
           navigation.navigate('ReleaseProduct', { cart });
+          setClearProduct();
           queryClient.invalidateQueries(['purchases', uuid]);
+          clearCartMutation.mutate(uuid);
           try {
             await sendReceipt(uuid, transactionId);
           } catch (error) {

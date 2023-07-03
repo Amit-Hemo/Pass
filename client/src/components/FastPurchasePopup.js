@@ -4,7 +4,7 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import { createFastTransaction, sendReceipt } from '../api/payment';
 import usePopup from '../hooks/usePopup';
-import useProductStore from '../stores/product';
+import useProductStore, { setClearProduct } from '../stores/product';
 import useUserStore from '../stores/user';
 import handleApiError from '../utils/handleApiError';
 import Popup from './Popup';
@@ -13,6 +13,8 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
   const uuid = useUserStore((state) => state.uuid);
   const tagUuid = useProductStore((state) => state.tagUuid);
   const price = useProductStore((state) => state.price);
+  const name = useProductStore((state) => state.name);
+  const size = useProductStore((state) => state.size);
   const [isLoading, setIsLoading] = useState(false);
   const { modalVisible, setModalVisible, modalInfo, setModalInfo } = usePopup();
   const queryClient = useQueryClient();
@@ -31,7 +33,10 @@ const PurchasePopup = ({ visible, setVisible, navigation }) => {
         isError: false,
         message: 'המוצר נרכש בהצלחה, תתחדשו !',
         onClose: async () => {
-          navigation.navigate('ReleaseProduct');
+          navigation.navigate('ReleaseProduct', {
+            singleProduct: { name, size },
+          });
+          setClearProduct();
           queryClient.invalidateQueries(['purchases', uuid]);
           try {
             await sendReceipt(uuid, transactionId);
