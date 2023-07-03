@@ -332,6 +332,13 @@ async function addProductToCart(req, res) {
     const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: 'Tag not found' });
 
+    if (!tag.isAvailable) {
+      return res.status(404).json({
+        error: 'Product is unavailable',
+        client: 'המוצר לא נוסף לעגלה, ייתכן והמוצר נקנה מלקוח אחר',
+      });
+    }
+
     const { cart } = user;
 
     if (
