@@ -17,7 +17,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useRef, useState } from 'react';
-import { AppState, I18nManager, Text, View } from 'react-native';
+import { AppState, I18nManager, View } from 'react-native';
 import 'react-native-gesture-handler';
 import { getUser, watchCart } from './src/api/user';
 import HeaderLogo from './src/components/HeaderLogo';
@@ -229,6 +229,11 @@ function HomeStackScreen() {
       <HomeStack.Screen
         name='ReleaseProduct'
         component={ReleaseProductScreen}
+        options={{
+          title: 'שחרור מוצרים',
+          presentation: 'modal',
+          headerLeft: () => {},
+        }}
       />
     </HomeStack.Navigator>
   );
@@ -322,6 +327,11 @@ function CartStackScreen() {
       <CartStack.Screen
         name='ReleaseProduct'
         component={ReleaseProductScreen}
+        options={{
+          title: 'שחרור מוצרים',
+          presentation: 'modal',
+          headerLeft: () => {},
+        }}
       />
     </CartStack.Navigator>
   );
@@ -351,7 +361,7 @@ export default function App() {
           const isSignedWithProvider = await SecureStore.getItemAsync(
             'signedWithProvider'
           );
-          console.log({isSignedWithProvider});
+          console.log({ isSignedWithProvider });
           if (isSignedWithProvider) {
             setIsSignedWithProvider(true);
           }
