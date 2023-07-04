@@ -2,6 +2,10 @@ import NfcManager, { NfcTech,Ndef } from 'react-native-nfc-manager';
 
 NfcManager.start();
 
+export function cancelNFC() {
+  NfcManager.cancelTechnologyRequest().then(() => console.log('canceled NFC request')).catch((err) => console.log({NFCError: err}));
+}
+
 async function readNFC() {
   try {
     // register for the NFC tag with NDEF in it
@@ -17,7 +21,6 @@ async function readNFC() {
   } catch (error) {
     console.log(error);
   } finally {
-    // stop the nfc scanning
     NfcManager.cancelTechnologyRequest();
   }
 }
