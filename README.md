@@ -44,7 +44,7 @@ const HOST = 'http://<Your localhost ip>:5000';
 
 ## Architecture
 The following diagram describes the Pass server structure according to the MVC (Model-View-Controller) model:
-![server module](images/Server%20Module%20Diagram.png)
+  <img src="images/Server%20Module%20Diagram.png" alt="Alt Text" width="700" height="400"/>
 
 - index.js, app.js - the main entry point of the application, the main file in which the server is started.
 
@@ -63,7 +63,8 @@ The following diagram describes the Pass server structure according to the MVC (
 - The models folder contains the schemas that define the arrangement of information in the database.
 
 This diagram describes the division of files into client-side modules according to the structure of a standard project using React Native:
-  ![frontend module](images/Frontend%20Module%20Diagram.png)
+  <img src="images/Frontend%20Module%20Diagram.png" alt="Alt Text" width="800" height="400"/>
+  
 
 - App.js - the main file in which all the settings and libraries that run in our application are initialized, here the main UI component of the application is also created and the rest of the components are derived from it.
 
@@ -78,6 +79,13 @@ This diagram describes the division of files into client-side modules according 
 - stores – files that contain objects that are used globally in different components and dynamically control the UI components and methods for them.
 
 - api - files that contain all the HTTP requests to the Pass server according to the resources that the Pass server contains when index.js initializes an object that knows how to send the requests and adds additional definitions that are sent with the requests such as http headers such as authorization when it comes to requests for a protected resource and functions that are called before or after making the requests .
+
+## Hardware
+- 3D model of the product shell
+<img src="images/smartTag.png" alt="Alt Text" width="300" height="250"/>
+
+- Electrical planning
+<img src="images/Electricity%20Model.png" alt="Alt Text" width="700" height="400"/>
 
 
 ## Built With
