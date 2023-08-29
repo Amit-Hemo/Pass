@@ -9,6 +9,10 @@ Final project in software engineering
 - Android Studio for building and running the app on a simulator or device
 - Braintree sandbox account : https://www.braintreepayments.com/sandbox
 
+## Before we start
+The easiest way to get an impression of the application is to download it via the following apk:
+https://drive.google.com/drive/folders/1FtLNCb1c3ubF1y0ZaeNql2jf5mzLiYlu?usp=sharing
+
 ## Getting Started
 1. Clone this repository: ```https://github.com/NadavBuchwalter/Pass.git```
 2. Install the necessary dependencies for the React Native app by navigating to the `PASS/client` directory and running: `npm i`
