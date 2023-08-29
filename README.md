@@ -1,6 +1,7 @@
 # Pass
 
-Final project in software engineering
+Our idea was to solve the issue of queues in clothing stores and for that we developed an application and hardware that communicate with each other and solve that problem.
+
 
 ## Requirements
 - Node.js v12.x or higher
