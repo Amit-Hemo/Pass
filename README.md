@@ -2,7 +2,6 @@
 
 Our idea was to solve the issue of queues in clothing stores and for that we developed an application and hardware that communicate with each other and solve that problem.
 
-
 ## Requirements
 - Node.js v12.x or higher
 - Expo CLI v6.x or higher
@@ -10,37 +9,9 @@ Our idea was to solve the issue of queues in clothing stores and for that we dev
 - Android Studio for building and running the app on a simulator or device
 - Braintree sandbox account : https://www.braintreepayments.com/sandbox
 
-## Before we start
+## Try the project
 The easiest way to get an impression of the application is to download it via the following apk:
 https://drive.google.com/drive/folders/1FtLNCb1c3ubF1y0ZaeNql2jf5mzLiYlu?usp=sharing
-
-## Getting Started
-1. Clone this repository: ```https://github.com/NadavBuchwalter/Pass.git```
-2. Install the necessary dependencies for the React Native app by navigating to the `PASS/client` directory and running: `npm i`
-3. Install the necessary dependencies for the React Native app by navigating to the `PASS/server` directory and running: `npm i`
-4. Navigate to the following path: `Pass/client/api/index.js`:
->- In line 4 replace the ip to your own ip : 
-```Js
-// for development
-const baseURL = 'http://<Your localhost ip>:5000';
-```
-5. Navigate to the following path: `Pass/client/src/screens/ProfileScreen.js`:
->- In line 15 replace the ip to your own ip : 
-```Js
-// for development
-const HOST = 'http://<Your localhost ip>:5000';
-```
-6. Navigate to the following path: `Pass/server` :
->- Create .env file based on the example from `Pass/server/.env.example` 
-
-7. Open your emulator through Android Studio
-
-8. Navigate to the following path: `Pass/server` :
->- Start the Node.js server by running: `npm start`
-
-9. Navigate to the following path: `Pass/client` :
->- Start the React Native app by running: `npm start`
-> Type `a` inside the terminal in order to load the application in your emulator
 
 ## A little peek at the app screens
 <p align="center">
