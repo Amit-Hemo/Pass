@@ -15,8 +15,12 @@ https://drive.google.com/drive/folders/1FtLNCb1c3ubF1y0ZaeNql2jf5mzLiYlu?usp=sha
 
 ## A little peek at the app screens
 ### Project Video
-[![Watch the video](https://res.cloudinary.com/dqhuqnxr7/image/upload/c_pad,w_600,h_338,ar_16:9/l_image:upload:839_rjgapa/c_scale,fl_relative,w_1.06/o_20/fl_layer_apply,g_center,x_0.03,y_0.04/v1722868057/pass_video_thumbnail.jpg)](https://drive.google.com/file/d/1xEEujvBkYwgSaMOK5ERVyQhJ8MAW18-W/view?usp=sharing)
-<p align="center">
+<a href="https://drive.google.com/file/d/1xEEujvBkYwgSaMOK5ERVyQhJ8MAW18-W/view?usp=sharing" title="Open Video" target="_blank">
+  <img src="https://res.cloudinary.com/dqhuqnxr7/image/upload/c_pad,w_600,h_338,ar_16:9/l_image:upload:839_rjgapa/c_scale,fl_relative,w_1.06/o_20/fl_layer_apply,g_center,x_0.03,y_0.04/v1722868057/pass_video_thumbnail.jpg" alt="thumbnail"/>
+</a>
+
+### UI - Sign In Flow Example
+<p>
   <img src="images/screens.png" alt="Alt Text" width="800" height="300"/>
 </p>
 
