@@ -7,7 +7,6 @@ const logger = createLoggerInstance('stores');
 
 async function getProduct(req, res) {
   const { tagUuid } = req.params;
-  logger.error('nadav god bless you')
   try {
     const tag = await TagModel.findOne({ uuid: tagUuid }).lean();
     if (!tag) return res.status(404).json({ error: 'tag not found' });
